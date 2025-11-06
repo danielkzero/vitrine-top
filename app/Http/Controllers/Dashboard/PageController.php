@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Http\Controllers\Dashboard;
+
+use App\Http\Controllers\Controller;
+use App\Models\Page;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class PageController extends Controller
+{
+    /**
+     * Lista todas as páginas do usuário autenticado.
+     */
+    public function index()
+    {
+        $pages = Page::where('user_id', auth()->id())
+            ->ordered()
+            ->paginate(10)
+            ->through(fn($page) => [
+                'id' => $page->id,
+                'title' => $page->title,
+                'icon' => $page->icon,
+                'is_active' => $page->is_active,
+                'order' => $page->order,
+                'public_url' => $page->public_url,
+                'excerpt' => $page->excerpt,
+            ]);
+
+        return Inertia::render('Dashboard/Pages/Index', [
+            'pages' => $pages,
+        ]);
+    }
+
+    /**
+     * Exibe o formulário de criação.
+     */
+    public function create()
+    {
+        return Inertia::render('Dashboard/Pages/Create');
+    }
+
+    /**
+     * Armazena uma nova página.
+     */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'icon' => 'nullable|string|max:100',
+            'content' => 'nullable|string',
+            'cover_image' => 'nullable|string|max:255',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+            'order' => 'nullable|integer',
+        ]);
+
+        $data['user_id'] = auth()->id();
+
+        Page::create($data);
+
+        return redirect()->route('dashboard.pages.index')->with('success', 'Página criada com sucesso!');
+    }
+
+    /**
+     * Exibe o formulário de edição.
+     */
+    public function edit(Page $page)
+    {
+        $this->authorizeAccess($page);
+
+        return Inertia::render('Dashboard/Pages/Edit', [
+            'page' => $page,
+        ]);
+    }
+
+    /**
+     * Atualiza uma página existente.
+     */
+    public function update(Request $request, Page $page)
+    {
+        $this->authorizeAccess($page);
+
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'icon' => 'nullable|string|max:100',
+            'content' => 'nullable|string',
+            'cover_image' => 'nullable|string|max:255',
+            'seo_title' => 'nullable|string|max:255',
+            'seo_description' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+            'order' => 'nullable|integer',
+        ]);
+
+        $page->update($data);
+
+        return redirect()->route('dashboard.pages.index')->with('success', 'Página atualizada com sucesso!');
+    }
+
+    /**
+     * Remove uma página.
+     */
+    public function destroy(Page $page)
+    {
+        $this->authorizeAccess($page);
+
+        $page->delete();
+
+        return back()->with('success', 'Página removida com sucesso!');
+    }
+
+    /**
+     * Exibe uma página pública (fora do dashboard).
+     */
+    public function show(string $key)
+    {
+        $page = Page::where('key', $key)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return Inertia::render('Public/Page', [
+            'page' => [
+                'title' => $page->title,
+                'content' => $page->content,
+                'cover_image' => $page->cover_image,
+                'seo_title' => $page->seo_title,
+                'seo_description' => $page->seo_description,
+            ],
+        ]);
+    }
+
+    /**
+     * Protege o acesso de outros usuários.
+     */
+    private function authorizeAccess(Page $page)
+    {
+        abort_if($page->user_id !== auth()->id(), 403);
+    }
+}
