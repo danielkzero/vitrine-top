@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\Dashboard\PageController;
-use App\Http\Controllers\Dashboard\ReviewController;
-use App\Http\Controllers\Dashboard\SubscriptionController;
-use App\Http\Controllers\Dashboard\PaymentController;
+use App\Http\Controllers\Main\PageController;
+use App\Http\Controllers\Main\ReviewController;
+use App\Http\Controllers\Main\SubscriptionController;
+use App\Http\Controllers\Main\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,11 +14,14 @@ use App\Http\Controllers\Dashboard\PaymentController;
 |--------------------------------------------------------------------------
 */
 
+
+// Página inicial
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
+
 
 // Exibe páginas dinâmicas criadas pelo usuário
 Route::get('/pagina/{key}', [PageController::class, 'show'])->name('pages.show');

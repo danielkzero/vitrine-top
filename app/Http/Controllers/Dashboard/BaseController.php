@@ -13,15 +13,20 @@ class BaseController extends Controller
 
     public function __construct()
     {
+        // Middleware de autenticação por request
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
             return $next($request);
         });
     }
 
-    /**
-     * Decide automaticamente se responde JSON ou Inertia
-     */
+    public function index(Request $request)
+    {
+        return Inertia::render('Dashboard', [
+            'user' => $this->user,
+        ]);
+    }
+
     protected function respond(Request $request, string $view, array $data = [])
     {
         if ($request->wantsJson()) {
@@ -31,17 +36,11 @@ class BaseController extends Controller
         return Inertia::render($view, $data);
     }
 
-    /**
-     * Retorna JSON padrão
-     */
     protected function json($data = [], int $status = 200)
     {
         return response()->json($data, $status);
     }
 
-    /**
-     * Retorna erro padrão
-     */
     protected function error(string $message = 'Erro', int $status = 400, array $meta = [])
     {
         return response()->json(array_merge(['message' => $message], $meta), $status);

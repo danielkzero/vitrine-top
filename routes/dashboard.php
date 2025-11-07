@@ -7,55 +7,21 @@ use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\ReviewController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
 use App\Http\Controllers\Dashboard\PaymentController;
+use Inertia\Inertia;
+
+Route::get('dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])
-    ->prefix('dashboard')
-    ->name('dashboard.')
+    ->prefix('painel')
+    ->name('painel.')
     ->group(function () {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Dashboard principal
-        |--------------------------------------------------------------------------
-        */
         Route::get('/', [BaseController::class, 'index'])->name('index');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Categorias
-        |--------------------------------------------------------------------------
-        */
         Route::resource('categories', CategoryController::class);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Páginas
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('pages', PageController::class)
-            ->except(['show']); // exibição pública fora do dashboard
-
-        /*
-        |--------------------------------------------------------------------------
-        | Avaliações (Reviews)
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('reviews', ReviewController::class)
-            ->only(['index', 'update', 'destroy']);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Assinaturas (Subscriptions)
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('subscriptions', SubscriptionController::class)
-            ->only(['index', 'store', 'update', 'destroy']);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pagamentos (Payments)
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('payments', PaymentController::class)
-            ->only(['index', 'show', 'store']);
+        Route::resource('pages', PageController::class)->except(['show']);
+        Route::resource('reviews', ReviewController::class)->only(['index', 'update', 'destroy']);
+        Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('payments', PaymentController::class)->only(['index', 'show', 'store']);
     });

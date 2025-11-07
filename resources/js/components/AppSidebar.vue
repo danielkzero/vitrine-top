@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import NavFooter from '@/components/NavFooter.vue';
-import NavMain from '@/components/NavMain.vue';
-import NavUser from '@/components/NavUser.vue';
+import NavFooter from '@/components/NavFooter.vue'
+import NavMain from '@/components/NavMain.vue'
+import NavUser from '@/components/NavUser.vue'
 import {
     Sidebar,
     SidebarContent,
@@ -10,42 +10,23 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
-import AppLogo from './AppLogo.vue';
+} from '@/components/ui/sidebar'
+import { Link } from '@inertiajs/vue3'
+import AppLogo from './AppLogo.vue'
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
+// Importa os menus configurados
+import { mainNavItems, footerNavItems } from '@/config/navigation'
 </script>
 
 <template>
     <Sidebar collapsible="icon" variant="inset">
+        <!-- Cabeçalho -->
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <!-- substitui route('painel.index') -->
+                        <Link href="/painel">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -53,14 +34,17 @@ const footerNavItems: NavItem[] = [
             </SidebarMenu>
         </SidebarHeader>
 
+        <!-- Conteúdo principal -->
         <SidebarContent>
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
+        <!-- Rodapé -->
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>
+
     <slot />
 </template>

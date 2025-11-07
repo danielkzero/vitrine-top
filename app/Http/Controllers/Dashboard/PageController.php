@@ -45,6 +45,14 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
+        // Limite máximo de páginas por usuário
+        $maxPages = 6;
+        if (Page::where('user_id', auth()->id())->count() >= $maxPages) {
+            return redirect()
+                ->back()
+                ->withErrors(['max' => "Você atingiu o limite máximo de $maxPages páginas."]);
+        }
+
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'icon' => 'nullable|string|max:100',
@@ -54,13 +62,16 @@ class PageController extends Controller
             'seo_description' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'order' => 'nullable|integer',
+            'type' => 'required|in:products,reviews,links,simple',
         ]);
 
         $data['user_id'] = auth()->id();
 
         Page::create($data);
 
-        return redirect()->route('dashboard.pages.index')->with('success', 'Página criada com sucesso!');
+        return redirect()
+            ->route('dashboard.pages.index')
+            ->with('success', 'Página criada com sucesso!');
     }
 
     /**
@@ -91,6 +102,7 @@ class PageController extends Controller
             'seo_description' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'order' => 'nullable|integer',
+            'type' => 'required|in:products,reviews,links,simple',
         ]);
 
         $page->update($data);
