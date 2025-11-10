@@ -8,13 +8,6 @@ use App\Http\Controllers\Main\ReviewController;
 use App\Http\Controllers\Main\SubscriptionController;
 use App\Http\Controllers\Main\PaymentController;
 
-/*
-|--------------------------------------------------------------------------
-| Rotas Públicas
-|--------------------------------------------------------------------------
-*/
-
-
 // Página inicial
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -23,8 +16,7 @@ Route::get('/', function () {
 })->name('home');
 
 
-// Exibe páginas dinâmicas criadas pelo usuário
-Route::get('/pagina/{key}', [PageController::class, 'show'])->name('pages.show');
+
 
 // Mostra avaliações públicas (reviews aprovadas)
 Route::get('/avaliacoes', [ReviewController::class, 'publicIndex'])->name('reviews.public');
@@ -48,3 +40,16 @@ Route::get('/checkout/erro', [PaymentController::class, 'error'])->name('checkou
 
 require __DIR__ . '/dashboard.php';
 require __DIR__ . '/settings.php';
+
+// Exibe páginas dinâmicas criadas pelo usuário
+// vitrine.top/minha_loja
+Route::get('/{key}', [PageController::class, 'show'])->name('pages.show');
+// vitrine.top/minha_loja/principal
+// vitrine.top/minha_loja/catalogo
+// vitrine.top/minha_loja/catalogo/id_produto
+// vitrine.top/minha_loja/catalogo/?p=1&outras_condicionais
+// vitrine.top/minha_loja/galeria
+// vitrine.top/minha_loja/galeria/?p=1&outras_condicionais
+// vitrine.top/minha_loja/sobre
+// vitrine.top/minha_loja/avaliacoes
+// vitrine.top/minha_loja/avaliacoes/?p=1&outras_condicionais

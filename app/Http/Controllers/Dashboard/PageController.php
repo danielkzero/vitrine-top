@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,21 +15,30 @@ class PageController extends Controller
      */
     public function index()
     {
+
+        $user = auth()->user();
+
+        Page::ensureDefaultPages($user->id);
+
         $pages = Page::where('user_id', auth()->id())
             ->ordered()
             ->paginate(10)
             ->through(fn($page) => [
                 'id' => $page->id,
                 'title' => $page->title,
+                'content' => $page->content,
                 'icon' => $page->icon,
                 'is_active' => $page->is_active,
                 'order' => $page->order,
                 'public_url' => $page->public_url,
-                'excerpt' => $page->excerpt,
+                'type' => $page->type,
             ]);
+
+        $avaliacoes = Review::where('user_id', auth()->id())->get();
 
         return Inertia::render('Dashboard/Pages/Index', [
             'pages' => $pages,
+            'avaliacoes' => $avaliacoes
         ]);
     }
 

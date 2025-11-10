@@ -26,7 +26,6 @@ class Page extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'content' => 'array',
     ];
 
     /*
@@ -90,5 +89,36 @@ class Page extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('order');
+    }
+
+    public static function ensureDefaultPages($userId)
+    {
+        $defaultPages = [
+            ['key' => 'principal', 'title' => 'Principal', 'is_active' => true, 'type' => 'simple', 'order' => 1],
+            ['key' => 'catalogo', 'title' => 'Catálogo', 'is_active' => true, 'type' => 'products', 'order' => 2],
+            ['key' => 'galeria', 'title' => 'Galeria', 'is_active' => false, 'type' => 'simple', 'order' => 3],
+            ['key' => 'links', 'title' => 'Links', 'is_active' => false, 'type' => 'links', 'order' => 4],
+            ['key' => 'sobre', 'title' => 'Sobre', 'is_active' => false, 'type' => 'simple', 'order' => 5],
+            ['key' => 'avaliacoes', 'title' => 'Avaliações', 'is_active' => true, 'type' => 'reviews', 'order' => 6],
+        ];
+
+        $existingKeys = self::where('user_id', $userId)->pluck('key')->toArray();
+
+        foreach ($defaultPages as $page) {
+            if (!in_array($page['key'], $existingKeys)) {
+                self::create([
+                    'user_id' => $userId,
+                    'key' => $page['key'],
+                    'title' => $page['title'],
+                    'is_active' => $page['is_active'],
+                    'order' => $page['order'],
+                    'content' => '',
+                    'cover_image' => '',
+                    'seo_title' => '',
+                    'seo_description' => '',
+                    'type' => $page['type']
+                ]);
+            }
+        }
     }
 }
