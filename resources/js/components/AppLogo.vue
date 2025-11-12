@@ -5,7 +5,9 @@ import { Store } from 'lucide-vue-next';
 
 <template>
     <div
-        class="flex aspect-square size-10 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground  bg-gradient-to-r to-emerald-600 from-sky-400">
+        class="flex aspect-square size-8 items-center justify-center rounded-xl 
+        bg-sidebar-primary text-sidebar-primary-foreground bg-gradient-to-r 
+        to-emerald-600 from-sky-400 shadow-md">
         <!--<AppLogoIcon class="size-5 fill-current text-white dark:text-black" />-->
         <component :is="Store" class="h-6 w-6" />
     </div>

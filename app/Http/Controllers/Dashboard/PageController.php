@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Page;
+use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,7 +17,6 @@ class PageController extends Controller
      */
     public function index()
     {
-
         $user = auth()->user();
 
         Page::ensureDefaultPages($user->id);
@@ -23,8 +24,9 @@ class PageController extends Controller
         $pages = Page::where('user_id', auth()->id())
             ->ordered()
             ->paginate(10)
-            ->through(fn($page) => [
+            ->through(fn($page) => [                
                 'id' => $page->id,
+                'key' => $page->key,
                 'title' => $page->title,
                 'content' => $page->content,
                 'icon' => $page->icon,
@@ -36,9 +38,15 @@ class PageController extends Controller
 
         $avaliacoes = Review::where('user_id', auth()->id())->get();
 
+        $produtos = Product::where('user_id', auth()->id())->get();
+
+        $categorias = Category::where('user_id', auth()->id())->get();
+
         return Inertia::render('Dashboard/Pages/Index', [
             'pages' => $pages,
-            'avaliacoes' => $avaliacoes
+            'avaliacoes' => $avaliacoes,
+            'produtos' => $produtos,
+            'categorias' => $categorias
         ]);
     }
 
@@ -87,12 +95,24 @@ class PageController extends Controller
     /**
      * Exibe o formulário de edição.
      */
-    public function edit(Page $page)
+    public function edit(string $key)
     {
-        $this->authorizeAccess($page);
+        // Busca a página pelo campo "key"
+        $page = Page::where('key', $key)->firstOrFail();
 
-        return Inertia::render('Dashboard/Pages/Edit', [
+        // Define dados extras conforme o tipo da página
+
+        $avaliacoes = Review::where('user_id', auth()->id())->get();
+
+        $produtos = Product::where('user_id', auth()->id())->get();
+
+        $categorias = Category::where('user_id', auth()->id())->get();
+
+        return inertia('Dashboard/Pages/Edit', [
             'page' => $page,
+            'avaliacoes' => $avaliacoes,
+            'produtos' => $produtos,
+            'categorias' => $categorias,
         ]);
     }
 

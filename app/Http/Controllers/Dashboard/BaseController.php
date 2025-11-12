@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
+use App\Models\Order;
+use App\Models\Category;
+use App\Models\Page;
 use Inertia\Inertia;
 
 class BaseController extends Controller
@@ -22,8 +26,28 @@ class BaseController extends Controller
 
     public function index(Request $request)
     {
+        $productsCount = Product::count();
+        $activeProducts = Product::where('is_public', true)->count();
+        $pendingOrders = Order::where('status', 'pending')->count();
+        $totalRevenue = Order::where('status', 'completed')->sum('total');
+        $recentOrders = Order::with('user')->latest()->take(5)->get();
+
         return Inertia::render('Dashboard', [
             'user' => $this->user,
+            'stats' => [
+                'products' => [
+                    'active' => $activeProducts,
+                    'total' => $productsCount,
+                ],
+                'orders' => [
+                    'pending' => $pendingOrders,
+                ],
+                'revenue' => [
+                    'total' => $totalRevenue,
+                    'count' => Order::count(),
+                ],
+            ],
+            'recentOrders' => $recentOrders,
         ]);
     }
 

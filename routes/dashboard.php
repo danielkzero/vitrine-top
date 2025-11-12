@@ -1,13 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 use App\Http\Controllers\Dashboard\BaseController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\ReviewController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
 use App\Http\Controllers\Dashboard\PaymentController;
-use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Rotas do Painel do Usuário (Dashboard)
+|--------------------------------------------------------------------------
+*/
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
@@ -17,11 +23,31 @@ Route::middleware(['auth', 'verified'])
     ->prefix('painel')
     ->name('painel.')
     ->group(function () {
+
+        // Página inicial do painel
         Route::get('/', [BaseController::class, 'index'])->name('index');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Categorias, Avaliações, Assinaturas, Pagamentos
+        |--------------------------------------------------------------------------
+        */
         Route::resource('categories', CategoryController::class);
-        Route::resource('pages', PageController::class)->except(['show']);
         Route::resource('reviews', ReviewController::class)->only(['index', 'update', 'destroy']);
         Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('payments', PaymentController::class)->only(['index', 'show', 'store']);
+    });
+
+/*
+|--------------------------------------------------------------------------
+| Páginas (definidas manualmente para usar "key" em vez de ID)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('painel/pages')
+    ->middleware(['auth', 'verified'])
+    ->name('painel.pages.')
+    ->group(function () {
+        Route::get('/', [PageController::class, 'index'])->name('index');
+        Route::get('/edit/{key}', [PageController::class, 'edit'])->name('edit');
+        Route::post('/update/{key}', [PageController::class, 'update'])->name('update');
     });
