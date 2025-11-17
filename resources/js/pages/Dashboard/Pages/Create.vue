@@ -12,7 +12,7 @@ const form = useForm({
 });
 
 const breadcrumbs = [
-    { title: 'Início', href: routes.painel.index },
+    { title: 'Painel', href: routes.painel.index },
     { title: 'Páginas', href: routes.painel.pages.index },
     { title: 'Nova Página', href: routes.painel.pages.create },
 ];
