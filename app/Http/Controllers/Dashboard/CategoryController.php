@@ -16,6 +16,7 @@ class CategoryController extends BaseController
 
         return $this->respond($request, 'Dashboard/Categories/Index', [
             'categories' => $categories,
+            'user' => $this->user,
         ]);
     }
 
