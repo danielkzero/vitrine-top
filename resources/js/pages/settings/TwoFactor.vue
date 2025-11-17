@@ -25,7 +25,7 @@ withDefaults(defineProps<Props>(), {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Two-Factor Authentication',
+        title: 'Autenticação de dois fatores',
         href: show.url(),
     },
 ];
@@ -52,7 +52,7 @@ onUnmounted(() => {
                     v-if="!twoFactorEnabled"
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="destructive">Disabled</Badge>
+                    <Badge variant="destructive">Desativado</Badge>
 
                     <p class="text-muted-foreground">
                         Ao ativar a autenticação de dois fatores, você será
@@ -75,7 +75,7 @@ onUnmounted(() => {
                             #default="{ processing }"
                         >
                             <Button type="submit" :disabled="processing">
-                                <ShieldCheck />Enable 2FA</Button
+                                <ShieldCheck />Ativar 2FA</Button
                             ></Form
                         >
                     </div>
@@ -85,7 +85,7 @@ onUnmounted(() => {
                     v-else
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="default">Enabled</Badge>
+                    <Badge variant="default">Ativo</Badge>
 
                     <p class="text-muted-foreground">
                         Com a autenticação de dois fatores ativada, você será
