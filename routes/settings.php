@@ -25,4 +25,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');
+
+    // NOVA ROTA DA LOJA
+    Route::get('settings/store', function () {
+        return Inertia::render('Settings/MyStore');
+    })->name('store.edit');
 });
