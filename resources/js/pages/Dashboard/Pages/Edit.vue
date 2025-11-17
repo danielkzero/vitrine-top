@@ -7,12 +7,12 @@ import { SquareCheckBig, UploadCloud, Star, StarOff, Eye, EyeOff } from 'lucide-
 import * as LucideIcons from 'lucide-vue-next'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { formatCurrency } from '@/lib/utils'
-import SimplesContent from './SimplesContent.vue'
-import LinkContent from './LinkContent.vue'
-import GaleryContent from './GaleryContent.vue'
-import ReviewContent from './ReviewContent.vue'
-import ProductContent from './ProductContent.vue'
-// Props do Inertia (agora vem uma única página)
+import SimplesContent from '@/components/vitrine/SimplesContent.vue'
+import LinkContent from '@/components/vitrine/LinkContent.vue'
+import GaleryContent from '@/components/vitrine/GaleryContent.vue'
+import ReviewContent from '@/components/vitrine/ReviewContent.vue'
+import ProductContent from '@/components/vitrine/ProductContent.vue'
+// Props do Inertia (agora vem uma única página)resources\js\components\vitrine\GaleryContent.vue
 const inertia = usePage()
 const page = ref(inertia.props.page || {}) // ✅ página atual
 const avaliacoes = inertia.props.avaliacoes || []
@@ -50,7 +50,7 @@ function onCoverSelected(event: Event) {
 
 // Breadcrumbs
 const breadcrumbs = [
-    { title: 'Início', href: '/painel' },
+    { title: 'Painel', href: '/painel' },
     { title: 'Páginas', href: '/painel/pages' },
     { title: 'Editar', href: '/painel/pages/edit' },
 ]
@@ -58,7 +58,7 @@ const breadcrumbs = [
 // Opções de ícones para páginas
 const iconOptions = [
     { name: 'EyeOff', label: 'Ocultar' },
-    { name: 'Home', label: 'Início' },
+    { name: 'Home', label: 'Painel' },
     { name: 'Book', label: 'Livro' },
     { name: 'Image', label: 'Galeria' },
     { name: 'Link', label: 'Links' },
@@ -199,15 +199,16 @@ function updateStatus(item: any) {
     <AppLayout :breadcrumbs="breadcrumbs">
 
         <!-- Formulário de edição -->
-        <main class="flex-1 py-4 px-1 md:py-6 md:px-6 shadow">
-            <div class="container mx-auto">
+        <main class="flex-1 py-4 md:py-6 md:px-6 gap-6 p-6 px-4 container mx-auto">
+            <div class="">
 
                 <div v-if="page">
                     <form class="space-y-4" @submit.prevent="handleSubmit">
                         <!-- Tab Geral -->
-                        <div class="border p-4 rounded-xl space-y-4 bg-white shadow">
-                            <h2 class="text-2xl font-extrabold leading-none 
-                            tracking-tight md:text-2xl flex gap-2 p-3 border bg-gray-100/50 rounded-xl">
+                        <div class="md:border p-4 rounded-xl space-y-4 md:shadow">
+                            <h2
+                                class="text-2xl font-extrabold leading-none 
+                            tracking-tight md:text-2xl flex gap-2 p-3 border bg-gray-100/50 dark:bg-white/10 rounded-xl">
                                 <component :is="SquareCheckBig" class="h-6 w-6 text-sky-400" />
                                 <span
                                     class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
@@ -228,7 +229,8 @@ function updateStatus(item: any) {
                                     <input v-model="page.title" type="text" placeholder="Título da página"
                                         class="flex-1 border rounded-xl px-3 py-2 w-2" />
 
-                                    <span @click="page.is_active = !page.is_active" class="cursor-pointer inline-flex items-center text-sm font-medium rounded-xl px-2 py-2"
+                                    <span @click="page.is_active = !page.is_active"
+                                        class="cursor-pointer inline-flex items-center text-sm font-medium rounded-xl px-2 py-2"
                                         :class="page.is_active
                                             ? 'bg-emerald-100 text-emerald-700'
                                             : 'bg-gray-200 text-gray-500'">
@@ -238,25 +240,26 @@ function updateStatus(item: any) {
 
                                 <!-- Dropdown de ícones -->
                                 <div v-if="showIconPicker"
-                                    class="mt-2 grid md:grid-cols-6 grid-cols-3 gap-2 border p-3 rounded-xl bg-white shadow-lg">
+                                    class="mt-2 grid md:grid-cols-6 grid-cols-3 gap-2 border p-3 rounded-xl bg-white dark:bg-white/10 shadow-lg">
                                     <button v-for="name in iconOptions" :key="name" type="button"
                                         @click="selectIcon(name.name)"
-                                        class="flex flex-col items-center justify-center p-2 hover:bg-gray-100 rounded-xl transition">
-                                        <component :is="LucideIcons[name.name]" class="h-6 w-6 text-gray-700" />
-                                        <span class="text-[10px] text-gray-500 mt-1">{{ name.label }}</span>
+                                        class="cursor-pointer flex flex-col items-center justify-center p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-xl transition">
+                                        <component :is="LucideIcons[name.name]"
+                                            class="h-6 w-6 text-gray-700 dark:text-gray-100" />
+                                        <span class="text-[10px] text-gray-500 dark:text-gray-200 mt-1">{{ name.label
+                                            }}</span>
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-sm font-medium mb-1">Tipo</label>
-                                <select v-model="page.type" class="w-full border rounded-xl px-3 py-2">
+                                <select v-model="page.type" class="w-full border rounded-xl px-3 py-2 dark:bg-black">
                                     <option value="simple">Simples</option>
                                     <option value="products">Produtos</option>
                                     <option value="gallery">Galeria</option>
                                     <option value="reviews">Avaliações</option>
                                     <option value="links">Links</option>
-
                                 </select>
                             </div>
 
@@ -291,9 +294,9 @@ function updateStatus(item: any) {
 
 
                         <!-- Tab SEO -->
-                        <div class="border p-4 rounded-xl space-y-4 bg-white shadow">
+                        <div class="md:border p-4 rounded-xl space-y-4 md:shadow">
                             <h2 class="text-2xl font-extrabold leading-none 
-                            tracking-tight md:text-2xl flex gap-2 p-3 border bg-gray-100/50 rounded-xl">
+                            tracking-tight md:text-2xl flex gap-2 p-3 border bg-gray-100/50 dark:bg-white/10 rounded-xl">
                                 <component :is="SquareCheckBig" class="h-6 w-6 text-sky-400" />
                                 <span
                                     class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
@@ -317,8 +320,8 @@ function updateStatus(item: any) {
                                 <label for="dropzone-file" class="flex flex-col items-center 
                                     justify-center w-full h-64 border-2 border-dashed 
                                     border-gray-300 rounded-xl cursor-pointer bg-gray-50 
-                                    hover:bg-gray-100 dark:bg-gray-700 dark:border-gray-600 
-                                    dark:hover:border-gray-500 dark:hover:bg-gray-600 transition">
+                                    hover:bg-gray-100 dark:bg-black dark:border-white/20 
+                                    dark:hover:border-white/30 dark:hover:bg-white/10 transition">
                                     <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                                         <UploadCloud class="w-10 h-10 mb-4 text-gray-500 dark:text-gray-400" />
                                         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
@@ -339,7 +342,8 @@ function updateStatus(item: any) {
                             </div>
                         </div>
 
-                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/80">
+                        <button type="submit"
+                            class="mx-4 md:mx-0 px-4 py-2 bg-primary dark:text-gray-800 text-white rounded-xl hover:bg-primary/80">
                             Salvar Alterações
                         </button>
                     </form>
@@ -354,41 +358,5 @@ li:active {
     cursor: grabbing;
 }
 
-/* Conteúdo interno do editor (sem usar @apply) */
-:deep(.ql-editor) {
-    min-height: 15rem;
-    /* equivalente a min-h-60 (15rem) */
-    border-radius: 1rem;
-    /* rounded-xl ~ 1rem */
-    padding: 1rem;
-    /* px-4 py-3 = 1rem 0.75rem, escolhi 1rem */
-    background-color: #ffffff;
-    /* bg-white */
-    color: #1f2937;
-    /* text-gray-800 */
-    line-height: 1.6;
-    /* leading-relaxed */
-}
 
-/* placeholder do editor */
-:deep(.ql-editor.ql-blank::before) {
-    color: #9ca3af;
-    /* text-gray-400 */
-}
-
-/* toolbar e container */
-:deep(.ql-toolbar) {
-    background-color: #f9fafb;
-    /* bg-gray-50 */
-    border-bottom: 1px solid #e5e7eb;
-    /* border-gray-200 */
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-}
-
-:deep(.ql-container) {
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
-    border: 1px solid #e5e7eb;
-}
 </style>
