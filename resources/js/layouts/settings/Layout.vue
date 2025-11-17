@@ -4,16 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
-import { edit as editProfile } from '@/routes/profile';
+import { edit, edit as editProfile } from '@/routes/profile';
+import { edit as editStore } from '@/routes/store';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 
-const sidebarNavItems: NavItem[] = [
+const sidebarNavItems: NavItem[] = [    
     {
         title: 'Perfil',
         href: editProfile(),
+    },
+    {
+        title: 'Loja',
+        href: editStore(),
     },
     {
         title: 'Senha',
@@ -27,6 +32,7 @@ const sidebarNavItems: NavItem[] = [
         title: 'Tema',
         href: editAppearance(),
     },
+    
 ];
 
 const currentPath = typeof window !== undefined ? window.location.pathname : '';
@@ -35,8 +41,8 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
 <template>
     <div class="px-4 py-6">
         <Heading
-            title="Settings"
-            description="Manage your profile and account settings"
+            title="Configurações"
+            description="Gerencie seu perfil e as configurações da sua conta."
         />
 
         <div class="flex flex-col lg:flex-row lg:space-x-12">
