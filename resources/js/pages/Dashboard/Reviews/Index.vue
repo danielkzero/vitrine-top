@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { routes } from '@/config/routes';
 const breadcrumbs = [
-    { title: 'Início', href: routes.painel.index },
+    { title: 'Painel', href: routes.painel.index },
     { title: 'Avaliações', href: routes.painel.reviews }
 ];
 </script>
