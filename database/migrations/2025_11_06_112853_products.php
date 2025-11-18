@@ -19,8 +19,10 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('discount_price', 10, 2)->nullable();
             $table->integer('stock')->default(0);
             $table->boolean('is_public')->default(true);
+            $tavle->boolean('featured')->default(false);
             $table->boolean('allow_whatsapp')->default(true);
             $table->string('cover_image')->nullable();
             $table->string('seo_title')->nullable();

@@ -34,6 +34,38 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
+
+    business_name: string;
+    slug: string;
+    description: string;
+    logo_url: string;
+    banner_url: string;
+    theme_color: string;
+    phone: string;
+    whatsapp: string;
+    instagram: string;
+    facebook: string;
+    phone_primary: string;
+}
+
+export interface Product {
+    id: number;
+    user_id: number;
+    category_id: number;
+    name: string;
+    slug: string;
+    description: string;
+    price: number;
+    discount_price: number | null;
+    active: boolean;
+    featured: boolean;
+    created_at: string;
+    updated_at: string;
+    images?: ProductImage[];
+    category?: {
+        id: number;
+        name: string;
+    };
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

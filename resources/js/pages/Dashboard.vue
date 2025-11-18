@@ -74,7 +74,7 @@ const breadcrumbs: BreadcrumbItem[] = [
           </Link>
 
         </div>
-        <p class="text-gray-500">Visão geral da sua loja</p>
+        <p class="text-gray-500 dark:text-gray-200">Visão geral da sua loja</p>
       </div>
 
       <!-- Cards de Métricas -->
@@ -110,22 +110,22 @@ const breadcrumbs: BreadcrumbItem[] = [
       <!-- Seções inferiores -->
       <div class="grid gap-6 lg:grid-cols-2">
         <!-- Ações rápidas -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <div class="p-4 border-b border-gray-100 dark:border-gray-700">
+        <div class="rounded-xl border border-gray-200 dark:border-white/20 bg-white dark:bg-white/10 shadow-sm">
+          <div class="p-4 border-b border-gray-100 dark:border-white/20">
             <h3 class="font-semibold text-gray-800 dark:text-gray-100">Ações Rápidas</h3>
           </div>
-          <div class="divide-y divide-gray-100 dark:divide-gray-700">
-            <button class="flex items-center gap-2 w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-700">
+          <div class="divide-y divide-gray-100 dark:divide-white/20">
+            <button class="flex items-center gap-2 w-full p-4 hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer">
               <Package class="w-5 h-5" />
               <span>Gerenciar Produtos</span>
             </button>
 
-            <button class="flex items-center gap-2 w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button class="flex items-center gap-2 w-full p-4 hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer">
               <Receipt class="w-5 h-5" />
               <span>Ver Pedidos</span>
             </button>
 
-            <button class="flex items-center gap-2 w-full p-4 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button class="flex items-center gap-2 w-full p-4 hover:bg-gray-50 dark:hover:bg-white/10 cursor-pointer rounded-b-xl">
               <Settings class="w-5 h-5" />
               <span>Configurar Loja</span>
             </button>
@@ -133,12 +133,12 @@ const breadcrumbs: BreadcrumbItem[] = [
         </div>
 
         <!-- Pedidos Recentes -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <div class="p-4 border-b border-gray-100 dark:border-gray-700">
+        <div class="rounded-xl border border-gray-200 dark:border-white/20 bg-white dark:bg-white/10 shadow-sm">
+          <div class="p-4 border-b border-gray-100 dark:border-white/20">
             <h3 class="font-semibold text-gray-800 dark:text-gray-100">Pedidos Recentes</h3>
           </div>
-          <div class="divide-y divide-gray-100 dark:divide-gray-700">
-            <div v-if="!props.recentOrders.length" class="p-4 text-gray-500">
+          <div class="divide-y divide-gray-100 dark:divide-white/20">
+            <div v-if="!props.recentOrders.length" class="p-4 text-gray-500 dark:text-gray-400">
               Nenhum pedido recente encontrado.
             </div>
             <div v-for="order in props.recentOrders" :key="order.id"

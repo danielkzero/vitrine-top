@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\Main\PageController;
-use App\Http\Controllers\Main\ReviewController;
-use App\Http\Controllers\Main\SubscriptionController;
-use App\Http\Controllers\Main\PaymentController;
+use App\Http\Controllers\dashboard\PageController;
+use App\Http\Controllers\dashboard\ReviewController;
+use App\Http\Controllers\dashboard\SubscriptionController;
+use App\Http\Controllers\dashboard\PaymentController;
 
 // Página inicial
 Route::get('/', function () {

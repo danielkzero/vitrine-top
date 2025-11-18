@@ -19,10 +19,10 @@ defineProps<{
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <div v-for="(link, index) in links" :key="index"
-                class="border border-gray-200 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition">
+                class="border border-gray-200 dark:border-white/10 dark:bg-white/10 rounded-xl p-4 shadow-sm hover:shadow-md transition">
                 <!-- Cabeçalho -->
                 <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-semibold text-gray-800 flex items-center gap-2">
+                    <h3 class="font-semibold text-gray-800 dark:text-white flex items-center gap-2">
                         <component :is="LucideIcons[link.icon]" class="w-5 h-5 text-gray-600" />
                         Link #{{ index + 1 }}
                     </h3>

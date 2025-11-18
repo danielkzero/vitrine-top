@@ -15,7 +15,7 @@ class ProductController extends BaseController
      */
     public function index(Request $request)
     {
-        $products = Product::where('user_id', $this->user->id)
+        $products = Product::with('images')->where('user_id', $this->user->id)
             ->with('category:id,name')
             ->orderBy('created_at', 'desc')
             ->get();

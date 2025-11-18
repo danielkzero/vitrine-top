@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
-import { Head, usePage } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
-import { QuillEditor } from '@vueup/vue-quill'
-import { SquareCheckBig, UploadCloud, Star, StarOff, Eye, EyeOff } from 'lucide-vue-next'
+import { Head, usePage, router  } from '@inertiajs/vue3'
+import { route } from 'ziggy-js';
+import { ref } from 'vue'
+import { SquareCheckBig,  Star, StarOff, Eye, EyeOff } from 'lucide-vue-next'
 import * as LucideIcons from 'lucide-vue-next'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { formatCurrency } from '@/lib/utils'
@@ -12,6 +12,7 @@ import LinkContent from '@/components/vitrine/LinkContent.vue'
 import GaleryContent from '@/components/vitrine/GaleryContent.vue'
 import ReviewContent from '@/components/vitrine/ReviewContent.vue'
 import ProductContent from '@/components/vitrine/ProductContent.vue'
+import DropzoneFile from '@/components/ui/dropzone-file/DropzoneFile.vue'
 // Props do Inertia (agora vem uma única página)resources\js\components\vitrine\GaleryContent.vue
 const inertia = usePage()
 const page = ref(inertia.props.page || {}) // ✅ página atual
@@ -142,7 +143,15 @@ function removeGalleryImage(index: number) {
 
 function handleSubmit() {
     // Em breve: enviar via Inertia.post(route('painel.pages.update', page.value.key), page.value)
-    console.log('Salvar página:', page.value)
+    router.post(
+        route('painel.pages.update', page.value.key), 
+        {
+            page: page.value,
+            produtos: produtos,
+            categorias: categorias,
+        },
+        { preserveScroll: true }
+    )
 }
 
 
@@ -155,7 +164,18 @@ const categoriaSelecionada = ref<number | null>(categorias.length ? categorias[0
 const showAddCategory = ref(false)
 const showAddProduct = ref(false)
 const novaCategoria = ref('')
-const novoProduto = ref({ name: '', price: '', description: '', category_id: null })
+const novoProduto = ref({
+    id: null,
+    name: '',
+    price: '',
+    discount_price: '',
+    category_id: categoriaSelecionada.value,
+    stock: '',
+    description: '',
+    is_public: true,
+    featured: false,
+    images: [] as string[],
+})
 
 function nomeCategoria(id: number) {
     const c = categorias.find((c: any) => c.id === id)
@@ -182,16 +202,109 @@ function removerCategoria(categoria: any) {
 
 function salvarProduto() {
     if (!novoProduto.value.name || !novoProduto.value.price) return
+
     novoProduto.value.category_id = categoriaSelecionada.value
-    produtos.push({ id: Date.now(), ...novoProduto.value })
-    novoProduto.value = { name: '', price: '', description: '', category_id: null }
+
+    if (novoProduto.value.id) {
+        // ---------- ATUALIZAR PRODUTO EXISTENTE ----------
+        const index = produtos.findIndex((p: any) => p.id === novoProduto.value.id)
+        if (index !== -1) {
+            produtos[index] = JSON.parse(JSON.stringify(novoProduto.value))
+        }
+    } else {
+        // ---------- CRIAR NOVO PRODUTO ----------
+        produtos.push({
+            ...novoProduto.value,
+            id: Date.now(),
+        })
+    }
+
+    // Reset
+    novoProduto.value = {
+        id: null,
+        name: '',
+        price: '',
+        discount_price: '',
+        category_id: categoriaSelecionada.value,
+        stock: '',
+        description: '',
+        is_public: true,
+        featured: false,
+        images: [],
+    }
+
     showAddProduct.value = false
 }
+
 function updateStatus(item: any) {
     console.log(`Atualizando status da avaliação #${item.id} para: ${item.status}`)
     // Exemplo: se quiser futuramente mandar para o backend:
     // Inertia.post(route('painel.reviews.update', item.id), { status: item.status })
 }
+
+function editarProduto(produto: any) {
+    novoProduto.value = JSON.parse(JSON.stringify(produto))
+    showAddProduct.value = true
+}
+
+
+function onPageCoverSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0]
+    if (!file) return
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/bmp', 'image/webp']
+    if (!validTypes.includes(file.type)) {
+        alert('Formato inválido. Use JPG, PNG, BMP ou WEBP.')
+        return
+    }
+    if (file.size > 1024 * 1024) {
+        alert('Tamanho máximo 1MB.')
+        return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        coverPreview.value = e.target?.result as string
+        page.value.cover_image = coverPreview.value
+    }
+    reader.readAsDataURL(file)
+}
+
+function onProductImageSelected(event: Event, index?: number) {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+
+    let target;
+
+    // Caso 1: novo produto (não tem index)
+    if (index === undefined || index === null) {
+        if (!novoProduto.value.images) novoProduto.value.images = [];
+        target = novoProduto.value;
+    }
+    // Caso 2: produto existente
+    else {
+        if (!produtos.value[index]) return; // evita crash
+        if (!produtos.value[index].images) produtos.value[index].images = [];
+        target = produtos.value[index];
+    }
+
+    // Adiciona as imagens
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            target.images.push({
+                id: null,
+                image_path: null,
+                image_base64: e.target?.result,
+                is_cover: false,
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+
+
 </script>
 <template>
 
@@ -199,11 +312,11 @@ function updateStatus(item: any) {
     <AppLayout :breadcrumbs="breadcrumbs">
 
         <!-- Formulário de edição -->
-        <main class="flex-1 py-4 md:py-6 md:px-6 gap-6 p-6 px-4 container mx-auto">
+        <main class="flex-1 py-4 md:py-6 md:px-6 gap-6 container mx-auto">
             <div class="">
 
                 <div v-if="page">
-                    <form class="space-y-4" @submit.prevent="handleSubmit">
+                    <form class="space-y-4" @submit.prevent.stop="handleSubmit">
                         <!-- Tab Geral -->
                         <div class="md:border p-4 rounded-xl space-y-4 md:shadow">
                             <h2
@@ -282,12 +395,21 @@ function updateStatus(item: any) {
                                     :updateStatus="updateStatus" />
 
                                 <!-- Tipo: Produtos -->
-                                <ProductContent :page="page" :categorias="categorias" :LucideIcons="LucideIcons"
-                                    :removerCategoria="removerCategoria" :nomeCategoria="nomeCategoria"
-                                    :produtos="produtos" :formatCurrency="formatCurrency" :novaCategoria="novaCategoria"
-                                    :salvarCategoria="salvarCategoria" :novoProduto="novoProduto"
-                                    :salvarProduto="salvarProduto" v-model:showAddCategory="showAddCategory"
+                                <ProductContent 
+                                    :page="page" :categorias="categorias" 
+                                    :LucideIcons="LucideIcons"
+                                    :removerCategoria="removerCategoria" 
+                                    :nomeCategoria="nomeCategoria"
+                                    :produtos="produtos" 
+                                    :formatCurrency="formatCurrency" 
+                                    :novaCategoria="novaCategoria"
+                                    :salvarCategoria="salvarCategoria" 
+                                    :salvarProduto="salvarProduto"
+                                    :editarProduto="editarProduto" 
+                                    :onCoverSelected="onProductImageSelected"
+                                    v-model:novoProduto="novoProduto"
                                     v-model:categoriaSelecionada="categoriaSelecionada"
+                                    v-model:showAddCategory="showAddCategory" 
                                     v-model:showAddProduct="showAddProduct" />
                             </div>
                         </div>
@@ -295,7 +417,8 @@ function updateStatus(item: any) {
 
                         <!-- Tab SEO -->
                         <div class="md:border p-4 rounded-xl space-y-4 md:shadow">
-                            <h2 class="text-2xl font-extrabold leading-none 
+                            <h2
+                                class="text-2xl font-extrabold leading-none 
                             tracking-tight md:text-2xl flex gap-2 p-3 border bg-gray-100/50 dark:bg-white/10 rounded-xl">
                                 <component :is="SquareCheckBig" class="h-6 w-6 text-sky-400" />
                                 <span
@@ -317,23 +440,9 @@ function updateStatus(item: any) {
 
                             <div class="w-full">
                                 <label class="block text-sm font-medium mb-1">Imagem de Capa</label>
-                                <label for="dropzone-file" class="flex flex-col items-center 
-                                    justify-center w-full h-64 border-2 border-dashed 
-                                    border-gray-300 rounded-xl cursor-pointer bg-gray-50 
-                                    hover:bg-gray-100 dark:bg-black dark:border-white/20 
-                                    dark:hover:border-white/30 dark:hover:bg-white/10 transition">
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
-                                        <UploadCloud class="w-10 h-10 mb-4 text-gray-500 dark:text-gray-400" />
-                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                            <span class="font-semibold">Clique para enviar</span> ou arraste e solte
-                                        </p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            SVG, PNG, JPG ou GIF (MAX. 800x400px)
-                                        </p>
-                                    </div>
-
-                                    <input id="dropzone-file" type="file" class="hidden" @change="onCoverSelected" />
-                                </label>
+                                <DropzoneFile :onCoverSelected="onCoverSelected"
+                                    titleFileTypes="<span class='font-semibold'>Clique para enviar</span> ou arraste e solte"
+                                    displayFileTypes="SVG, PNG, JPG ou GIF (MAX. 800x400px)" />
                             </div>
 
                             <div v-if="coverPreview" class="mt-4 flex justify-center">
@@ -357,6 +466,4 @@ function updateStatus(item: any) {
 li:active {
     cursor: grabbing;
 }
-
-
 </style>

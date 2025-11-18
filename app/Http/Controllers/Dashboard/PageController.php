@@ -24,7 +24,7 @@ class PageController extends Controller
         $pages = Page::where('user_id', auth()->id())
             ->ordered()
             ->paginate(10)
-            ->through(fn($page) => [                
+            ->through(fn($page) => [
                 'id' => $page->id,
                 'key' => $page->key,
                 'title' => $page->title,
@@ -121,23 +121,113 @@ class PageController extends Controller
      */
     public function update(Request $request, Page $page)
     {
-        $this->authorizeAccess($page);
-
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'icon' => 'nullable|string|max:100',
-            'content' => 'nullable|string',
-            'cover_image' => 'nullable|string|max:255',
-            'seo_title' => 'nullable|string|max:255',
-            'seo_description' => 'nullable|string|max:255',
-            'is_active' => 'boolean',
-            'order' => 'nullable|integer',
-            'type' => 'required|in:products,reviews,links,simple',
+        // $this->authorizeOwnership($page);
+        $validatedPage = $request->validate([
+            'page.title' => 'required|string|max:255',
+            'page.icon' => 'nullable|string|max:100',
+            'page.content' => 'nullable',
+            'page.cover_image' => 'nullable|string|max:255',
+            'page.seo_title' => 'nullable|string|max:255',
+            'page.seo_description' => 'nullable|string|max:255',
+            'page.is_active' => 'boolean',
+            'page.order' => 'nullable|integer',
+            'page.type' => 'required|string',
         ]);
 
-        $page->update($data);
+        // Atualiza a página
+        $page->update($validatedPage['page']);
 
-        return redirect()->route('dashboard.pages.index')->with('success', 'Página atualizada com sucesso!');
+        // ==============================
+        // 🔥 CRUD de CATEGORIAS
+        // ==============================
+        $categorias = $request->input('categorias', []);
+
+        foreach ($categorias as $cat) {
+            // Categoria nova
+            if (!isset($cat['id'])) {
+                Category::create([
+                    'user_id' => auth()->id(),
+                    'name' => $cat['name']
+                ]);
+                continue;
+            }
+
+            // Atualizar categoria existente
+            Category::where('user_id', auth()->id())
+                ->where('id', $cat['id'])
+                ->update(['name' => $cat['name']]);
+        }
+
+        // ==============================
+        // 🔥 CRUD de PRODUTOS
+        // ==============================
+        $produtos = $request->input('produtos', []);
+
+        foreach ($produtos as $p) {
+            // ==============================
+            // 🔥 NOVO PRODUTO
+            // ==============================
+            if (!isset($p['id'])) {
+                $produto = Product::create([
+                    'user_id' => auth()->id(),
+                    'name' => $p['name'],
+                    'price' => $p['price'],
+                    'discount_price' => $p['discount_price'] ?? null,
+                    'stock' => $p['stock'] ?? 0,
+                    'description' => $p['description'] ?? null,
+                    'featured' => $p['featured'] ?? false,
+                    'is_public' => $p['is_public'] ?? true,
+                    'category_id' => $p['category_id'],
+                ]);
+
+                // Salvar ID recém-criado para usar nas imagens
+                $p['id'] = $produto->id;
+            } else {
+                // ==============================
+                // 🔥 ATUALIZAR PRODUTO EXISTENTE
+                // ==============================
+                Product::where('user_id', auth()->id())
+                    ->where('id', $p['id'])
+                    ->update([
+                        'name' => $p['name'],
+                        'price' => $p['price'],
+                        'discount_price' => $p['discount_price'] ?? null,
+                        'stock' => $p['stock'] ?? 0,
+                        'description' => $p['description'] ?? null,
+                        'featured' => $p['featured'] ?? false,
+                        'is_public' => $p['is_public'] ?? true,
+                        'category_id' => $p['category_id'],
+                    ]);
+            }
+
+            // ==============================
+            // 🔥 CRUD DAS IMAGENS DO PRODUTO
+            // ==============================
+            if (isset($p['images']) && is_array($p['images'])) {
+                foreach ($p['images'] as $img) {
+                    // NOVA IMAGEM
+                    if (!isset($img['id'])) {
+                        ProductImage::create([
+                            'product_id' => $p['id'],
+                            'image_path' => $img['image_path'] ?? null,
+                            'image_base64' => $img['image_base64'] ?? null,
+                            'is_cover' => $img['is_cover'] ?? false,
+                        ]);
+                        continue;
+                    }
+
+                    // ATUALIZAR IMAGEM EXISTENTE
+                    ProductImage::where('id', $img['id'])
+                        ->where('product_id', $p['id'])
+                        ->update([
+                            'image_path' => $img['image_path'] ?? null,
+                            'image_base64' => $img['image_base64'] ?? null,
+                            'is_cover' => $img['is_cover'] ?? false,
+                        ]);
+                }
+            }
+        }
+        return back()->with('success', 'Página e produtos atualizados com sucesso!');
     }
 
     /**

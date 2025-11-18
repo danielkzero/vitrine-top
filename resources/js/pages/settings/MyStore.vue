@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { edit } from '@/routes/store';
+import { type BreadcrumbItem } from '@/types';
 
 import { reactive } from 'vue'
 import {
@@ -24,8 +25,10 @@ import {
 
 import { usePage } from '@inertiajs/vue3'
 
+
 const page = usePage()
-const user = page.props.auth.user
+const user = page.props.auth.user 
+
 
 const store = reactive({
     business_name: user.business_name ?? "",

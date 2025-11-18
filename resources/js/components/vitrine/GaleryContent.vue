@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { UploadCloud } from 'lucide-vue-next'
+import { UploadCloud } from 'lucide-vue-next';
+import DropzoneFile from '@/components/ui/dropzone-file/DropzoneFile.vue';
 defineProps<{
     page: {};
     removeGalleryImage: (index: number) => void;
@@ -30,21 +31,8 @@ defineProps<{
         </div>
 
         <!-- Dropzone para adicionar novas imagens -->
-        <label for="gallery-dropzone" class="flex flex-col items-center justify-center 
-	                                    w-full h-64 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer 
-	                                    bg-gray-50 hover:bg-gray-100 transition">
-            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
-                <UploadCloud class="w-10 h-10 mb-4 text-gray-500" />
-                <p class="mb-2 text-sm text-gray-500">
-                    <span class="font-semibold">Clique para enviar</span> ou arraste e solte
-                    imagens
-                </p>
-                <p class="text-xs text-gray-400">
-                    JPG, PNG, WEBP (MAX. 1MB por imagem)
-                </p>
-            </div>
-            <input id="gallery-dropzone" type="file" class="hidden" accept="image/*" multiple
-                @change="onGallerySelected" />
-        </label>
+        <DropzoneFile :onCoverSelected="onGallerySelected"
+            titleFileTypes="<span class='font-semibold'>Clique para enviar</span> ou arraste e solte"
+            displayFileTypes="JPG, PNG, WEBP (MAX. 1MB por imagem)" />
     </div>
 </template>
