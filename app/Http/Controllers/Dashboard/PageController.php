@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PageController extends Controller
@@ -38,7 +40,10 @@ class PageController extends Controller
 
         $avaliacoes = Review::where('user_id', auth()->id())->get();
 
-        $produtos = Product::where('user_id', auth()->id())->get();
+        $produtos = Product::with('images')->where('user_id', auth()->id())->get()->map(function ($produto) {
+            $produto->imagensParaExcluir = [];
+            return $produto;
+        });;
 
         $categorias = Category::where('user_id', auth()->id())->get();
 
@@ -46,7 +51,7 @@ class PageController extends Controller
             'pages' => $pages,
             'avaliacoes' => $avaliacoes,
             'produtos' => $produtos,
-            'categorias' => $categorias
+            'categorias' => $categorias,
         ]);
     }
 
@@ -101,12 +106,16 @@ class PageController extends Controller
         $page = Page::where('key', $key)->firstOrFail();
 
         // Define dados extras conforme o tipo da página
+        $avaliacoes = [];
+        if ($page->type === 'reviews')
+            $avaliacoes = Review::where('user_id', auth()->id())->get();
 
-        $avaliacoes = Review::where('user_id', auth()->id())->get();
-
-        $produtos = Product::where('user_id', auth()->id())->get();
-
-        $categorias = Category::where('user_id', auth()->id())->get();
+        $produtos = [];
+        $categorias = [];
+        if ($page->type === 'products') {
+            $produtos = Product::with('images')->where('user_id', auth()->id())->get();
+            $categorias = Category::where('user_id', auth()->id())->get();
+        }
 
         return inertia('Dashboard/Pages/Edit', [
             'page' => $page,
@@ -119,24 +128,26 @@ class PageController extends Controller
     /**
      * Atualiza uma página existente.
      */
-    public function update(Request $request, Page $page)
+    public function update(Request $request, string $key)
     {
-        // $this->authorizeOwnership($page);
+        $page = Page::where('key', $key)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
         $validatedPage = $request->validate([
+            'page.user_id' => 'required|exists:users,id',
+            'page.key' => 'required|string|max:100',
             'page.title' => 'required|string|max:255',
             'page.icon' => 'nullable|string|max:100',
-            'page.content' => 'nullable',
-            'page.cover_image' => 'nullable|string|max:255',
-            'page.seo_title' => 'nullable|string|max:255',
-            'page.seo_description' => 'nullable|string|max:255',
             'page.is_active' => 'boolean',
             'page.order' => 'nullable|integer',
             'page.type' => 'required|string',
+            'page.content' => 'nullable|string',
+            'page.cover_image' => 'nullable|string|max:255',
+            'page.seo_title' => 'nullable|string|max:255',
+            'page.seo_description' => 'nullable|string|max:255',
         ]);
-
-        // Atualiza a página
-        $page->update($validatedPage['page']);
-
+        
         // ==============================
         // 🔥 CRUD de CATEGORIAS
         // ==============================
@@ -172,7 +183,7 @@ class PageController extends Controller
                     'user_id' => auth()->id(),
                     'name' => $p['name'],
                     'price' => $p['price'],
-                    'discount_price' => $p['discount_price'] ?? null,
+                    'discount_price' => $p['discount_price'], 
                     'stock' => $p['stock'] ?? 0,
                     'description' => $p['description'] ?? null,
                     'featured' => $p['featured'] ?? false,
@@ -191,7 +202,7 @@ class PageController extends Controller
                     ->update([
                         'name' => $p['name'],
                         'price' => $p['price'],
-                        'discount_price' => $p['discount_price'] ?? null,
+                        'discount_price' => $p['discount_price'],
                         'stock' => $p['stock'] ?? 0,
                         'description' => $p['description'] ?? null,
                         'featured' => $p['featured'] ?? false,
@@ -203,31 +214,23 @@ class PageController extends Controller
             // ==============================
             // 🔥 CRUD DAS IMAGENS DO PRODUTO
             // ==============================
+            ProductImage::where('product_id', $p['id'])->delete();
+
             if (isset($p['images']) && is_array($p['images'])) {
                 foreach ($p['images'] as $img) {
-                    // NOVA IMAGEM
-                    if (!isset($img['id'])) {
-                        ProductImage::create([
-                            'product_id' => $p['id'],
-                            'image_path' => $img['image_path'] ?? null,
-                            'image_base64' => $img['image_base64'] ?? null,
-                            'is_cover' => $img['is_cover'] ?? false,
-                        ]);
-                        continue;
-                    }
-
-                    // ATUALIZAR IMAGEM EXISTENTE
-                    ProductImage::where('id', $img['id'])
-                        ->where('product_id', $p['id'])
-                        ->update([
-                            'image_path' => $img['image_path'] ?? null,
-                            'image_base64' => $img['image_base64'] ?? null,
-                            'is_cover' => $img['is_cover'] ?? false,
-                        ]);
+                    ProductImage::create([
+                        'product_id' => $p['id'],
+                        'image_path' => $img['image_path'] ?? null,
+                        'image_base64' => $img['image_base64'] ?? null,
+                        'is_cover' => $img['is_cover'] ?? false,
+                    ]);
                 }
             }
         }
-        return back()->with('success', 'Página e produtos atualizados com sucesso!');
+        // retorna erro
+        return redirect()
+            ->back()
+            ->with('success', 'Página atualizada com sucesso!');
     }
 
     /**
@@ -267,6 +270,7 @@ class PageController extends Controller
      */
     private function authorizeAccess(Page $page)
     {
-        abort_if($page->user_id !== auth()->id(), 403);
+        $user = auth()->user();
+        abort_if($page->user_id !== $user->id, 403);
     }
 }

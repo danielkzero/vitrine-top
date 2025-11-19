@@ -17,6 +17,7 @@ class Product extends Model
         'name',
         'description',
         'price',
+        'discount_price',
         'stock',
         'is_public',
         'allow_whatsapp',
@@ -27,6 +28,7 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'discount_price' => 'decimal:2',
         'is_public' => 'boolean',
         'allow_whatsapp' => 'boolean',
     ];

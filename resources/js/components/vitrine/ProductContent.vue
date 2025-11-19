@@ -15,7 +15,7 @@ const props = defineProps<{
     salvarCategoria: () => void;
     salvarProduto: () => void;
     editarProduto: (produto: Product) => void;
-    onCoverSelected: (event: Event, index: number) => void;
+    onCoverSelected: (files: File[] | FileList) => void;
     page: {};
 }>()
 
@@ -34,6 +34,22 @@ watch(() => props.novaCategoria, val => {
     novaCategoriaLocal.value = val
 })
 
+function abrirNovoProduto() {
+    novoProduto.value = {
+        id: null,
+        name: '',
+        price: '',
+        discount_price: '',
+        category_id: categoriaSelecionada.value ?? '',
+        stock: 0,
+        description: '',
+        is_public: true,
+        featured: false,
+        images: []
+    };
+
+    showAddProduct.value = true;
+}
 
 </script>
 
@@ -55,15 +71,15 @@ watch(() => props.novaCategoria, val => {
         <!-- Tabs horizontais de categorias -->
         <div v-else class="overflow-x-auto pb-2">
             <div class="flex gap-2 min-w-max">
-                <button @click="showAddCategory = true"
-                    class="flex items-center gap-1 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-emerald-600">
+                <button @click.stop="showAddCategory = true" type="button"
+                    class="cursor-pointer flex items-center gap-1 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-emerald-600">
                     <LucideIcons.PlusCircle class="w-4 h-4" />
                     Nova
                 </button>
 
-                <button v-for="categoria in [...categorias].reverse()" :key="categoria.id"
-                    @click="categoriaSelecionada = categoria.id"
-                    class="flex items-center gap-2 whitespace-nowrap px-3 py-1 rounded-full text-sm font-medium" :class="categoriaSelecionada === categoria.id
+                <button type="button" v-for="categoria in [...categorias].reverse()" :key="categoria.id"
+                    @click.stop="categoriaSelecionada = categoria.id"
+                    class="cursor-pointer flex items-center gap-2 whitespace-nowrap px-3 py-1 rounded-full text-sm font-medium" :class="categoriaSelecionada === categoria.id
                         ? 'bg-sky-500 text-white dark:bg-sky-200 dark:text-gray-900 hover:bg-sky-600 dark:hover:bg-sky-300'
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
                     {{ categoria.name }}
@@ -79,25 +95,21 @@ watch(() => props.novaCategoria, val => {
                 <h3 class="text-lg font-semibold">
                     {{ nomeCategoria(categoriaSelecionada) }}
                 </h3>
-                <button @click="showAddProduct = true"
-                    class="flex items-center gap-1 bg-sky-500 dark:bg-sky-100 dark:text-gray-900 dark:hover:bg-sky-300 text-white px-3 py-1 rounded-full text-sm hover:bg-sky-600">
+                <button type="button" @click.stop="abrirNovoProduto"
+                    class="cursor-pointer flex items-center gap-1 bg-sky-500 dark:bg-sky-100 dark:text-gray-900 dark:hover:bg-sky-300 text-white px-3 py-1 rounded-full text-sm hover:bg-sky-600">
                     <LucideIcons.Plus class="w-4 h-4" />
                     Adicionar
                 </button>
             </div>
 
-            <div v-for="produto in produtos.filter(p => p.category_id === categoriaSelecionada)" :key="produto.id"
-                class="flex items-center justify-between bg-white dark:bg-white/10 rounded-lg shadow-sm border p-3 mb-2">
+            <div v-for="produto in produtos.filter(p => p.category_id === categoriaSelecionada)" :key="produto.id" @click="editarProduto(produto)"
+                class="cursor-pointer hover:shadow-emerald-200 hover:bg-emerald-50 flex items-center justify-between bg-white dark:bg-white/10 rounded-lg shadow-sm border p-3 mb-2">
                 <div class="flex items-center gap-3">
-                    <img v-if="produto.cover_image" :src="produto.cover_image"
+                    <img v-if="produto.images" :src="produto.images[0]?.image_base64"
                         class="w-12 h-12 rounded-lg object-cover border" />
                     <div>
                         <p class="font-medium text-gray-800 dark:text-white">{{ produto.name }}</p>
                         <p class="text-gray-500 dark:text-gray-300 text-sm">{{ produto.description }}</p>
-                        <div @click="editarProduto(produto)">
-                            Editar
-                        </div>
-
                     </div>
                 </div>
                 <div class="text-right">
@@ -121,11 +133,11 @@ watch(() => props.novaCategoria, val => {
                 <input v-model="novaCategoriaLocal" placeholder="Nome da categoria"
                     class="w-full border rounded-lg px-3 py-2 text-sm mb-3" />
                 <div class="flex justify-end gap-2">
-                    <button @click="showAddCategory = false" class="px-3 py-1 text-gray-500 hover:text-gray-700">
+                    <button type="button" @click.stop="showAddCategory = false" class="cursor-pointer px-3 py-1 text-gray-500 hover:text-gray-700">
                         Cancelar
                     </button>
-                    <button @click="salvarCategoria"
-                        class="bg-emerald-500 text-white px-4 py-1 rounded-lg hover:bg-emerald-600">
+                    <button type="button" @click.stop="salvarCategoria"
+                        class="cursor-pointer bg-emerald-500 text-white px-4 py-1 rounded-lg hover:bg-emerald-600">
                         Salvar
                     </button>
                 </div>
@@ -140,7 +152,8 @@ watch(() => props.novaCategoria, val => {
                 <h3 class="text-lg font-semibold mb-3 text-gray-700">Novo Produto</h3>
                 <label>Imagem do produto</label>
                 <DropzoneFile 
-                    :onCoverSelected="onCoverSelected"
+                    :initial-files="novoProduto.images"
+                    @onCoverSelected="onCoverSelected"
                     :allowed-extensions="['jpg', 'png', 'webp']"
                     display-file-types="JPG, PNG, WEBP (MAX. 1MB por imagem)"
                     title-file-types="Arraste e solte a imagem do produto ou <span class='font-semibold'>clique para enviar</span>"
@@ -186,10 +199,10 @@ watch(() => props.novaCategoria, val => {
                     <label class="text-sm text-gray-700 mb-4">Produto em destaque</label>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button @click="showAddProduct = false" class="px-3 py-1 text-gray-500 hover:text-gray-700">
+                    <button type="button" @click.stop="showAddProduct = false" class="cursor-pointer px-3 py-1 text-gray-500 hover:text-gray-700">
                         Cancelar
                     </button>
-                    <button @click="salvarProduto" class="bg-sky-500 text-white px-4 py-1 rounded-lg hover:bg-sky-600">
+                    <button type="button" @click.stop="salvarProduto" class="cursor-pointer bg-sky-500 text-white px-4 py-1 rounded-lg hover:bg-sky-600">
                         Salvar
                     </button>
                 </div>
