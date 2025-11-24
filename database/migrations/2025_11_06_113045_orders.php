@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained()->onDelete('set null');
+            //status
+            $table->string('status')->default('pending');
+            //total
+            $table->decimal('total', 10, 2)->default(0);
             $table->string('customer_name');
             $table->string('contact')->nullable();
             $table->text('message')->nullable();

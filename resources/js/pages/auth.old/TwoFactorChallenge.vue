@@ -59,7 +59,7 @@ const codeValue = computed<string>(() => code.value.join(''));
             <template v-if="!showRecoveryInput">
                 <Form
                     v-bind="store.form()"
-                    class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 space-y-4"
+                    class="space-y-4"
                     reset-on-error
                     @error="code = []"
                     #default="{ errors, processing, clearErrors }"
@@ -89,7 +89,9 @@ const codeValue = computed<string>(() => code.value.join(''));
                         </div>
                         <InputError :message="errors.code" />
                     </div>
-                    <Button type="submit" class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg" :disabled="processing">Continuar</Button>
+                    <Button type="submit" class="w-full" :disabled="processing"
+                        >Continuar</Button
+                    >
                     <div class="text-center text-sm text-muted-foreground">
                         <span>ou você pode </span>
                         <button
@@ -118,7 +120,9 @@ const codeValue = computed<string>(() => code.value.join(''));
                         required
                     />
                     <InputError :message="errors.recovery_code" />
-                    <Button type="submit" class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg" :disabled="processing">Continuar</Button>
+                    <Button type="submit" class="w-full" :disabled="processing"
+                        >Continuar</Button
+                    >
 
                     <div class="text-center text-sm text-muted-foreground">
                         <span>ou você pode </span>

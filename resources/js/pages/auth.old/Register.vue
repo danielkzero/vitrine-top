@@ -22,7 +22,7 @@ import { Form, Head } from '@inertiajs/vue3';
             v-bind="store.form()"
             :reset-on-success="['password', 'password_confirmation']"
             v-slot="{ errors, processing }"
-            class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 shadow-2xl flex flex-col gap-6"
+            class="flex flex-col gap-6"
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
@@ -84,7 +84,7 @@ import { Form, Head } from '@inertiajs/vue3';
 
                 <Button
                     type="submit"
-                    class="mt-2 w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg hover:translate-y-[-1px] transition-transform"
+                    class="mt-2 w-full"
                     tabindex="5"
                     :disabled="processing"
                     data-test="register-user-button"
@@ -94,9 +94,14 @@ import { Form, Head } from '@inertiajs/vue3';
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-slate-500">
+            <div class="text-center text-sm text-muted-foreground">
                 Já tem uma conta?
-                <TextLink :href="login()" class="text-emerald-600 font-medium" :tabindex="6">Logar-se</TextLink>
+                <TextLink
+                    :href="login()"
+                    class="underline underline-offset-4"
+                    :tabindex="6"
+                    >Logar-se</TextLink
+                >
             </div>
         </Form>
     </AuthBase>

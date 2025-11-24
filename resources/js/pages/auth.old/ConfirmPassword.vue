@@ -20,7 +20,6 @@ import { Form, Head } from '@inertiajs/vue3';
             v-bind="store.form()"
             reset-on-success
             v-slot="{ errors, processing }"
-            class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 shadow-2xl"
         >
             <div class="space-y-6">
                 <div class="grid gap-2">
@@ -40,7 +39,7 @@ import { Form, Head } from '@inertiajs/vue3';
 
                 <div class="flex items-center">
                     <Button
-                        class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg"
+                        class="w-full"
                         :disabled="processing"
                         data-test="confirm-password-button"
                     >

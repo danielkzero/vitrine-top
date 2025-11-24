@@ -22,12 +22,15 @@ defineProps<{
     >
         <Head title="Esqueceu sua senha" />
 
-        <div v-if="status" class="mb-4 text-center text-sm font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded">
+        <div
+            v-if="status"
+            class="mb-4 text-center text-sm font-medium text-green-600"
+        >
             {{ status }}
         </div>
 
         <div class="space-y-6">
-            <Form v-bind="email.form()" v-slot="{ errors, processing }" class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 shadow-2xl">
+            <Form v-bind="email.form()" v-slot="{ errors, processing }">
                 <div class="grid gap-2">
                     <Label for="email">E-mail</Label>
                     <Input
@@ -43,7 +46,7 @@ defineProps<{
 
                 <div class="my-6 flex items-center justify-start">
                     <Button
-                        class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg"
+                        class="w-full"
                         :disabled="processing"
                         data-test="email-password-reset-link-button"
                     >

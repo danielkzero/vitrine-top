@@ -29,7 +29,6 @@ const inputEmail = ref(props.email);
             :transform="(data) => ({ ...data, token, email })"
             :reset-on-success="['password', 'password_confirmation']"
             v-slot="{ errors, processing }"
-            class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 shadow-2xl"
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
@@ -77,7 +76,7 @@ const inputEmail = ref(props.email);
 
                 <Button
                     type="submit"
-                    class="mt-4 w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg"
+                    class="mt-4 w-full"
                     :disabled="processing"
                     data-test="reset-password-button"
                 >

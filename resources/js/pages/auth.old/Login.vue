@@ -26,7 +26,10 @@ defineProps<{
     >
         <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 text-center text-sm font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded">
+        <div
+            v-if="status"
+            class="mb-4 text-center text-sm font-medium text-green-600"
+        >
             {{ status }}
         </div>
 
@@ -34,7 +37,7 @@ defineProps<{
             v-bind="store.form()"
             :reset-on-success="['password']"
             v-slot="{ errors, processing }"
-            class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 shadow-2xl flex flex-col gap-6"
+            class="flex flex-col gap-6"
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
@@ -77,15 +80,15 @@ defineProps<{
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <Label for="remember" class="flex items-center space-x-3 text-sm text-slate-700">
+                    <Label for="remember" class="flex items-center space-x-3">
                         <Checkbox id="remember" name="remember" :tabindex="3" />
-                        <span class="select-none">Lembrar-me</span>
+                        <span>Lembrar-me</span>
                     </Label>
                 </div>
 
                 <Button
                     type="submit"
-                    class="mt-4 w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg hover:translate-y-[-1px] transition-transform"
+                    class="mt-4 w-full"
                     :tabindex="4"
                     :disabled="processing"
                     data-test="login-button"
@@ -95,9 +98,12 @@ defineProps<{
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-slate-500" v-if="canRegister">
+            <div
+                class="text-center text-sm text-muted-foreground"
+                v-if="canRegister"
+            >
                 Não tem uma conta?
-                <TextLink :href="register()" :tabindex="5" class="text-emerald-600 font-medium">Cadastre-se</TextLink>
+                <TextLink :href="register()" :tabindex="5">Cadastre-se</TextLink>
             </div>
         </Form>
     </AuthBase>

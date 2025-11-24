@@ -27,7 +27,7 @@ defineProps<{
             >
                 <div class="flex h-9 w-9 items-center justify-center">
                     <AppLogoIcon
-                        class="size-9 fill-current text-black dark:text-white"
+                        class="size-9 fill-current text-black dark:text-white bg-gradient-to-r to-emerald-600 from-sky-400"
                     />
                 </div>
             </Link>

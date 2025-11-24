@@ -64,17 +64,14 @@ function abrirNovoProduto() {
         </p>
 
         <!-- Nenhuma categoria -->
-        <div v-if="categorias.length === 0" class="text-gray-500 text-sm">
-            Nenhuma categoria encontrada. Adicione uma para começar.
-        </div>
 
         <!-- Tabs horizontais de categorias -->
-        <div v-else class="overflow-x-auto pb-2">
+        <div class="overflow-x-auto pb-2">
             <div class="flex gap-2 min-w-max">
                 <button @click.stop="showAddCategory = true" type="button"
                     class="cursor-pointer flex items-center gap-1 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-emerald-600">
                     <LucideIcons.PlusCircle class="w-4 h-4" />
-                    Nova
+                    Nova Categoria
                 </button>
 
                 <button type="button" v-for="categoria in [...categorias].reverse()" :key="categoria.id"
@@ -151,7 +148,7 @@ function abrirNovoProduto() {
                 class="bg-white dark:bg-black w-11/12 max-w-md rounded-xl shadow-lg p-4 dark:border dark:border-gray-700">
                 <h3 class="text-lg font-semibold mb-3 text-gray-700">Novo Produto</h3>
                 <label>Imagem do produto</label>
-                <DropzoneFile 
+                <DropzoneFile
                     :initial-files="novoProduto.images"
                     @onCoverSelected="onCoverSelected"
                     :allowed-extensions="['jpg', 'png', 'webp']"

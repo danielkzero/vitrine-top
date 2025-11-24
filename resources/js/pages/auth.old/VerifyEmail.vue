@@ -19,19 +19,32 @@ defineProps<{
     >
         <Head title="Verificação de e-mail" />
 
-        <div v-if="status === 'verification-link-sent'" class="mb-4 text-center text-sm font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded">
-            Um novo link de verificação foi enviado
-            para o endereço de e-mail que você
+        <div
+            v-if="status === 'verification-link-sent'"
+            class="mb-4 text-center text-sm font-medium text-green-600"
+        >
+            Um novo link de verificação foi enviado 
+            para o endereço de e-mail que você 
             forneceu durante o cadastro.
         </div>
 
-        <Form v-bind="send.form()" class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 text-center" v-slot="{ processing }">
-            <Button :disabled="processing" class="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg">
+        <Form
+            v-bind="send.form()"
+            class="space-y-6 text-center"
+            v-slot="{ processing }"
+        >
+            <Button :disabled="processing" variant="secondary">
                 <Spinner v-if="processing" />
                 Reenviar e-mail de verificação
             </Button>
 
-            <TextLink :href="logout()" as="button" class="mx-auto block text-sm mt-4 text-slate-500">Sair</TextLink>
+            <TextLink
+                :href="logout()"
+                as="button"
+                class="mx-auto block text-sm"
+            >
+                Sair
+            </TextLink>
         </Form>
     </AuthLayout>
 </template>
