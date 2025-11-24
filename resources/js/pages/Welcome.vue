@@ -1,28 +1,16 @@
 <script setup lang="ts">
-import { dashboard, login, register } from '@/routes';
+import { login, register } from '@/routes';
 import { ref, onMounted, onUnmounted } from 'vue';
-import { Link, Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-// lucide icons for Vue 3
-import { ShoppingBag, Smartphone, Share2, BarChart3, CheckCircle2, MessageCircle, Store, ArrowRight, Zap, Camera, Send, Plus, Home, Scissors, Bed, Dumbbell, Calculator, Leaf, Smile, Eye, Heart, Flower } from 'lucide-vue-next';
+import BaseButton from '@/components/ui/button/BaseButton.vue';
+
+// iconMap centralizado
+import iconMap, { getIcon } from '@/lib/iconMap';
+
 import content from '@/data/welcomeContent';
 
-// map icon name (string) from content to lucide components
-const iconMap: Record<string, any> = {
-    Smartphone,
-    Share2,
-    ShoppingBag,
-    MessageCircle,
-    BarChart3,
-    Store,
-    Zap,
-    Camera,
-    Send,
-    ArrowRight,
-    CheckCircle2,
-    Plus
-    , Home, Scissors, Bed, Dumbbell, Calculator, Leaf, Smile, Eye, Heart, Flower
-};
 const isMenuOpen = ref(false);
 const scrolled = ref(false);
 
@@ -48,8 +36,8 @@ withDefaults(
         canRegister: true,
     },
 );
-// features now come from `content.features`
 </script>
+
 
 <template>
 
@@ -80,24 +68,18 @@ withDefaults(
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
-                    <Link v-if="$page.props.auth.user" :href="dashboard()"
-                        class="inline-block rounded-sm border border-[#19140035] px-4 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC]">
+                    <BaseButton v-if="$page.props.auth.user" as="Link" :href="route('painel.index')" variant="ghost" size="sm"
+                    >
                         Painel
-                    </Link>
+                    </BaseButton>
                     <template v-else>
-                        <Link :href="login()" class="text-sm font-medium text-slate-700 hover:text-slate-900">Entrar
-                        </Link>
+                        <BaseButton as="Link" :href="login()" variant="ghost" size="sm">
+                            Entrar
+                        </BaseButton>
 
-                        <Link
-                            v-if="canRegister"
-                            :href="register()"
-                            class="px-5 py-2.5 rounded-full bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl flex items-center gap-2">Criar
-                            conta grátis
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M5 12h14M12 5l7 7-7 7" stroke-width="1.5" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </Link>
+                        <BaseButton v-if="canRegister" as="Link" :href="register()" variant="pill" size="sm" trailing-icon="ArrowRight">
+                            Criar conta grátis 
+                        </BaseButton>
                     </template>
                 </div>
 
@@ -164,12 +146,12 @@ withDefaults(
                         <div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                             <a href="#planos"
                                 class="w-full sm:w-auto px-8 py-4 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2">{{
-                                content.hero.ctaPrimary }}
-                                <ArrowRight class="w-5 h-5" />
+                                    content.hero.ctaPrimary }}
+                                <component :is="getIcon('ArrowRight')" class="w-5 h-5" />
                             </a>
                             <a href="https://wa.me/5524999699849" target="_blank" rel="noopener noreferrer"
                                 class="w-full sm:w-auto px-8 py-4 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-                                <MessageCircle class="w-5 h-5 text-green-600" />
+                                <component :is="getIcon('MessageCircle')" class="w-5 h-5 text-emerald-500" />
                                 Falar no WhatsApp
                             </a>
                         </div>
@@ -177,7 +159,7 @@ withDefaults(
                         <div
                             class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-slate-500">
                             <div v-for="(b, i) in content.hero.badges" :key="i" class="flex items-center gap-1">
-                                <CheckCircle2 class="w-4 h-4 text-emerald-500" />
+                                <component :is="getIcon('CheckCircle2')" class="w-4 h-4 text-emerald-500" />
                                 {{ b }}
                             </div>
                         </div>
@@ -225,8 +207,8 @@ withDefaults(
                                             <div class="flex items-center justify-between">
                                                 <div class="h-4 w-1/2 bg-emerald-100 rounded"></div>
                                                 <div
-                                                    class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">
-                                                    <Plus :size="18" />
+                                                    class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">                                                    
+                                                    <component :is="getIcon('Plus')" class="w-4 h-4" />
                                                 </div>
                                             </div>
                                         </div>
@@ -238,7 +220,7 @@ withDefaults(
                                 class="absolute -right-6 top-12 bg-white p-4 rounded-lg shadow-xl border border-slate-100 animate-bounce duration-[3000ms]">
                                 <div class="flex items-center gap-3">
                                     <div class="bg-green-100 p-2 rounded-full text-green-600">
-                                        <MessageCircle class="w-5 h-5" />
+                                        <component :is="getIcon('MessageCircle')" class="w-5 h-5" />
                                     </div>
                                     <div>
                                         <p class="text-xs text-slate-500">Novo pedido via WhatsApp</p>
@@ -340,14 +322,14 @@ withDefaults(
                         </div>
                         <p class="text-xs text-slate-400 mb-6"></p>
 
-                        <button
-                            class="w-full py-3 rounded-lg bg-slate-900 text-white font-bold hover:bg-slate-800 mb-6">Escolher
-                            Mensal</button>
+                        <BaseButton variant="dark" block class="mb-6">
+                            Escolher Mensal
+                        </BaseButton>
 
                         <ul class="space-y-4">
                             <li v-for="(b, idx) in content.plans.monthly.bullets" :key="idx"
                                 class="flex items-start gap-3">
-                                <CheckCircle2 class="text-emerald-500 w-5 h-5" />
+                                <component :is="getIcon('CheckCircle2')" class="w-5 h-5 text-emerald-500" />
                                 <span class="text-sm text-slate-600">{{ b }}</span>
                             </li>
                         </ul>
@@ -368,14 +350,14 @@ withDefaults(
                         </div>
                         <p class="text-xs text-slate-400 mb-8">{{ content.plans.annual.note }}</p>
 
-                        <button
-                            class="w-full py-3 rounded-lg bg-emerald-500 text-white font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/25 transition-all hover:-translate-y-1 mb-8">Escolher
-                            Anual</button>
+                        <BaseButton variant="primary" block class="mb-8">
+                            Escolher Anual
+                        </BaseButton>
 
                         <ul class="space-y-4">
                             <li v-for="(b, idx) in content.plans.annual.bullets" :key="idx"
                                 class="flex items-start gap-3">
-                                <CheckCircle2 class="text-emerald-500 w-5 h-5" />
+                                <component :is="getIcon('CheckCircle2')" class="w-5 h-5 text-emerald-500" />
                                 <span class="text-sm text-slate-600">{{ b }}</span>
                             </li>
                         </ul>
@@ -396,9 +378,9 @@ withDefaults(
                     <a href="#planos"
                         class="px-8 py-4 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-bold transition-colors">Criar
                         minha vitrine grátis</a>
-                    <button
-                        class="px-8 py-4 rounded-lg bg-transparent border border-slate-600 hover:border-emerald-400 hover:text-emerald-400 text-white font-bold transition-colors">Ver
-                        demonstração</button>
+                    <BaseButton variant="outline" size="lg">
+                        Ver demonstração
+                    </BaseButton>
                 </div>
             </div>
         </section>
@@ -442,5 +424,3 @@ withDefaults(
         </footer>
     </div>
 </template>
-
-<!-- features are defined in the <script setup> section -->

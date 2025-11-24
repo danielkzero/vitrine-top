@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dashboard, login, register } from '@/routes';
+import { painel, login, register } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 import AppLogo from '@/components/AppLogo.vue';
 
@@ -44,7 +44,7 @@ withDefaults(
 
                     <Link
                         v-if="$page.props.auth.user"
-                        :href="dashboard()"
+                        :href="painel()"
                         class="inline-block rounded-sm border border-[#19140035] px-4 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC]"
                     >
                         Painel
