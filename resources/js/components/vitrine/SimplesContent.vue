@@ -1,104 +1,101 @@
 <script setup lang="ts">
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+
 defineProps<{
-    page: {};
+  page: any
 }>()
 </script>
 
 <template>
-    <!-- Tipo: Simples (texto com Quill) -->
-    <div v-if="page.type === 'simple'">
-        <QuillEditor class="border px-3 py-2" v-model:content="page.content" content-type="html" />
+  <div v-if="page.type === 'simple'" class="space-y-2">
+    <label class="text-sm font-medium text-slate-700 dark:text-slate-200">
+      Conteúdo da Página
+    </label>
+
+    <div
+      class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm 
+             focus-within:ring-2 focus-within:ring-emerald-500 transition-all duration-200"
+    >
+      <QuillEditor
+        class="bg-white dark:bg-slate-900"
+        v-model:content="page.content"
+        content-type="html"
+        placeholder="Digite o conteúdo da página..."
+      />
     </div>
+  </div>
 </template>
+
 <style scoped>
+/* ===========================
+   Estilização do editor Quill
+   =========================== */
 
-/* Conteúdo interno do editor (sem usar @apply) */
+/* Editor mínimo */
 :deep(.ql-editor) {
-    min-height: 15rem;
-    line-height: 1.6;
-    /* leading-relaxed */
+  min-height: 14rem;
+  padding: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #1f2937; /* slate-800 */
 }
 
-
-/* placeholder do editor */
-:deep(.ql-editor.ql-blank::before) {
-    color: #9ca3af;
-    /* text-gray-400 */
-}
-
-/* toolbar e container */
-:deep(.ql-toolbar) {
-    /* border-gray-200 */
-    border-top-left-radius: 0.8rem;
-    border-top-right-radius: 0.8rem;
-}
-
-:deep(.ql-container) {
-    border-bottom-left-radius: 0.8rem;
-    border-bottom-right-radius: 0.8rem;
-}
-
-/* Editor - texto */
 :global(html.dark .ql-editor) {
-  color: #e5e7eb; /* text-gray-200 */
+  color: #e5e7eb; /* slate-200 */
+}
+
+/* Placeholder */
+:deep(.ql-editor.ql-blank::before) {
+  color: #9ca3af !important; /* slate-400 */
+  font-style: normal;
 }
 
 /* Container */
-:global(html.dark .ql-container) {
-  border-color: rgb(var(--color-gray-custom-10)); /* gray-700 */
+:deep(.ql-container) {
+  border: none !important;
 }
 
-/* Toolbar fundo */
+/* Toolbar */
+:deep(.ql-toolbar) {
+  border: none !important;
+  padding: 0.5rem;
+  background: #f9fafb; /* slate-50 */
+}
+
 :global(html.dark .ql-toolbar) {
-  /* cor de fundo --color-white mais 10% de opatidade */
-  background-color: rgb(var(--color-gray-custom)); /* 80% opaco */
-  border-color: rgb(var(--color-gray-custom-10));
+  background: #1e293b !important; /* slate-800 */
+  border-bottom: 1px solid #334155 !important; /* slate-700 */
 }
 
-/* Ícones (stroke e fill) */
-:global(html.dark .ql-toolbar .ql-stroke) {
-  stroke: #e5e7eb !important;
+/* Botões */
+:deep(.ql-toolbar button) {
+  border-radius: 0.375rem !important; /* rounded-md */
+  transition: background 0.2s;
+}
+
+:deep(.ql-toolbar button:hover) {
+  background-color: #e2e8f0 !important; /* slate-200 */
 }
 
 :global(html.dark .ql-toolbar button:hover) {
-  background-color: rgb(var(--color-gray-custom-30)) !important;
-}
-:global(html.dark .ql-toolbar .ql-active) {
-  background-color: rgb(var(--color-gray-custom-30)) !important;
+  background-color: #334155 !important; /* slate-700 */
 }
 
-:global(html.dark .ql-toolbar .ql-fill:hover) {
-  fill: rgb(var(--color-gray-custom-30)) !important;
+/* Ícones */
+:global(html.dark .ql-stroke) {
+  stroke: #e5e7eb !important;
+}
+:global(html.dark .ql-fill) {
+  fill: #e5e7eb !important;
 }
 
-/* Dropdown labels */
-:global(html.dark .ql-picker-label) {
-  color: #e5e7eb !important;
-  background-color: rgb(var(--color-gray-custom)) !important;
-}
-
-/* Dropdown options */
+/* Dropdowns */
 :global(html.dark .ql-picker-options) {
-  background-color: rgb(var(--color-gray-custom)) !important;
-  border-color: rgb(var(--color-gray-custom-10)) !important;
+  background: #1e293b !important;
+  border-color: #475569 !important;
 }
-
-/* Ícones dentro das opções */
-:global(html.dark .ql-picker-options .ql-picker-item) {
+:global(html.dark .ql-picker-item) {
   color: #e5e7eb !important;
 }
-
-/* Ícones dentro das opções */
-:global(html.dark .ql-picker-options .ql-selected) {
-  color: #e5e7eb !important;
-  background-color: rgb(var(--color-gray-custom-30)) !important;
-}
-
-:global(html.dark .ql-picker-options .ql-picker-item:hover) {
-  color: #e5e7eb !important;
-  background-color: rgb(var(--color-gray-custom-20)) !important;
-}
-
 </style>

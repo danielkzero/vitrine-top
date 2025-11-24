@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { type Product } from '@/types';
-import * as LucideIcons from 'lucide-vue-next';
+import { getIcon } from '@/lib/iconMap';
 import DropzoneFile from '@/components/ui/dropzone-file/DropzoneFile.vue';
 import { ref, watch } from 'vue'
+import { formatCurrency } from '@/lib/utils';
 
 const props = defineProps<{
     categorias: {};
-    LucideIcons: typeof LucideIcons;
     removerCategoria: (categoria: any) => void;
     nomeCategoria: (id: number) => any;
     produtos: {};
-    formatCurrency: (value: Number | String) => string;
     novaCategoria: string;
     salvarCategoria: () => void;
     salvarProduto: () => void;
@@ -70,7 +69,7 @@ function abrirNovoProduto() {
             <div class="flex gap-2 min-w-max">
                 <button @click.stop="showAddCategory = true" type="button"
                     class="cursor-pointer flex items-center gap-1 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-emerald-600">
-                    <LucideIcons.PlusCircle class="w-4 h-4" />
+                    <component :is="getIcon('PlusCircle')" class="w-4 h-4" />
                     Nova Categoria
                 </button>
 
@@ -80,7 +79,7 @@ function abrirNovoProduto() {
                         ? 'bg-sky-500 text-white dark:bg-sky-200 dark:text-gray-900 hover:bg-sky-600 dark:hover:bg-sky-300'
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
                     {{ categoria.name }}
-                    <LucideIcons.Trash2 class="w-4 h-4 text-red-500 hover:text-red-600"
+                    <component :is="getIcon('Trash2')" class="w-4 h-4 text-red-500 hover:text-red-600"
                         @click.stop="removerCategoria(categoria)" />
                 </button>
             </div>
@@ -94,7 +93,7 @@ function abrirNovoProduto() {
                 </h3>
                 <button type="button" @click.stop="abrirNovoProduto"
                     class="cursor-pointer flex items-center gap-1 bg-sky-500 dark:bg-sky-100 dark:text-gray-900 dark:hover:bg-sky-300 text-white px-3 py-1 rounded-full text-sm hover:bg-sky-600">
-                    <LucideIcons.Plus class="w-4 h-4" />
+                    <component :is="getIcon('Plus')" class="w-4 h-4" />
                     Adicionar
                 </button>
             </div>
