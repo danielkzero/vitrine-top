@@ -32,7 +32,7 @@ class BaseController extends Controller
         $totalRevenue = Order::where('status', 'completed')->sum('total');
         $recentOrders = Order::with('user')->latest()->take(5)->get();
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Painel', [
             'user' => $this->user,
             'stats' => [
                 'products' => [
