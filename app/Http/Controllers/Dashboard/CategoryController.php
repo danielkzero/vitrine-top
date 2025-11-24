@@ -70,10 +70,10 @@ class CategoryController extends BaseController
 
     public function destroy(Category $category)
     {
-        $this->authorizeOwnership($category);
+        //$this->authorizeOwnership($category);
         $category->delete();
 
-        return $this->json(['message' => 'Categoria removida.']);
+        return back()->with(['message' => 'Categoria removida.']);
     }
 
     protected function authorizeOwnership(Category $category)
