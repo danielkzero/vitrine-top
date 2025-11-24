@@ -15,9 +15,9 @@ use App\Http\Controllers\Dashboard\PaymentController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/painel', function () {
+    return redirect()->route('painel.index');
+})->middleware(['auth', 'verified']);
 
 Route::middleware(['auth', 'verified'])
     ->prefix('painel')
