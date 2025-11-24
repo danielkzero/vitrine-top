@@ -130,6 +130,7 @@ class PageController extends Controller
      */
     public function update(Request $request, string $key)
     {
+        
         $page = Page::where('key', $key)
             ->where('user_id', auth()->id())
             ->firstOrFail();
@@ -152,6 +153,8 @@ class PageController extends Controller
         // 🔥 CRUD de CATEGORIAS
         // ==============================
         $categorias = $request->input('categorias', []);
+
+        
 
         foreach ($categorias as $cat) {
             // Categoria nova
