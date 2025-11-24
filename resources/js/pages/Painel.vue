@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+import BaseButton from '@/components/ui/button/BaseButton.vue';
+import { getIcon } from '@/lib/iconMap';
 
-// Ícones
-import {
-  Package,
-  Receipt,
-  Settings,
-  ShoppingCart,
-  DollarSign,
-  ExternalLink
-} from "lucide-vue-next";
+import { route } from 'ziggy-js';
 
 const props = defineProps<{
   stats: {
@@ -35,7 +28,7 @@ const props = defineProps<{
 const breadcrumbs: BreadcrumbItem[] = [
   {
     title: 'Painel',
-    href: dashboard().url,
+    href: route('painel.index'),
   },
 ];
 </script>
@@ -50,28 +43,24 @@ const breadcrumbs: BreadcrumbItem[] = [
       <!-- Cabeçalho -->
       <div>
         <!-- Botões superiores -->
-        <div class="flex justify-start gap-3">
+        <div class="md:flex md:justify-start gap-3">
           <!-- Titulo -->
           <div>
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
               Painel
             </h1>
-
           </div>
 
-          <!-- Botão Configurar Loja -->
-          <Link href="/settings/store"
-            class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg text-sm flex items-center gap-2 ms-auto shadow-lg">
-            <Settings class="w-4 h-4" />
+          <!-- Botão Configurar Loja -->          
+          <BaseButton as="Link" href="/settings/store" variant="primary" size="sm" leading-icon="Settings" class="ms-auto">
             Configurar Loja
-          </Link>
+          </BaseButton>
 
           <!-- Botão Ver Vitrine (condicional) -->
-          <Link v-if="props.user.business_name && props.user.slug" :href="`/vitrine/${props.user.slug}`"
-            class="px-4 py-2 bg-white border border-slate-100 text-slate-700 rounded-lg text-sm flex items-center gap-2">
-            <ExternalLink class="w-4 h-4" />
+          <BaseButton v-if="props.user?.business_name && props.user.slug" as="Link" :href="`/${props.user.slug}`" class="ms-3 md:ms-0"
+            variant="secondary" size="sm" leading-icon="StoreIcon" target="_blank">
             Ver Vitrine
-          </Link>
+          </BaseButton>
 
         </div>
         <p class="text-gray-500 dark:text-gray-200">Visão geral da sua loja</p>
@@ -81,35 +70,38 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
         <!-- Produtos -->
-        <div class="relative rounded-xl bg-white p-6 border border-slate-100 text-slate-800 shadow-lg">
-          <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-tr from-sky-400 to-emerald-500 flex items-center justify-center text-white shadow">
-            <Package class="w-6 h-6" />
+        <div class="relative rounded-xl bg-white p-6 border border-slate-100 text-sky-700 shadow-lg 
+            after:absolute after:left-0 after:top-0 after:h-full after:w-3 after:bg-sky-400 after:rounded-l-xl">
+          <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-tr from-sky-400 to-sky-700 flex items-center justify-center text-white shadow">
+            <component :is="getIcon('Package')" class="w-6 h-6" />
           </div>
           <p class="font-semibold">Produtos Ativos</p>
-          <h2 class="text-3xl font-bold mt-2">{{ props.stats.products.active }}</h2>
-          <p class="text-sm mt-1 text-slate-500">{{ props.stats.products.total }} total</p>
+          <h2 class="text-3xl font-bold mt-2">{{ props.stats?.products.active }}</h2>
+          <p class="text-sm mt-1 text-slate-500">{{ props.stats?.products.total }} total</p>
         </div>
 
         <!-- Pedidos -->
-        <div class="relative rounded-xl bg-white p-6 border border-slate-100 text-slate-800 shadow-lg">
-          <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-tr from-sky-400 to-emerald-500 flex items-center justify-center text-white shadow">
-            <ShoppingCart class="w-6 h-6" />
+        <div class="relative rounded-xl bg-white p-6 border border-slate-100 text-amber-700 shadow-lg
+            after:absolute after:left-0 after:top-0 after:h-full after:w-3 after:bg-amber-400 after:rounded-l-xl">
+          <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-tr from-amber-400 to-amber-700 flex items-center justify-center text-white shadow">            
+            <component :is="getIcon('ShoppingCart')" class="w-6 h-6" />
           </div>
           <p class="font-semibold">Pedidos Pendentes</p>
-          <h2 class="text-3xl font-bold mt-2">{{ props.stats.orders.pending }}</h2>
-          <p class="text-sm mt-1 text-slate-500">{{ props.stats.orders.pending }} total</p>
+          <h2 class="text-3xl font-bold mt-2">{{ props.stats?.orders.pending }}</h2>
+          <p class="text-sm mt-1 text-slate-500">{{ props.stats?.orders.pending }} total</p>
         </div>
 
         <!-- Receita -->
-        <div class="relative rounded-xl bg-white p-6 border border-slate-100 text-slate-800 shadow-lg">
-          <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-tr from-sky-400 to-emerald-500 flex items-center justify-center text-white shadow">
-            <DollarSign class="w-6 h-6" />
+        <div class="relative rounded-xl bg-white p-6 border border-slate-100 text-emerald-700 shadow-lg
+            after:absolute after:left-0 after:top-0 after:h-full after:w-3 after:bg-emerald-400 after:rounded-l-xl">
+          <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-400 to-emerald-700 flex items-center justify-center text-white shadow">
+            <component :is="getIcon('DollarSign')" class="w-6 h-6" />
           </div>
           <p class="font-semibold">Receita Total</p>
           <h2 class="text-3xl font-bold mt-2">
-            R$ {{ props.stats.revenue.total }}
+            R$ {{ props.stats?.revenue.total }}
           </h2>
-          <p class="text-sm mt-1 text-slate-500">De {{ props.stats.revenue.count }} pedidos</p>
+          <p class="text-sm mt-1 text-slate-500">De {{ props.stats?.revenue.count }} pedidos</p>
         </div>
       </div>
 
@@ -122,17 +114,17 @@ const breadcrumbs: BreadcrumbItem[] = [
           </div>
           <div class="divide-y divide-slate-100">
             <button class="flex items-center gap-2 w-full p-4 hover:bg-slate-50 cursor-pointer">
-              <Package class="w-5 h-5 text-slate-700" />
+              <component :is="getIcon('Package')" class="w-5 h-5 text-slate-700" />
               <span class="text-slate-700">Gerenciar Produtos</span>
             </button>
 
             <button class="flex items-center gap-2 w-full p-4 hover:bg-slate-50 cursor-pointer">
-              <Receipt class="w-5 h-5 text-slate-700" />
+              <component :is="getIcon('Receipt')" class="w-5 h-5 text-slate-700" />
               <span class="text-slate-700">Ver Pedidos</span>
             </button>
 
             <button class="flex items-center gap-2 w-full p-4 hover:bg-slate-50 cursor-pointer rounded-b-xl">
-              <Settings class="w-5 h-5 text-slate-700" />
+              <component :is="getIcon('Settings')" class="w-5 h-5 text-slate-700" />
               <span class="text-slate-700">Configurar Loja</span>
             </button>
           </div>
@@ -144,10 +136,10 @@ const breadcrumbs: BreadcrumbItem[] = [
             <h3 class="font-semibold text-slate-800">Pedidos Recentes</h3>
           </div>
           <div class="divide-y divide-slate-100">
-            <div v-if="!props.recentOrders.length" class="p-4 text-slate-500">
+            <div v-if="!props?.recentOrders?.length" class="p-4 text-slate-500">
               Nenhum pedido recente encontrado.
             </div>
-            <div v-for="order in props.recentOrders" :key="order.id"
+            <div v-for="order in props?.recentOrders" :key="order.id"
               class="flex justify-between p-4 text-slate-700">
               <div>
                 <p class="font-semibold">{{ order.user?.name ?? 'Cliente' }}</p>
