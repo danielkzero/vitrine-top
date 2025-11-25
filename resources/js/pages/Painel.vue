@@ -52,12 +52,12 @@ const breadcrumbs: BreadcrumbItem[] = [
           </div>
 
           <!-- Botão Configurar Loja -->          
-          <BaseButton as="Link" href="/settings/store" variant="primary" size="sm" leading-icon="Settings" class="ms-auto">
+          <BaseButton as="Link" :href="['/settings/store']" variant="primary" size="sm" leading-icon="Settings" class="ms-auto">
             Configurar Loja
           </BaseButton>
 
           <!-- Botão Ver Vitrine (condicional) -->
-          <BaseButton v-if="props.user?.business_name && props.user.slug" as="Link" :href="`/${props.user.slug}`" class="ms-3 md:ms-0"
+          <BaseButton v-if="props.user?.business_name && props.user.slug" as="Link" :href="[`/${props.user.slug}`]" class="ms-3 md:ms-0"
             variant="secondary" size="sm" leading-icon="StoreIcon" target="_blank">
             Ver Vitrine
           </BaseButton>

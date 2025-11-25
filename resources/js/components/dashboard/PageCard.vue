@@ -60,7 +60,7 @@ const statusClasses = computed(() => {
             </span>
 
             <!-- Botão Editar -->
-            <BaseButton as="Link" :href="editHref" size="sm" variant="primary" leading-icon="FileEdit">
+            <BaseButton as="Link" :href="[editHref]" size="sm" variant="primary" leading-icon="FileEdit">
                 Editar
             </BaseButton>
         </div>
