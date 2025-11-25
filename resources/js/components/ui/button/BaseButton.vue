@@ -33,7 +33,7 @@ interface Props {
 
     as?: 'button' | 'Link' | 'a';
 
-    href?: string;       // para Link ou <a>
+    href?: { type: [String, Object], default: null },       // para Link ou <a>
     method?: string;     // para Link
     preserveScroll?: boolean;
     preserveState?: boolean;
