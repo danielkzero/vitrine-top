@@ -115,6 +115,7 @@ async function save() {
   saving.value = true
   try {
     // Emit save with the localProduct payload; parent handles persistence
+    
     emit('save', JSON.parse(JSON.stringify(localProduct)))
     emit('update:modelValue', false)
   } finally {
@@ -122,26 +123,47 @@ async function save() {
   }
 }
 
-function handleFiles(files:any) {
-  // Dropzone emits File[] or file-like objects; map to localProduct.images as in parent
+async function handleFiles(files: any) {
   const arr = Array.isArray(files) ? files : []
-  const out:any[] = []
-
-  arr.forEach((f:any) => {
-    if (f.file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        out.push({ id: null, image_path: null, image_base64: e.target?.result, is_cover: false })
+  
+  const out = await Promise.all(
+    arr.map(async (f:any) => {
+      if (f.file) {
+        const base64 = await fileToBase64(f.file)
+        return {
+          id: null,
+          image_path: null,
+          image_base64: base64,
+          is_cover: false
+        }
       }
-      reader.readAsDataURL(f.file)
-    } else if (f.url) {
-      out.push({ id: null, image_path: null, image_base64: f.url, is_cover:false })
-    }
-  })
+      if (f.url) {
+        return {
+          id: null,
+          image_path: null,
+          image_base64: f.url,
+          is_cover: false
+        }
+      }
+      return null
+    })
+  )
 
-  // pequenassegurança: se async reader, we push later — but parent will be notified on save
-  localProduct.images = out.length ? out : localProduct.images
+  const cleaned = out.filter(Boolean)
+
+  console.log("IMAGENS:", cleaned.length)
+  localProduct.images = cleaned
 }
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = e => resolve(e.target?.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 </script>
 
 <style scoped>

@@ -17,9 +17,6 @@ import ReviewContent from '@/components/vitrine/ReviewContent.vue'
 import ProductContent from '@/components/dashboard/products/ProductContent.vue'
 
 
-import { formatCurrency } from '@/lib/utils'
-import * as LucideIcons from 'lucide-vue-next'
-
 // ---------- Inertia props / normalização ----------
 const inertia = usePage()
 const rawPage = inertia.props.page ?? {}

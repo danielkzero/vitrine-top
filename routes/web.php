@@ -7,6 +7,7 @@ use App\Http\Controllers\dashboard\PageController;
 use App\Http\Controllers\dashboard\ReviewController;
 use App\Http\Controllers\dashboard\SubscriptionController;
 use App\Http\Controllers\dashboard\PaymentController;
+use App\Http\Controllers\Vitrine\VitrineController;
 
 // Página inicial
 Route::get('/', function () {
@@ -43,7 +44,8 @@ require __DIR__ . '/settings.php';
 
 // Exibe páginas dinâmicas criadas pelo usuário
 // vitrine.top/minha_loja
-Route::get('/{key}', [PageController::class, 'show'])->name('pages.show');
+//Route::get('/{key}', [PageController::class, 'show'])->name('pages.show');
+Route::get('/{slug}', [VitrineController::class, 'show'])->name('vitrine.public');
 // vitrine.top/minha_loja/principal
 // vitrine.top/minha_loja/catalogo
 // vitrine.top/minha_loja/catalogo/id_produto
