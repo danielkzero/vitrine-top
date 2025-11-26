@@ -46,6 +46,7 @@ require __DIR__ . '/settings.php';
 // vitrine.top/minha_loja
 //Route::get('/{key}', [PageController::class, 'show'])->name('pages.show');
 Route::get('/{slug}', [VitrineController::class, 'show'])->name('vitrine.public');
+Route::get('/{slug}/{page?}', [VitrineController::class, 'show'])->name('vitrine.public');
 // vitrine.top/minha_loja/principal
 // vitrine.top/minha_loja/catalogo
 // vitrine.top/minha_loja/catalogo/id_produto

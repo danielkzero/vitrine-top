@@ -20,11 +20,6 @@ const activeIndex = ref(0)
 watch(() => props.product, () => activeIndex.value = 0)
 
 const images = computed(() => props.product?.images ?? [])
-const priceDisplay = computed(() => {
-    if (!props.product) return ''
-    return `R$ ${Number(props.product.discount_price || props.product.price || 0).toFixed(2)}`
-})
-
 function close() { visible.value = false }
 
 // comprar via whatsapp: monta mensagem e abre wa.me
@@ -57,15 +52,16 @@ async function loadMoreReviews() {
 <template>
     <transition name="modal-fade">
         <div v-if="visible" class="fixed inset-0 z-50 bg-black/40 flex items-end md:items-center justify-center">
-            <div
-                class="w-full md:max-w-md min-h-full bg-white md:rounded-2xl overflow-auto shadow-2xl">
+            <div class="w-full md:max-w-md min-h-full bg-white md:rounded-2xl overflow-auto shadow-2xl">
                 <!-- header -->
                 <div class="flex items-center justify-between p-3 border-b">
-                    <button @click="close" class="p-2 rounded-lg bg-white">
+                    <button @click="close" class="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
                         <component :is="getIcon('ChevronLeft')" class="w-5 h-5" />
                     </button>
-                    <div class="text-sm font-semibold">{{ props.product?.name }}</div>
-                    <div class="w-9"></div>
+                    <div class="text-sm font-semibold">Detalhes</div>
+                    <button @click="close" class="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
+                        <component :is="getIcon('Heart')" class="w-5 h-5" />
+                    </button>
                 </div>
 
                 <!-- imagem grande -->
@@ -75,13 +71,16 @@ async function loadMoreReviews() {
                         <img v-if="images.length"
                             :src="images[activeIndex]?.image_base64 || ('/' + images[activeIndex]?.image_path)"
                             class="max-h-full object-contain" loading="lazy" />
-                        <div v-else class="h-40 w-full bg-slate-100 rounded-lg flex items-center justify-center">Sem
-                            imagem</div>
+                        <div v-else class="h-40 w-full bg-slate-100 rounded-lg flex items-center justify-center">
+                            Sem imagem
+                        </div>
 
                         <!-- dots -->
                         <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-                            <div v-for="(i, idx) in images" :key="idx"
-                                :class="idx === activeIndex ? 'w-2 h-2 bg-white' : 'w-2 h-2 bg-white/40'"
+                            <div v-for="(i, idx) in images" :key="idx" @click="selectImage(idx)"
+                                :class="idx === activeIndex ? 
+                                'w-3 h-3 bg-emerald-50/90 ring-emerald-300 ring shadow-2xl' : 
+                                'w-3 h-3 bg-emerald-100/90 ring-emerald-300 ring shadow-2xl'"
                                 class="rounded-full"></div>
                         </div>
                     </div>
@@ -91,7 +90,7 @@ async function loadMoreReviews() {
                 <div class="px-4 pb-3">
                     <div class="flex gap-2 overflow-x-auto">
                         <div v-for="(it, i) in images" :key="i" @click="selectImage(i)"
-                            :class="['p-1 rounded-lg cursor-pointer', activeIndex === i ? 'border-2 border-sky-500' : 'border']">
+                            :class="['p-1 rounded-lg cursor-pointer', activeIndex === i ? 'border-2 border-emerald-500' : 'border']">
                             <img :src="it.image_base64 || ('/' + it.image_path)"
                                 class="w-20 h-14 object-cover rounded-md" loading="lazy" />
                         </div>
@@ -100,12 +99,19 @@ async function loadMoreReviews() {
 
                 <!-- conteúdo -->
                 <div class="p-4 space-y-3">
-                    <div class="flex justify-between items-start">
+                    <div class="flex justify-between items-center">
                         <div>
                             <h3 class="font-bold text-lg">{{ props.product?.name }}</h3>
                             <p class="text-xs text-slate-500">{{ props.product?.brand ?? '' }}</p>
                         </div>
-                        <div class="text-emerald-600 font-bold text-lg">{{ priceDisplay }}</div>
+                        <div>
+                            <div class="text-slate-400 line-through text-xs" v-if="props.product.discount_price">
+                                {{ formatCurrency(props.product.price) }}
+                            </div>
+                            <div class="text-emerald-600 font-bold text-lg">
+                                {{ formatCurrency(props.product.discount_price) }}
+                            </div>
+                        </div>
                     </div>
 
                     <p class="text-sm text-slate-600 line-clamp-3">{{ props.product?.description }}</p>

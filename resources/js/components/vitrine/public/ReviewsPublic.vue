@@ -11,7 +11,7 @@ defineProps({ reviews: Array })
         <div class="text-xs text-slate-400">{{ new Date(r.created_at).toLocaleDateString('pt-BR') }}</div>
       </div>
       <div class="flex gap-1 mt-2">
-        <component v-for="n in 5" :key="n" :is="getIcon(n <= r.rating ? 'Star' : 'StarOff')" class="w-4 h-4 text-yellow-400" />
+        <component v-for="n in 5" :key="n" :is="getIcon(n <= r.rating ? 'Star' : 'StarOff')" class="w-4 h-4 " :class="n <= r.rating ? 'text-yellow-400' : 'text-slate-400'" />
       </div>
       <p class="text-sm text-slate-600 mt-2">{{ r.comment }}</p>
     </div>

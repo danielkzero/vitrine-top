@@ -1,29 +1,44 @@
 <!-- resources/js/components/vitrine/public/BottomNav.vue -->
 <script setup lang="ts">
-import { ref } from 'vue'
 import { getIcon } from '@/lib/iconMap'
+import { computed } from 'vue'
+
 const props = defineProps({
-  pages: { type: Array, default: () => [] } // opcional: usar pages para gerar ícones do menu
+  pages: { type: Array, default: () => [] },
+  activeKey: { type: String, default: null }
 })
-const active = ref('home')
-function setTab(k) { active.value = k }
+
+const emit = defineEmits(['navigate'])
+
+const sortedPages = computed(() => {
+  return [...props.pages]
+    .filter(p => p.is_active)
+    .sort((a, b) => a.order - b.order)
+})
+
+function go(page) {
+  emit('navigate', page)
+}
 </script>
 
 <template>
-  <nav class="fixed bottom-4 left-4 right-4 z-40">
-    <div class="bg-white/95 rounded-2xl px-6 py-3 flex justify-between items-center shadow-lg mx-auto max-w-xl">
-      <button @click="setTab('home')" :class="active==='home' ? 'text-sky-600' : 'text-slate-400'">
-        <component :is="getIcon('Home')" class="w-6 h-6" />
+  <nav class="fixed bottom-4 left-2 right-2 z-40">
+    <div class="bg-white border-2 border-slate-100 rounded-2xl px-6 py-3 flex justify-between items-center shadow-xl mx-auto max-w-xl">
+
+      <button
+        v-for="page in sortedPages"
+        :key="page.key"
+        @click="go(page)"
+        :class="[
+          'flex flex-col items-center justify-center transition-all',
+          props.activeKey === page.key ? 'text-emerald-600' : 'text-slate-500'
+        ]"
+      >
+        <component :is="getIcon(page.icon || 'Home')" class="w-6 h-6 mb-1" />
+        <span class="text-[10px] font-medium truncate max-w-[60px]">{{ page.title }}</span>
+        <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1" v-if="props.activeKey === page.key"></div>
       </button>
-      <button @click="setTab('search')" :class="active==='search' ? 'text-sky-600' : 'text-slate-400'">
-        <component :is="getIcon('Search')" class="w-6 h-6" />
-      </button>
-      <button @click="setTab('cart')" :class="active==='cart' ? 'text-sky-600' : 'text-slate-400'">
-        <component :is="getIcon('ShoppingCart')" class="w-6 h-6" />
-      </button>
-      <button @click="setTab('profile')" :class="active==='profile' ? 'text-sky-600' : 'text-slate-400'">
-        <component :is="getIcon('User')" class="w-6 h-6" />
-      </button>
+
     </div>
   </nav>
 </template>
