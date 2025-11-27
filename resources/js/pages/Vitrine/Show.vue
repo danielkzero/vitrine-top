@@ -18,6 +18,7 @@ const props = defineProps({
   products: Array,
   categories: Array,
   reviews: Array,
+  itemId: Number,
   page: {
     type: Object as () => Page,
     required: true
@@ -38,11 +39,10 @@ function resolvePageComponent(page: any) {
 
 function goToPage(page: Page) {
   router.get(
-    route('vitrine.public', { slug: props.user.slug }),
-    {
-      p: page.key,
-      preserveScroll: true,
-    }
+    route('vitrine.public.page', {
+      slug: props.user.slug,
+      page: page.key
+    })
   )
 }
 
@@ -56,7 +56,7 @@ interface Page {
   order: number
 }
 
-const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/1200x/9c/48/9e/9c489e9aa09653a6406a1945acfa8f60.jpg"
+const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/736x/11/fb/72/11fb728bfcec7b599d7a3a3c58dbb30d.jpg"
 </script>
 
 
@@ -72,13 +72,14 @@ const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/1200x/9c/4
     <header
       class="container mx-auto relative w-full h-[150px] md:h-[380px] flex items-center justify-center bg-cover bg-center bg-no-repeat rounded-b-2xl"
       :style="{ backgroundImage: `url('${heroImage}')` }">
-      
+
       <!-- Overlay escuro para contraste -->
       <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px] rounded-b-2xl"></div>
 
       <!-- Conteúdo -->
       <div class="relative z-10 text-center text-white px-4">
-        <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-lg">
+        <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-lg items-center flex">
+          <img src="@/assets/icon-teste-store.png" class="w-12 mr-3 rounded-2xl bg-amber-50 shadow ring ring-emerald-500" />
           {{ props.user.business_name }}
         </h1>
         <p class="mt-3 text-lg opacity-90">
@@ -93,17 +94,17 @@ const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/1200x/9c/4
     <main class="container mx-auto px-3 flex-grow">
       <section>
         <h2 class="text-xl font-bold items-center flex py-6">
-          <component :is="getIcon(pageLocal.icon)" class="mr-2" />
-          {{ pageLocal.title }}
+          <component :is="getIcon(pageLocal.icon)" class="mr-2"  />
+          {{ pageLocal.title }} 
         </h2>
 
-        <component :is="resolvePageComponent(pageLocal)" :page="pageLocal" :products="props.products"
-          :categories="props.categories" :reviews="props.reviews" />
+        <component :is="resolvePageComponent(pageLocal)" :user="props.user" :page="pageLocal" :products="props.products"
+            :categories="props.categories" :reviews="props.reviews" />
       </section>
     </main>
 
     <BottomNav :pages="props.pages" :activeKey="pageLocal.key" @navigate="goToPage" />
-    
+
     <!-- ============================ -->
     <!-- FOOTER -->
     <!-- ============================ -->

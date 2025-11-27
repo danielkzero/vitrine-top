@@ -2,6 +2,8 @@
 
 @import 'tw-animate-css';
 
+@plugin "@tailwindcss/typography";
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
@@ -166,6 +168,7 @@
     --sidebar-ring: hsl(217.2 91.2% 59.8%);
     --sidebar: hsl(240 5.9% 10%);
 }
+
 
 @layer base {
     * {

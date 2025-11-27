@@ -34,16 +34,15 @@ class Product extends Model
     ];
 
     /*
-    |--------------------------------------------------------------------------
-    | Relacionamentos
-    |--------------------------------------------------------------------------
-    */
+     * |--------------------------------------------------------------------------
+     * | Relacionamentos
+     * |--------------------------------------------------------------------------
+     */
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
 
     public function images()
     {
@@ -60,16 +59,27 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function getRatingAttribute()
+    {
+        $reviews = $this->reviews()->where('status', 'approved')->get();
+
+        if ($reviews->count() === 0) {
+            return null;
+        }
+
+        return round($reviews->avg('rating'), 1);  // ex: 4.7
+    }
+
     public function orders()
     {
         return $this->belongsToMany(Order::class)->withPivot('quantity', 'price')->withTimestamps();
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | Acessores, Mutadores e Eventos
-    |--------------------------------------------------------------------------
-    */
+     * |--------------------------------------------------------------------------
+     * | Acessores, Mutadores e Eventos
+     * |--------------------------------------------------------------------------
+     */
 
     protected static function booted()
     {
@@ -82,10 +92,10 @@ class Product extends Model
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | Métodos auxiliares
-    |--------------------------------------------------------------------------
-    */
+     * |--------------------------------------------------------------------------
+     * | Métodos auxiliares
+     * |--------------------------------------------------------------------------
+     */
 
     public function getFormattedPriceAttribute()
     {

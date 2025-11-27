@@ -50,4 +50,6 @@ Route::prefix('painel/pages')
         Route::get('/', [PageController::class, 'index'])->name('index');
         Route::get('/edit/{key}', [PageController::class, 'edit'])->name('edit');
         Route::post('/update/{key}', [PageController::class, 'update'])->name('update');
+        Route::post('/reorder', [PageController::class, 'reorder'])->name('reorder');
+
     });

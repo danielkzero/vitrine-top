@@ -39,11 +39,7 @@ const statusClasses = computed(() => {
                 </div>
 
                 <!-- Badge -->
-                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full"
-                    :class="statusClasses">
-                    <component :is="getIcon(active ? 'Eye' : 'EyeOff')" class="w-4 h-4 mr-1" />
-                    {{ active ? 'Ativa' : 'Inativa' }}
-                </span>
+                
             </div>
 
             <!-- Descrição -->
@@ -55,6 +51,11 @@ const statusClasses = computed(() => {
         <!-- Footer -->
         <div class="flex justify-between items-center mt-5">
             <!-- Tipo -->
+             <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full"
+                    :class="statusClasses">
+                    <component :is="getIcon(active ? 'Eye' : 'EyeOff')" class="w-4 h-4 mr-1" />
+                    {{ active ? 'Ativa' : 'Inativa' }}
+                </span>
             <span class="text-xs px-3 py-1 rounded-full bg-amber-100 text-amber-700">
                 Tipo: {{ type }}
             </span>

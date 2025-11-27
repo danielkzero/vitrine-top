@@ -1,13 +1,13 @@
 <?php
 
+use App\Http\Controllers\dashboard\PageController;
+use App\Http\Controllers\dashboard\PaymentController;
+use App\Http\Controllers\dashboard\ReviewController;
+use App\Http\Controllers\dashboard\SubscriptionController;
+use App\Http\Controllers\Vitrine\VitrineController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\dashboard\PageController;
-use App\Http\Controllers\dashboard\ReviewController;
-use App\Http\Controllers\dashboard\SubscriptionController;
-use App\Http\Controllers\dashboard\PaymentController;
-use App\Http\Controllers\Vitrine\VitrineController;
 
 // Página inicial
 Route::get('/', function () {
@@ -15,9 +15,6 @@ Route::get('/', function () {
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
-
-
-
 
 // Mostra avaliações públicas (reviews aprovadas)
 Route::get('/avaliacoes', [ReviewController::class, 'publicIndex'])->name('reviews.public');
@@ -34,19 +31,37 @@ Route::get('/checkout/sucesso', [PaymentController::class, 'success'])->name('ch
 Route::get('/checkout/erro', [PaymentController::class, 'error'])->name('checkout.error');
 
 /*
-|--------------------------------------------------------------------------
-| Rotas do Dashboard e Configurações
-|--------------------------------------------------------------------------
-*/
+ * |--------------------------------------------------------------------------
+ * | Rotas do Dashboard e Configurações
+ * |--------------------------------------------------------------------------
+ */
 
 require __DIR__ . '/dashboard.php';
 require __DIR__ . '/settings.php';
 
 // Exibe páginas dinâmicas criadas pelo usuário
 // vitrine.top/minha_loja
-//Route::get('/{key}', [PageController::class, 'show'])->name('pages.show');
-Route::get('/{slug}', [VitrineController::class, 'show'])->name('vitrine.public');
-Route::get('/{slug}/{page?}', [VitrineController::class, 'show'])->name('vitrine.public');
+// Route::get('/{key}', [PageController::class, 'show'])->name('pages.show');
+// Route::get('/{slug}', [VitrineController::class, 'show'])->name('vitrine.public');
+// Route::get('/{slug}/{page?}', [VitrineController::class, 'show'])->name('vitrine.public');
+Route::prefix('{slug}')->group(function () {
+    // Página inicial da vitrine
+    Route::get('/', [VitrineController::class, 'home'])
+        ->name('vitrine.public.home');
+
+    // Páginas dinâmicas
+    Route::get('/{page}', [VitrineController::class, 'page'])
+        ->name('vitrine.public.page');
+
+    // Páginas com ID (ex: produto, item da galeria)
+    Route::get('/{page}/{id}', [VitrineController::class, 'pageWithId'])
+        ->whereNumber('id')
+        ->name('vitrine.public.page.id');
+
+    Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])
+        ->name('vitrine.reviews.store');
+});
+
 // vitrine.top/minha_loja/principal
 // vitrine.top/minha_loja/catalogo
 // vitrine.top/minha_loja/catalogo/id_produto

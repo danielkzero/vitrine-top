@@ -130,10 +130,9 @@ class PageController extends Controller
      */
     public function update(Request $request, string $key)
     {
-        
         $page = Page::where('key', $key)
             ->where('user_id', auth()->id())
-            ->firstOrFail();
+            ->firstOrFail();        
 
         $validatedPage = $request->validate([
             'page.user_id' => 'required|exists:users,id',
@@ -148,13 +147,13 @@ class PageController extends Controller
             'page.seo_title' => 'nullable|string|max:255',
             'page.seo_description' => 'nullable|string|max:255',
         ]);
-        
+
+        $page->update($validatedPage['page']);
+
         // ==============================
         // 🔥 CRUD de CATEGORIAS
         // ==============================
         $categorias = $request->input('categorias', []);
-
-        
 
         foreach ($categorias as $cat) {
             // Categoria nova
@@ -186,7 +185,7 @@ class PageController extends Controller
                     'user_id' => auth()->id(),
                     'name' => $p['name'],
                     'price' => $p['price'],
-                    'discount_price' => $p['discount_price'], 
+                    'discount_price' => $p['discount_price'],
                     'stock' => $p['stock'] ?? 0,
                     'description' => $p['description'] ?? null,
                     'featured' => $p['featured'] ?? false,
@@ -234,6 +233,22 @@ class PageController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Página atualizada com sucesso!');
+    }
+
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'pages' => 'required|array',
+            'pages.*.id' => 'required|integer|exists:pages,id',
+            'pages.*.order' => 'required|integer',
+        ]);
+
+        foreach ($request->pages as $p) {
+            Page::where('id', $p['id'])
+                ->update(['order' => $p['order']]);
+        }
+
+        return back()->with('success', 'Ordem atualizada');
     }
 
     /**

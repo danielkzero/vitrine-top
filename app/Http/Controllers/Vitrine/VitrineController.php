@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Vitrine;
 
 use App\Http\Controllers\Controller;
@@ -9,27 +8,42 @@ use Inertia\Inertia;
 
 class VitrineController extends Controller
 {
-    public function show(Request $request, $slug)
+    public function home(string $slug)
     {
-        // Buscar usuário ativo pela vitrine
+        return $this->renderPage($slug);
+    }
+
+    public function page(string $slug, string $pageKey)
+    {
+        return $this->renderPage($slug, $pageKey);
+    }
+
+    public function pageWithId(string $slug, string $pageKey, int $id)
+    {
+        return $this->renderPage($slug, $pageKey, $id);
+    }
+
+    private function renderPage(string $slug, ?string $pageKey = null, int $id = null)
+    {
+        // ===== BUSCA DO USUÁRIO =====
         $user = User::where('slug', $slug)
             ->where('is_active', true)
             ->with([
                 'settings',
                 'pages' => function ($q) {
-                    $q->where('is_active', true)
-                      ->orderBy('order')
-                      ->orderBy('id');
+                    $q
+                        ->where('is_active', true)
+                        ->orderBy('order')
+                        ->orderBy('id');
                 },
                 'products.images',
                 'categories',
-                'reviews' => function ($q) {
-                    $q->where('status', 'approved');
-                }
+                'products.reviews' => fn($q) => $q->where('status', 'approved'),
+                'reviews' => fn($q) => $q->where('status', 'approved'),
             ])
             ->firstOrFail();
 
-        // Montar páginas com conteúdo decodificado
+        // ===== PROCESSAR PÁGINAS =====
         $pages = $user->pages->map(function ($page) {
             $content = $page->content;
 
@@ -52,31 +66,52 @@ class VitrineController extends Controller
             ];
         });
 
-        // Página atual baseada no ?p=key
-        $requestedKey = $request->query('p');
+        // ===== DEFINIR A PÁGINA ATUAL A PARTIR DA ROTA REAL =====
+        if ($pageKey) {
+            $currentPage = $pages->firstWhere('key', $pageKey)
+                ?? abort(404);
+        } else {
+            // Página inicial = primeira página ativa
+            $currentPage = $pages->first();
+        }
 
-        $currentPage = $pages->firstWhere('key', $requestedKey)
-            ?? $pages->first(); // fallback
+        // ===== DADOS RELACIONADOS À PÁGINA =====
+        $products = $user->products()
+    ->with([
+        'images',
+        'reviews' => fn($q) => $q->where('status', 'approved')
+    ])
+    ->where('is_public', true)
+    ->get()
+    ->map(function($product){
+        $product->rating = $product->reviews->avg('rating') ?? null;
+        return $product;
+    });
 
-        // Produtos públicos
-        $products = $user->products
-            ->filter(fn ($p) => $p->is_public)
-            ->values();
-
-        // Categorias
         $categories = $user->categories;
-
-        // Reviews aprovadas
         $reviews = $user->reviews;
 
-        return Inertia::render('Vitrine/Show', [
-            'user' => $user,
-            'settings' => $user->settings,
-            'pages' => $pages,
-            'page' => $currentPage,  // EXATAMENTE AQUI COMO VOCÊ QUERIA
-            'products' => $products,
-            'categories' => $categories,
-            'reviews' => $reviews,
-        ]);
+        if ($id) {
+            return Inertia::render('Vitrine/ShowId', [
+                'user' => $user,
+                'settings' => $user->settings,
+                'pages' => $pages,
+                'page' => $currentPage,
+                'products' => $products,
+                'categories' => $categories,
+                'itemId' => $id,  // opcional
+            ]);
+        } else {
+            return Inertia::render('Vitrine/Show', [
+                'user' => $user,
+                'settings' => $user->settings,
+                'pages' => $pages,
+                'page' => $currentPage,
+                'products' => $products,
+                'categories' => $categories,
+                'reviews' => $reviews,
+                'itemId' => $id,  // opcional
+            ]);
+        }
     }
 }

@@ -2,13 +2,12 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import ProductCard from '@/components/vitrine/public/ProductCard.vue'
-import ProductModalFull from '@/components/vitrine/public/ProductModalFull.vue'
-
-import FloatingWhatsApp from '@/components/vitrine/public/FloatingWhatsApp.vue'
 import ProductCardSkeleton from '@/components/vitrine/public/ProductCardSkeleton.vue'
 import { getIcon } from '@/lib/iconMap'
 import debounce from 'lodash/debounce'
 import BannerCarousel from './BannerCarousel.vue'
+import { route } from 'ziggy-js'
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
     page: Object,
@@ -70,8 +69,17 @@ watch(q, (v) => onSearch(v))
 
 // abre modal
 function openProduct(prod) {
+    router.get(
+        route('vitrine.public.page.id', {
+            slug: props.user.slug,
+            page: props.page.key,
+            id: prod.id
+        })/*,
+        { preserveScroll: true }*/
+    )
+    /*
     activeProduct.value = prod
-    showModal.value = true
+    showModal.value = true*/
 }
 
 // fechar
@@ -96,17 +104,20 @@ onMounted(() => {
 })
 
 const banner = ref({
-  settings: {
-    show_header: true,
-    banners: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1503602642458-232111445657?w=1600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=1600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&auto=format&fit=crop&q=80"
-    ]
-  }
+    settings: {
+        show_header: true,
+        banners: [
+            "https://i.pinimg.com/1200x/a6/a1/10/a6a11085a57874b3df4f29cb1cc738de.jpg",
+            "https://i.pinimg.com/1200x/be/a9/4c/bea94cd38b7caef4a8a279fd44858f9b.jpg",
+            "https://i.pinimg.com/1200x/b8/96/5c/b8965c48e5e9fe24bac3ade76cb81d43.jpg",
+            "https://images.pexels.com/photos/1124466/pexels-photo-1124466.jpeg"
+        ]
+    }
 });
+
+
+
+
 
 </script>
 
@@ -115,8 +126,9 @@ const banner = ref({
         <!-- Header: busca + ações -->
         <header class="pb-4">
             <div class="flex items-center gap-3">
+                <!-- Acessar carrinho de compras -->
                 <button class="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
-                    <component :is="getIcon('Menu')" class="w-5 h-5 text-slate-700" />
+                    <component :is="getIcon('ShoppingCart')" fill="currentColor" class="w-5 h-5 text-slate-700" />
                 </button>
 
                 <div class="flex-1 relative">
@@ -143,7 +155,7 @@ const banner = ref({
             <BannerCarousel :images="banner.settings.banners" v-if="banner.settings.banners.length" />
 
             <!-- categorias scroll -->
-            <h2 class="text-xl font-bold items-center flex my-3">
+            <h2 class="text-xl font-bold items-center flex my-6">
                 Categorias
             </h2>
             <div class="mt-3 overflow-x-auto pb-2">
@@ -162,52 +174,24 @@ const banner = ref({
             </div>
         </header>
 
-        <!-- Destaques carousel (mobile-first small cards)
-        <section v-if="featured.length" class=" pb-4">
-            <div class="flex gap-3 overflow-x-auto pb-2">
-                <div v-for="f in featured" :key="f.id"
-                    class="min-w-[220px] bg-gradient-to-tr from-sky-400 to-emerald-500 text-white rounded-xl p-4 shadow-lg cursor-pointer"
-                    @click="openProduct(f)">
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-lg line-clamp-2">{{ f.name }}</h4>
-                            <p class="text-sm opacity-90 mt-1">R$ {{ Number(f.discount_price || f.price).toFixed(2) }}
-                            </p>
-                        </div>
-                        <img v-if="f.images?.length" :src="f.images[0].image_base64 || ('/' + f.images[0].image_path)"
-                            class="w-20 h-20 object-cover rounded-lg" loading="lazy" />
-                    </div>
-                </div>
-            </div>
-        </section> -->
-
         <!-- Grid / List -->
         <main class=" pb-2">
             <div v-if="!visibleProducts.length && !loading" class="text-center py-12 text-slate-400">
                 Nenhum produto disponível.
             </div>
 
-            <div v-if="viewMode === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                <ProductCard v-for="p in visibleProducts" :key="p?.id" :product="p" @open="openProduct" />
+            <div v-if="viewMode === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
+                <ProductCard v-for="p in visibleProducts" :key="p.id" :product="p" viewMode="grid"
+                    @open="openProduct" />
+
                 <!-- skeletons -->
                 <ProductCardSkeleton v-if="loading" v-for="n in 6" :key="'sk' + n" />
             </div>
 
             <div v-else class="space-y-3">
-                <div v-for="p in visibleProducts" :key="p.id"
-                    class="bg-white rounded-xl p-3 shadow-sm flex gap-3 items-center cursor-pointer"
-                    @click="openProduct(p)">
-                    <img v-if="p.images?.length" :src="p.images[0].image_base64 || ('/' + p.images[0].image_path)"
-                        class="w-20 h-20 object-cover rounded-lg" loading="lazy" />
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <h4 class="font-bold text-sm">{{ p.name }}</h4>
-                            <div class="text-emerald-600 font-bold">R$ {{ Number(p.discount_price || p.price).toFixed(2)
-                                }}</div>
-                        </div>
-                        <p class="text-xs text-slate-500 line-clamp-2 mt-1">{{ p.description }}</p>
-                    </div>
-                </div>
+                <ProductCard v-for="p in visibleProducts" :key="p.id" :product="p" viewMode="list"
+                    @open="openProduct" />
+
                 <ProductCardSkeleton v-if="loading" v-for="n in 3" :key="'skl' + n" />
             </div>
 
@@ -215,8 +199,6 @@ const banner = ref({
             <div ref="sentinel" class="h-6"></div>
         </main>
 
-        <!-- Modal full screen produto -->
-        <ProductModalFull v-model:show="showModal" :product="activeProduct" :user="user" />
 
         <!--<FloatingWhatsApp :user="props.user" />-->
     </div>

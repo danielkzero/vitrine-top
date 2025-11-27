@@ -10,9 +10,11 @@ import BaseButton from '@/components/ui/button/BaseButton.vue';
 import iconMap, { getIcon } from '@/lib/iconMap';
 
 import content from '@/data/welcomeContent';
+import DemoStorePreview from './DemoStorePreview.vue';
 
 const isMenuOpen = ref(false);
 const scrolled = ref(false);
+const search = ref('')
 
 const toggleMenu = () => (isMenuOpen.value = !isMenuOpen.value);
 
@@ -68,8 +70,8 @@ withDefaults(
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
-                    <BaseButton v-if="$page.props.auth.user" as="Link" :href="route('painel.index')" variant="ghost" size="sm"
-                    >
+                    <BaseButton v-if="$page.props.auth.user" as="Link" :href="['/painel']" variant="ghost"
+                        size="sm">
                         Painel
                     </BaseButton>
                     <template v-else>
@@ -77,8 +79,9 @@ withDefaults(
                             Entrar
                         </BaseButton>
 
-                        <BaseButton v-if="canRegister" as="Link" :href="register()" variant="pill" size="sm" trailing-icon="ArrowRight">
-                            Criar conta grátis 
+                        <BaseButton v-if="canRegister" as="Link" :href="register()" variant="pill" size="sm"
+                            trailing-icon="ArrowRight">
+                            Criar conta grátis
                         </BaseButton>
                     </template>
                 </div>
@@ -165,76 +168,16 @@ withDefaults(
                         </div>
                     </div>
 
-                    <!-- Hero Image/Card -->
-                    <div class="flex-1 w-full max-w-[400px] lg:max-w-[400px]">
-                        <div class="relative">
-                            <div
-                                class="absolute -inset-1 bg-gradient-to-r from-sky-400 to-emerald-600 rounded-2xl blur opacity-30">
-                            </div>
-                            <div
-                                class="relative bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden">
-                                <div class="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-2">
-                                    <div class="flex gap-1.5">
-                                        <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                                        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                                        <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                                    </div>
-                                    <div class="flex-1 bg-white h-6 rounded-md border border-slate-200 mx-4"></div>
-                                </div>
+                    <!-- Hero / Card Demonstrativo -->
+                    <DemoStorePreview />
 
-                                <div class="p-6 bg-slate-50/50">
-                                    <div class="flex items-center gap-4 mb-6">
-                                        <div
-                                            class="w-16 h-16 rounded-full bg-gradient-to-tr from-sky-400 to-emerald-500 shadow-lg flex items-center justify-center text-white font-bold text-2xl">
-                                            VT</div>
-                                        <div>
-                                            <h3 class="font-bold text-xl text-slate-800">Loja Exemplo</h3>
-                                            <p class="text-emerald-600 text-sm font-medium">Aberto agora • Entrega em 1h
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div v-for="i in 4" :key="i"
-                                            class="bg-white p-3 rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                                            <div
-                                                class="bg-slate-100 h-24 rounded-md mb-3 relative overflow-hidden group">
-                                                <div
-                                                    class="absolute inset-0 flex items-center justify-center text-slate-300 text-xs">
-                                                    Foto do Produto</div>
-                                            </div>
-                                            <div class="h-4 w-3/4 bg-slate-100 rounded mb-2"></div>
-                                            <div class="flex items-center justify-between">
-                                                <div class="h-4 w-1/2 bg-emerald-100 rounded"></div>
-                                                <div
-                                                    class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">                                                    
-                                                    <component :is="getIcon('Plus')" class="w-4 h-4" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div
-                                class="absolute -right-6 top-12 bg-white p-4 rounded-lg shadow-xl border border-slate-100 animate-bounce duration-[3000ms]">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-green-100 p-2 rounded-full text-green-600">
-                                        <component :is="getIcon('MessageCircle')" class="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-slate-500">Novo pedido via WhatsApp</p>
-                                        <p class="text-sm font-bold text-slate-800">R$ 149,90</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Categories Section -->
+        <!-- ================================ -->
+        <!-- Categories Section               -->
+        <!-- ================================ -->
         <section id="categorias" class="py-20 bg-slate-50">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center max-w-3xl mx-auto mb-8">
@@ -317,7 +260,7 @@ withDefaults(
                         <h3 class="text-xl font-bold text-slate-800 mb-2">{{ content.plans.monthly.name }}</h3>
                         <div class="mb-2">
                             <span class="text-4xl font-extrabold text-slate-900">{{ content.plans.monthly.price
-                                }}</span>
+                            }}</span>
                             <span class="text-slate-500"> {{ content.plans.monthly.per }}</span>
                         </div>
                         <p class="text-xs text-slate-400 mb-6"></p>

@@ -35,6 +35,7 @@ class ReviewController extends BaseController
     {
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
+            'whatsapp'      => 'nullable|string|max:20',
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string'],
             'status' => ['nullable', 'in:pending,approved,rejected'],
@@ -45,6 +46,7 @@ class ReviewController extends BaseController
 
         $review = Review::create($data);
 
+        return back()->with('message', 'Avaliação enviada com sucesso! Aguarde aprovação.');
         return $this->json([
             'message' => 'Avaliação criada com sucesso.',
             'review' => $review,

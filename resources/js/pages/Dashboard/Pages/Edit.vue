@@ -295,6 +295,7 @@ async function handleSubmit() {
   }
 
   sending.value = true
+  console.log(page.value)
   try {
     await router.post(route('painel.pages.update', page.value.key), {
       page: page.value,
