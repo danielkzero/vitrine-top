@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
-import AppearanceTabs from '@/components/AppearanceTabs.vue';
-import HeadingSmall from '@/components/HeadingSmall.vue';
-import { type BreadcrumbItem } from '@/types';
+import AppearanceTabs from '@/components/AppearanceTabs.vue'
+import HeadingSmall from '@/components/HeadingSmall.vue'
+import { type BreadcrumbItem } from '@/types'
 
-import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/appearance';
+import AppLayout from '@/layouts/AppLayout.vue'
+import SettingsLayout from '@/layouts/settings/Layout.vue'
+import { edit } from '@/routes/appearance'
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
         title: 'Preferências de exibição',
         href: edit().url,
     },
-];
+]
 </script>
 
 <template>
@@ -22,12 +22,22 @@ const breadcrumbItems: BreadcrumbItem[] = [
         <Head title="Preferências de exibição" />
 
         <SettingsLayout>
-            <div class="space-y-6">
-                <HeadingSmall
-                    title="Preferência de exibição"
-                    description="Atualize as preferências de exibição do aplicativo."
+            <div class="space-y-10">
+
+                <HeadingSmall 
+                    title="Preferências de exibição"
+                    description="Atualize o tema, comportamento visual e modo de exibição do aplicativo."
                 />
-                <AppearanceTabs />
+
+                <!-- CARD PADRÃO DARK/LIGHT -->
+                <div
+                    class="p-8 rounded-2xl border shadow-sm 
+                           bg-slate-50/10 dark:bg-white/5 
+                           transition-colors duration-300"
+                >
+                    <AppearanceTabs />
+                </div>
+
             </div>
         </SettingsLayout>
     </AppLayout>
