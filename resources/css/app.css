@@ -178,3 +178,14 @@
         @apply bg-background text-foreground;
     }
 }
+
+
+.container-custom {
+    width: 100%;
+    @media (width >= 40rem /* 640px */) {
+        max-width: 40rem /* 640px */;
+    }
+    @media (width >= 48rem /* 768px */) {
+        max-width: 48rem /* 768px */;
+    }
+}
