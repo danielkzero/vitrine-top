@@ -18,6 +18,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'surname',
         'business_name',
         'slug',
+        'avatar',
+        'logo_base64',
+        'background_image',
+        'subtitle',
+        'theme_color',
         'email',
         'password',
         'address',
@@ -90,6 +95,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function banners()
+    {
+        return $this->hasMany(Banner::class);
     }
 
     /**
