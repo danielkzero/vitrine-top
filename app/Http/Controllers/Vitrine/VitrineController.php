@@ -37,6 +37,7 @@ class VitrineController extends Controller
                         ->orderBy('id');
                 },
                 'products.images',
+                'banners',
                 'categories',
                 'products.reviews' => fn($q) => $q->where('status', 'approved'),
                 'reviews' => fn($q) => $q->where('status', 'approved'),
