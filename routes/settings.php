@@ -30,4 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/store', function () {
         return Inertia::render('Settings/MyStore');
     })->name('store.edit');
+
+    Route::put('settings/store', [ProfileController::class, 'updateStore'])
+    ->name('store.update');
+
 });
