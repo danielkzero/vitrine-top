@@ -23,5 +23,8 @@ export const routes = {
             index: '/painel/payments',
         },
         settings: '/painel/settings',
+        banners: {
+            index: '/painel/banners'
+        }
     },
 };
