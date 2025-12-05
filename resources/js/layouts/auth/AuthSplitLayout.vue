@@ -46,7 +46,7 @@ defineProps<{
                         {{ title }}
                     </h1>
                     <p class="text-sm text-muted-foreground" v-if="description">
-                        {{ description }}
+                        {{ description }} 
                     </p>
                 </div>
                 <slot />
