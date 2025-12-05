@@ -38,12 +38,10 @@ Route::get('/checkout/erro', [PaymentController::class, 'error'])->name('checkou
 
 require __DIR__ . '/dashboard.php';
 require __DIR__ . '/settings.php';
+require __DIR__ . '/banner.php';
 
 // Exibe páginas dinâmicas criadas pelo usuário
 // vitrine.top/minha_loja
-// Route::get('/{key}', [PageController::class, 'show'])->name('pages.show');
-// Route::get('/{slug}', [VitrineController::class, 'show'])->name('vitrine.public');
-// Route::get('/{slug}/{page?}', [VitrineController::class, 'show'])->name('vitrine.public');
 Route::prefix('{slug}')->group(function () {
     // Página inicial da vitrine
     Route::get('/', [VitrineController::class, 'home'])
@@ -61,13 +59,3 @@ Route::prefix('{slug}')->group(function () {
     Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])
         ->name('vitrine.reviews.store');
 });
-
-// vitrine.top/minha_loja/principal
-// vitrine.top/minha_loja/catalogo
-// vitrine.top/minha_loja/catalogo/id_produto
-// vitrine.top/minha_loja/catalogo/?p=1&outras_condicionais
-// vitrine.top/minha_loja/galeria
-// vitrine.top/minha_loja/galeria/?p=1&outras_condicionais
-// vitrine.top/minha_loja/sobre
-// vitrine.top/minha_loja/avaliacoes
-// vitrine.top/minha_loja/avaliacoes/?p=1&outras_condicionais
