@@ -56,7 +56,7 @@ interface Page {
   order: number
 }
 
-const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/736x/11/fb/72/11fb728bfcec7b599d7a3a3c58dbb30d.jpg"
+const heroImage = props.user.background_image ?? ""
 </script>
 
 
@@ -70,7 +70,7 @@ const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/736x/11/fb
     <!-- HERO COM BACKGROUND IMAGE -->
     <!-- ============================ -->
     <header
-      class="container mx-auto relative w-full h-[150px] md:h-[380px] flex items-center justify-center bg-cover bg-center bg-no-repeat rounded-b-2xl"
+      class="container-custom mx-auto relative w-full h-[10rem] md:h-[12rem] flex items-center justify-center bg-cover bg-center bg-no-repeat rounded-b-2xl"
       :style="{ backgroundImage: `url('${heroImage}')` }">
 
       <!-- Overlay escuro para contraste -->
@@ -79,11 +79,11 @@ const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/736x/11/fb
       <!-- Conteúdo -->
       <div class="relative z-10 text-center text-white px-4">
         <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-lg items-center flex">
-          <img src="@/assets/icon-teste-store.png" class="w-12 mr-3 rounded-2xl bg-amber-50 shadow ring ring-emerald-500" />
+          <img :src="props.user.logo_base64" class="w-12 mr-3 rounded-2xl bg-amber-50 shadow ring" :class="`ring-[${ props.user.theme_color }]`" />
           {{ props.user.business_name }}
         </h1>
         <p class="mt-3 text-lg opacity-90">
-          {{ props.settings?.subtitle ?? 'Bem-vindo à nossa vitrine' }}
+          {{ props.user?.subtitle ?? '' }}
         </p>
       </div>
     </header>
@@ -91,7 +91,7 @@ const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/736x/11/fb
     <!-- ============================ -->
     <!-- CONTEÚDO DA VITRINE -->
     <!-- ============================ -->
-    <main class="container mx-auto px-3 flex-grow">
+    <main class="container-custom mx-auto px-3 flex-grow">
       <section>
         <h2 class="text-xl font-bold items-center flex py-6">
           <component :is="getIcon(pageLocal.icon)" class="mr-2"  />
@@ -103,13 +103,13 @@ const heroImage = props.settings?.hero_image ?? "https://i.pinimg.com/736x/11/fb
       </section>
     </main>
 
-    <BottomNav :pages="props.pages" :activeKey="pageLocal.key" @navigate="goToPage" />
+    <BottomNav :user="props.user" :pages="props.pages" :activeKey="pageLocal.key" @navigate="goToPage" />
 
     <!-- ============================ -->
     <!-- FOOTER -->
     <!-- ============================ -->
     <footer class="bg-white border-t pb-24 mt-6">
-      <div class="container mx-auto px-4 py-6 text-sm text-slate-500 text-center">
+      <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500 text-center">
         © {{ new Date().getFullYear() }} {{ props.user.business_name }}
       </div>
     </footer>

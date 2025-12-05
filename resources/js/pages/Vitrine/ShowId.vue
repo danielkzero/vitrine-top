@@ -22,8 +22,6 @@ function goBackToProducts() {
   }))
 }
 
-const heroImage = props.settings?.hero_image ??
-  "https://i.pinimg.com/1200x/9c/48/9e/9c489e9aa09653a6406a1945acfa8f60.jpg"
 </script>
 
 <template>
@@ -31,7 +29,7 @@ const heroImage = props.settings?.hero_image ??
 
   <div class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
     <!-- CONTEÚDO: página de produto -->
-    <main class="container mx-auto flex-grow">
+    <main class="container-custom mx-auto flex-grow">
       <ProductPageFull
         :products="props.products"
         :itemId="props.itemId"
@@ -42,7 +40,7 @@ const heroImage = props.settings?.hero_image ??
 
 
     <footer class="bg-white border-t mt-6">
-      <div class="container mx-auto px-4 py-6 text-sm text-slate-500 text-center">
+      <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500 text-center">
         © {{ new Date().getFullYear() }} {{ props.user.business_name }}
       </div>
     </footer>
