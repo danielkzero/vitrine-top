@@ -103,21 +103,6 @@ onMounted(() => {
     if (sentinel.value) io.observe(sentinel.value)
 })
 
-const banner = ref({
-    settings: {
-        show_header: true,
-        banners: [
-            "https://i.pinimg.com/1200x/a6/a1/10/a6a11085a57874b3df4f29cb1cc738de.jpg",
-            "https://i.pinimg.com/1200x/be/a9/4c/bea94cd38b7caef4a8a279fd44858f9b.jpg",
-            "https://i.pinimg.com/1200x/b8/96/5c/b8965c48e5e9fe24bac3ade76cb81d43.jpg",
-            "https://images.pexels.com/photos/1124466/pexels-photo-1124466.jpeg"
-        ]
-    }
-});
-
-
-
-
 
 </script>
 
@@ -152,7 +137,7 @@ const banner = ref({
             <!-- ============================ -->
             <!-- BANNER CAROUSEL (opcional) -->
             <!-- ============================ -->
-            <BannerCarousel :images="banner.settings.banners" v-if="banner.settings.banners.length" />
+            <BannerCarousel :images="props.user.banners" v-if="props.user.banners.length" />
 
             <!-- categorias scroll -->
             <h2 class="text-xl font-bold items-center flex my-6">
@@ -161,14 +146,17 @@ const banner = ref({
             <div class="mt-3 overflow-x-auto pb-2">
                 <div class="flex gap-2">
                     <button
-                        :class="['px-3 py-1.5 rounded-xl text-sm whitespace-nowrap', !selectedCategory ? 'bg-emerald-500 text-white' : 'bg-white border']"
+                        :class="['px-3 py-1.5 rounded-xl text-sm whitespace-nowrap', !selectedCategory ? `text-white` : 'bg-white border']"
+                        :style=" !selectedCategory ? { backgroundColor: props.user.theme_color } : '' "
+                        
                         @click="selectedCategory = null">Todas</button>
 
                     <button v-for="c in categories" :key="c.id"
-                        :class="['px-3 py-1.5 rounded-xl text-sm whitespace-nowrap', selectedCategory === c.id ? 'bg-emerald-500 text-white' : 'bg-white border']"
+                        :class="['px-3 py-1.5 rounded-xl text-sm whitespace-nowrap', selectedCategory === c.id ? `text-white` : 'bg-white border']"
+                        :style="selectedCategory === c.id ? { backgroundColor: props.user.theme_color} : ''"
                         @click="selectedCategory = c.id">
                         <component :is="getIcon(c.icon || 'Store')" class="inline-block w-4 h-4 mr-2" />
-                        {{ c.name }}
+                        {{ c.name }} 
                     </button>
                 </div>
             </div>
@@ -182,7 +170,7 @@ const banner = ref({
 
             <div v-if="viewMode === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
                 <ProductCard v-for="p in visibleProducts" :key="p.id" :product="p" viewMode="grid"
-                    @open="openProduct" />
+                    @open="openProduct" :user="props.user" />
 
                 <!-- skeletons -->
                 <ProductCardSkeleton v-if="loading" v-for="n in 6" :key="'sk' + n" />

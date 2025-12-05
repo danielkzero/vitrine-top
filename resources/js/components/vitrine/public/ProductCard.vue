@@ -4,6 +4,7 @@ import { getIcon } from '@/lib/iconMap'
 import { formatCurrency } from '@/lib/utils'
 
 const props = defineProps({
+  user: Object,
   product: { type: Object, required: true },
   viewMode: { type: String, default: 'grid' } // 'grid' ou 'list'
 })
@@ -20,7 +21,9 @@ function open() { emit('open', props.product) }
     class="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition cursor-pointer relative overflow-hidden"
   >
     <div v-if="product.featured"
-      class="absolute top-3 left-3 bg-emerald-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+      class="absolute top-3 left-3 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1"
+      :style="{ backgroundColor: props.user.theme_color }"
+      >
       <component :is="getIcon('Star')" class="w-4 h-4" /> Destaque
     </div>
 
@@ -40,7 +43,9 @@ function open() { emit('open', props.product) }
       <div class="text-slate-400 line-through text-xs" v-if="product.discount_price">
         {{ formatCurrency(product.price) }}
       </div>
-      <div class="text-emerald-600 font-bold">
+      <div class="font-bold"
+      :style="{ color: props.user.theme_color }"
+      >
         {{ formatCurrency(product.discount_price || product.price) }}
       </div>
       <div class="text-xs text-slate-400">Estoque: {{ product.stock }}</div>

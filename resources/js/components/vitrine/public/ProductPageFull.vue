@@ -71,6 +71,7 @@ function goBack() {
 
 const form = ref({
     customer_name: '',
+    product_id: product.value.id,
     whatsapp: '',
     rating: 5,
     comment: ''
@@ -83,6 +84,7 @@ function toggleForm() {
 }
 
 function submitReview() {
+    form.value.product_id = product.value.id;
     router.post(
         route('vitrine.reviews.store', {
             slug: props.user.slug,
@@ -100,7 +102,7 @@ function submitReview() {
 </script>
 
 <template>
-    <div class="w-full md:max-w-md mx-auto min-h-screen bg-white md:rounded-2xl shadow">
+    <div class="container-custom w-full mx-auto min-h-screen bg-white md:rounded-2xl shadow">
 
         <!-- HEADER (igual ao modal mas sem close duplicado) -->
         <div class="flex items-center justify-between p-3 border-b">
@@ -132,10 +134,11 @@ function submitReview() {
 
                 <!-- dots -->
                 <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-                    <div v-for="(i, idx) in images" :key="idx" @click="activeIndex = idx" :class="idx === activeIndex ?
-                        'w-3 h-3 bg-emerald-50/90 ring-emerald-300 ring shadow-2xl' :
-                        'w-3 h-3 bg-emerald-100/90 ring-emerald-300 ring shadow-2xl'"
-                        class="rounded-full cursor-pointer"></div>
+                    <div v-for="(i, idx) in images" :key="idx" 
+                        @click="activeIndex = idx" 
+                        :class="idx === activeIndex ? `w-3 h-3 shadow-2xl` :`w-3 h-3 shadow-2xl`"
+                        :style="{ backgroundColor: props.user.theme_color, opacity: .5, border: props.user.theme_color }" 
+                        class="rounded-full cursor-pointer"></div> 
                 </div>
             </div>
         </div>
@@ -145,8 +148,8 @@ function submitReview() {
             <div class="flex gap-2 overflow-x-auto">
                 <div v-for="(it, i) in images" :key="i" @click="activeIndex = i" :class="[
                     'p-1 rounded-lg cursor-pointer',
-                    activeIndex === i ? 'border-2 border-emerald-500' : 'border'
-                ]">
+                    activeIndex === i ? 'border-2' : 'border'
+                ]" :style="{ borderColor: props.user.theme_color }"> 
                     <img :src="it.image_base64 || ('/' + it.image_path)" class="w-20 h-14 object-cover rounded-md"
                         loading="lazy" />
                 </div>
@@ -166,7 +169,7 @@ function submitReview() {
                     <div class="text-slate-400 line-through text-xs" v-if="product?.discount_price">
                         {{ formatCurrency(product?.price) }}
                     </div>
-                    <div class="text-emerald-600 font-bold text-lg">
+                    <div class="font-bold text-lg" :style="{ color: props.user.theme_color }">
                         {{ formatCurrency(product?.discount_price || product?.price) }}
                     </div>
                 </div>
@@ -194,7 +197,7 @@ function submitReview() {
 
             <!-- Ações -->
             <div class="flex gap-3 mt-3">
-                <button @click="buyNow" class="flex-1 bg-emerald-600 text-white py-3 rounded-2xl font-semibold">
+                <button @click="buyNow" class="flex-1 text-white py-3 rounded-2xl font-semibold" :style="{ backgroundColor: props.user.theme_color }">
                     <div class="items-center flex justify-center">
                         <component :is="getIcon('ShoppingBag')" class="w-5 h-5 mr-2" />
                         Comprar via WhatsApp
@@ -241,7 +244,7 @@ function submitReview() {
                             <!-- WhatsApp -->
                             <input v-model="form.whatsapp" type="text" placeholder="Seu WhatsApp (opcional)"
                                 class="w-full border rounded-xl p-3 focus:ring-2 focus:ring-sky-300 outline-none" />
-
+                            
                             <!-- Rating -->
                             <div class="flex gap-1 mt-2">
                                 <component v-for="i in 5" :key="i" :is="getIcon(i <= form.rating ? 'Star' : 'StarOff')"
@@ -256,7 +259,7 @@ function submitReview() {
 
                             <!-- Enviar -->
                             <button type="submit"
-                                class="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold mt-3 shadow-sm">
+                                class="w-full text-white py-3 rounded-xl font-semibold mt-3 shadow-sm" :style="{ backgroundColor: props.user.theme_color }">
                                 Enviar Avaliação
                             </button>
 
@@ -290,7 +293,7 @@ function submitReview() {
                         Carregando avaliações...
                     </div>
 
-                    <button v-if="!reviewsLoading" @click="loadMoreReviews" class="w-full text-sm text-emerald-600">
+                    <button v-if="!reviewsLoading" @click="loadMoreReviews" class="w-full text-sm" :style="{ color: props.user.theme_color }">
                         - Carregar mais avaliações -
                     </button>
                 </div>
