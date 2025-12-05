@@ -1,46 +1,35 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import SettingsLayout from '@/layouts/settings/Layout.vue'
+import { Head, usePage, router } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
+import SettingsLayout from '@/layouts/settings/Layout.vue'
+
 import HeadingSmall from '@/components/HeadingSmall.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { edit } from '@/routes/store';
-import { type BreadcrumbItem } from '@/types';
+import DropzoneFile from '@/components/ui/dropzone-file/DropzoneFile.vue'
 
-import { reactive } from 'vue'
-import {
-    Store,
-    Palette,
-    Image as ImageIcon,
-    Phone,
-    MessageCircle,
-    Instagram,
-    Facebook,
-    Upload,
-    Save,
-} from 'lucide-vue-next'
+import { Store, Palette, Upload, Save, Image } from 'lucide-vue-next'
 
-import { usePage } from '@inertiajs/vue3'
-
+import { reactive, ref } from 'vue'
+import { edit } from '@/routes/store'
+import { type BreadcrumbItem } from '@/types'
+import { route } from 'ziggy-js'
+import { getIcon } from '@/lib/iconMap'
 
 const page = usePage()
-const user = page.props.auth.user 
+const user = page.props.auth.user
 
-
+// Dados principais
 const store = reactive({
     business_name: user.business_name ?? "",
+    subtitle: user.subtitle ?? "",
     slug: user.slug ?? "",
     description: user.description ?? "",
-    logo_url: user.logo_url ?? "",
-    banner_url: user.banner_url ?? "",
-    theme_color: user.theme_color ?? "#6366f1",
-    phone: user.phone_primary ?? "",
-    whatsapp: user.whatsapp ?? "",
-    instagram: user.instagram ?? "",
-    facebook: user.facebook ?? ""
+    logo_base64: user.logo_base64 ?? "",
+    background_image: user.background_image ?? "",
+    theme_color: user.theme_color ?? "#6366f1"
 })
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -48,7 +37,64 @@ const breadcrumbItems: BreadcrumbItem[] = [
         title: 'Configurações da Loja',
         href: edit().url,
     },
-];
+]
+
+function toBase64(file: File): Promise<string> {
+    return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.readAsDataURL(file)
+    })
+}
+
+// LOGO
+async function handleLogoUpload(event: Event) {
+    const target = event.target as HTMLInputElement
+    const file = target.files?.[0]
+
+    if (!file) return
+    if (file.size > 1024 * 1024) {
+        alert("A imagem deve ter no máximo 1MB!")
+        return
+    }
+
+    store.logo_base64 = await toBase64(file)
+}
+
+// BACKGROUND
+async function handleBackground(files: any[]) {
+    if (!files.length) return
+
+    const f = files[0].file
+
+    if (f && f.size > 1024 * 1024) {
+        alert("A imagem deve ter no máximo 1MB!")
+        return
+    }
+
+    if (f) {
+        store.background_image = await toBase64(f)
+    } else if (files[0].url) {
+        store.background_image = files[0].url
+    }
+}
+
+function saveStore() {
+    router.put(route('store.update'), store, {
+        preserveScroll: true,
+        onSuccess: () => {
+            Object.assign(store, {
+                business_name: page.props.auth.user.business_name ?? "",
+                subtitle: page.props.auth.user.subtitle ?? "",
+                slug: page.props.auth.user.slug ?? "",
+                description: page.props.auth.user.description ?? "",
+                logo_base64: page.props.auth.user.logo_base64 ?? "",
+                background_image: page.props.auth.user.background_image ?? "",
+                theme_color: page.props.auth.user.theme_color ?? "#6366f1"
+            })
+        }
+    })
+}
 </script>
 
 <template>
@@ -57,133 +103,155 @@ const breadcrumbItems: BreadcrumbItem[] = [
         <Head title="Minha Loja" />
 
         <SettingsLayout>
-            <div class="space-y-8">
+            <div class="space-y-12">
+
+                <!-- HEADER -->
                 <HeadingSmall title="Configurações da Loja"
-                    description="Gerencie sua vitrine, aparência e informações públicas" />
+                    description="Gerencie nome, slug, descrição, logo, imagem de fundo e cor da sua vitrine pública" />
 
-                <!-- Seção Básica -->
-                <div class="space-y-6">
-                    <h2 class="text-lg font-medium flex items-center gap-2">
-                        <Store class="w-5 h-5" />
-                        Informações Básicas
-                    </h2>
+                <!-- ===================== -->
+                <!-- CARD: INFORMAÇÕES BÁSICAS -->
+                <!-- ===================== -->
+                <div
+                    class="p-8 rounded-2xl border shadow-sm bg-slate-50/10 dark:bg-white/5 border-slate-200/10 dark:border-white/10">
 
-                    <div class="grid gap-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-50/10 dark:bg-white/5 text-emerald-600 dark:text-emerald-400">
+                            <Store class="w-5 h-5" />
+                        </div>
+                        <h2 class="text-2xl font-bold">Informações Básicas</h2>
+                    </div>
+
+                    <div class="grid gap-6">
                         <div class="grid gap-2">
                             <Label>Nome da loja *</Label>
                             <Input v-model="store.business_name" placeholder="Minha Loja" />
                         </div>
 
                         <div class="grid gap-2">
+                            <Label>Sub-título</Label>
+                            <Input v-model="store.subtitle" placeholder="Bem-vindo à nossa vitrine" />
+                        </div>
+
+                        <div class="grid gap-2">
                             <Label>Slug *</Label>
-                            <div class="flex items-center">vitrine.top/<Input v-model="store.slug" placeholder="minha-loja" /></div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-slate-500 dark:text-slate-400">vitrine.top/</span>
+                                <Input v-model="store.slug" placeholder="minha-loja" />
+                            </div>
                         </div>
 
                         <div class="grid gap-2">
                             <Label>Descrição</Label>
-                            <Textarea v-model="store.description" :rows="4" />
+                            <Textarea v-model="store.description" :rows="4" placeholder="Descreva sua loja..." />
                         </div>
                     </div>
                 </div>
 
-                <!-- Seção de Design -->
-                <div class="space-y-6">
-                    <h2 class="text-lg font-medium flex items-center gap-2">
-                        <Palette class="w-5 h-5" />
-                        Design e Aparência
-                    </h2>
+                <!-- ===================== -->
+                <!-- CARD: DESIGN E APARÊNCIA -->
+                <!-- ===================== -->
+                <div
+                    class="p-8 rounded-2xl border shadow-sm bg-slate-50/10 dark:bg-white/5 border-slate-200/10 dark:border-white/10">
 
-                    <div class="space-y-6">
-                        <!-- Logo -->
-                        <div class="grid gap-2">
-                            <Label>Logo da Loja</Label>
-                            <div class="flex items-center gap-4 mt-2">
-                                <img v-if="store.logo_url" :src="store.logo_url"
-                                    class="w-20 h-20 rounded-lg border object-cover" />
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-50/10 dark:bg-white/5 text-emerald-600 dark:text-emerald-400">
+                            <Palette class="w-5 h-5" />
+                        </div>
+                        <h2 class="text-2xl font-bold">Design e Aparência</h2>
+                    </div>
 
-                                <div>
-                                    <input id="logo-upload" type="file" class="hidden" />
-                                    <Button variant="outline">
-                                        <Upload class="w-4 h-4 mr-2" />
-                                        Enviar Logo
-                                    </Button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                        <!-- BACKGROUND IMAGE -->
+                        <div class="grid sm:col-span-2 gap-3">
+                            <Label>Imagem de Fundo</Label>
+
+                            <DropzoneFile :initial-files="[]" :multiple="false" :maxFiles="1"
+                                :allowed-extensions="['jpg', 'jpeg', 'png', 'webp']"
+                                title-file-types="Clique ou arraste uma imagem"
+                                display-file-types="JPG, PNG, WEBP – Máx. 1MB" @onCoverSelected="handleBackground" />
+
+                            <!-- imagem de fundo -->
+                            <div class="pt-2">
+                                <h2 class="text-lg font-semibold mb-3 dark:text-white">Imagem de fundo</h2>
+
+                                <div v-if="store.background_image"
+                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                                    <div
+                                        class="relative rounded-xl overflow-hidden shadow border bg-white dark:bg-slate-800 dark:border-white/10 group">
+                                        <img :src="store.background_image" class="w-full h-40 object-cover" />
+
+                                        <button
+                                            class="absolute top-2 right-2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition">
+                                            <component :is="getIcon('Trash')" class="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
+
+                                <p v-else class="text-gray-400 dark:text-gray-500 text-sm">Nenhum banner enviado ainda.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- LOGO -->
+                        <div class="grid gap-3">
+                            <Label>Logo da Loja</Label>
+
+                            <div class="flex items-center gap-4">
+                                <label for="logo-upload"
+                                    class="group cursor-pointer relative w-24 h-24 rounded-full overflow-hidden border border-slate-200/10 dark:border-white/10 shadow-sm flex items-center justify-center bg-slate-50/10 dark:bg-white/5 hover:shadow-md transition">
+
+                                    <img v-if="store.logo_base64" :src="store.logo_base64"
+                                        class="absolute inset-0 w-full h-full object-cover" />
+
+                                    <Store v-else
+                                        class="w-8 h-8 text-slate-400 dark:text-white group-hover:text-emerald-600 transition" />
+
+                                    <div
+                                        class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                        <Upload class="w-6 h-6 text-white drop-shadow" />
+                                    </div>
+                                </label>
+
+                                <input id="logo-upload" type="file" class="hidden" accept="image/*"
+                                    @change="handleLogoUpload" />
                             </div>
                         </div>
 
-                        <!-- Banner -->
-                        <div class="grid gap-2">
-                            <Label>Banner</Label>
-                            <div class="mt-2">
-                                <img v-if="store.banner_url" :src="store.banner_url"
-                                    class="w-full h-40 rounded-lg border object-cover" />
 
-                                <input id="banner-upload" type="file" class="hidden" />
-
-                                <Button variant="outline" class="mt-2">
-                                    <Upload class="w-4 h-4 mr-2" />
-                                    Enviar Banner
-                                </Button>
-                            </div>
-                        </div>
-
-                        <!-- Cor -->
-                        <div class="grid gap-2">
+                        <!-- COR PRINCIPAL -->
+                        <div class="grid gap-3">
                             <Label>Cor Principal</Label>
-                            <div class="flex gap-4 mt-2">
-                                <input type="color" v-model="store.theme_color" class="w-16 h-10 rounded" />
+
+                            <div class="flex items-center gap-4">
+                                <label for="theme-color-input"
+                                    class="group w-14 h-10 rounded-full border cursor-pointer flex items-center justify-center shadow-sm transition relative border-slate-200/10 dark:border-white/10"
+                                    :style="{ backgroundColor: store.theme_color }">
+
+                                    <Palette
+                                        class="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition drop-shadow" />
+                                </label>
+
+                                <input id="theme-color-input" type="color" v-model="store.theme_color"
+                                    class="absolute opacity-0 w-0 h-0 pointer-events-none" />
+
                                 <Input v-model="store.theme_color" />
                             </div>
                         </div>
+
                     </div>
                 </div>
 
-                <!-- Seção de Contato -->
-                <div class="space-y-6">
-                    <h2 class="text-lg font-medium flex items-center gap-2">
-                        <Phone class="w-5 h-5" />
-                        Contato
-                    </h2>
-
-                    <div class="grid gap-4">
-                        <div class="grid gap-2">
-                            <Label>Telefone</Label>
-                            <Input v-model="store.phone" placeholder="(11) 99999-0000" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label class="flex items-center gap-2">
-                                <MessageCircle class="w-4 h-4" />
-                                WhatsApp
-                            </Label>
-                            <Input v-model="store.whatsapp" placeholder="5511999990000" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label class="flex items-center gap-2">
-                                <Instagram class="w-4 h-4" />
-                                Instagram
-                            </Label>
-                            <Input v-model="store.instagram" placeholder="@minhaloja" />
-                        </div>
-
-                        <div class="grid gap-2">
-                            <Label class="flex items-center gap-2">
-                                <Facebook class="w-4 h-4" />
-                                Facebook
-                            </Label>
-                            <Input v-model="store.facebook" placeholder="facebook.com/minhaloja" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Botão Salvar -->
+                <!-- BOTÃO SALVAR -->
                 <div class="flex justify-end">
-                    <Button class="flex items-center gap-2">
+                    <Button @click="saveStore"
+                        class="flex items-center gap-2 px-6 py-3 text-white font-semibold bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all rounded-lg">
                         <Save class="w-4 h-4" />
                         Salvar Configurações
                     </Button>
                 </div>
+
             </div>
         </SettingsLayout>
     </AppLayout>
