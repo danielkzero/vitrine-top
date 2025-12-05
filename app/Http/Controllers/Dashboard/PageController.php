@@ -132,7 +132,7 @@ class PageController extends Controller
     {
         $page = Page::where('key', $key)
             ->where('user_id', auth()->id())
-            ->firstOrFail();        
+            ->firstOrFail();
 
         $validatedPage = $request->validate([
             'page.user_id' => 'required|exists:users,id',
@@ -154,21 +154,30 @@ class PageController extends Controller
         // 🔥 CRUD de CATEGORIAS
         // ==============================
         $categorias = $request->input('categorias', []);
+        $categoriasPersistidas = [];
 
         foreach ($categorias as $cat) {
             // Categoria nova
             if (!isset($cat['id'])) {
-                Category::create([
+                $categoriaCriada = Category::create([
                     'user_id' => auth()->id(),
                     'name' => $cat['name']
                 ]);
+                $categoriasPersistidas[] = $categoriaCriada;
                 continue;
+            } else {
+                // Atualizar categoria existente
+                Category::where('user_id', auth()->id())
+                    ->where('id', $cat['id'])
+                    ->update(['name' => $cat['name']]);
+
+                $categoriasPersistidas[] = Category::find($cat['id']);
             }
 
             // Atualizar categoria existente
-            Category::where('user_id', auth()->id())
+            /*Category::where('user_id', auth()->id())
                 ->where('id', $cat['id'])
-                ->update(['name' => $cat['name']]);
+                ->update(['name' => $cat['name']]);*/
         }
 
         // ==============================
@@ -232,7 +241,10 @@ class PageController extends Controller
         // retorna erro
         return redirect()
             ->back()
-            ->with('success', 'Página atualizada com sucesso!');
+            ->with([
+                'success', 'Página atualizada com sucesso!',
+                'categorias' => $categoriasPersistidas
+            ]);
     }
 
     public function reorder(Request $request)
