@@ -140,12 +140,16 @@ async function salvarCategoria(categoriaNome: string) {
 
   console.log('Categorias enviadas:', categorias.value);
 
-  await router.post(
-    route('painel.pages.update', page.value.key),
-    { 
-      page: page.value,
-      categorias: categorias.value },
-    { preserveScroll: true }
+  await router.post(route('painel.pages.update', page.value.key),
+    { page: page.value, categorias: categorias.value },
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        categorias.value = inertia.props.categorias as any[]; // ← Agora com IDs corretos
+        categoriaSelecionada.value = categorias.value[categorias.value.length - 1].id;
+      }
+    },
+
   );
 
   novaCategoria.value = '';
@@ -158,7 +162,7 @@ async function salvarCategoria(categoriaNome: string) {
 }
 
 async function removerCategoria(categoria: any) {
-  if (!confirm('Ao remover esta categoria, todos os produtos dela serão excluídos. Deseja continuar?')) 
+  if (!confirm('Ao remover esta categoria, todos os produtos dela serão excluídos. Deseja continuar?'))
     return;
 
   const id = categoria.id;
@@ -309,6 +313,21 @@ async function handleSubmit() {
   }
 }
 
+async function updateStatus(review: any) {
+  try {
+    await router.put(route('painel.reviews.update', review.id), {
+      customer_name: review.customer_name,
+      product_id: review.product_id,
+      whatsapp: review.whatsapp,
+      rating: review.rating,
+      comment: review.comment,
+      status: review.status,
+    })
+  }catch(e) {
+    console.error('Erro ao alterar status', e);
+  }
+}
+
 async function cancel() {
   //cancelar
   await router.get(route('painel.pages.index'));
@@ -341,7 +360,7 @@ async function cancel() {
               :onGallerySelected="(e) => onProductImageSelected(e)" />
 
             <ReviewContent v-if="page.type === 'reviews'" :page="page" :avaliacoes="avaliacoes"
-              :updateStatus="() => { }" />
+              :updateStatus="updateStatus" />
 
             <ProductContent v-if="page.type === 'products'" :page="page" :categorias="categorias" :produtos="produtos"
               :novaCategoria="novaCategoria" :removerCategoria="removerCategoria" :nomeCategoria="nomeCategoria"
