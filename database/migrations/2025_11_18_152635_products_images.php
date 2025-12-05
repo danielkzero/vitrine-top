@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('product_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('image_path');
+            $table->string('image_path')->nullable();
             // long string to store base64 image
             $table->longText('image_base64')->nullable();
             $table->boolean('is_cover')->default(false);
