@@ -38,7 +38,7 @@ export interface User {
     business_name: string;
     slug: string;
     description: string;
-    logo_url: string;
+    logo_path: string;
     banner_url: string;
     theme_color: string;
     phone: string;

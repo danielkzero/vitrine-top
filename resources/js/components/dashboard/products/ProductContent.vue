@@ -117,18 +117,36 @@ function onDeleteCategory(category: any) {
 }
 
 function openNewProduct() {
-    // prepare novoProdutoLocal
     novoProdutoLocal.value = {
-        id: null, name: '', price: '', discount_price: '', category_id: categoriaSelecionadaLocal.value ?? '', stock: 0, description: '', is_public: true, featured: false, images: []
+        id: null,
+        name: '',
+        price: '',
+        discount_price: '',
+        category_id: categoriaSelecionadaLocal.value ?? '',
+        stock: 0,
+        description: '',
+        is_public: true,
+        featured: false,
+        images: []
     }
     showAddProductLocal.value = true
 }
 
 function onEditProduct(prod: any) {
-    // clone product into novoProdutoLocal and open modal
-    novoProdutoLocal.value = JSON.parse(JSON.stringify(prod))
+    const clone = JSON.parse(JSON.stringify(prod))
+
+    // Converter imagens do backend para formato esperado pelo Dropzone
+    clone.images = (clone.images || []).map((img: any) => ({
+        id: img.id ?? null,
+        file: null,
+        url: img.image_path ? img.image_path : null,
+        isOld: true,
+    }))
+
+    novoProdutoLocal.value = clone
     showAddProductLocal.value = true
 }
+
 
 // When modal emits save, pass to parent salvarProduto (which expects novoProduto)
 function handleSaveProduct(payload: any) {

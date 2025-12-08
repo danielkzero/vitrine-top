@@ -134,7 +134,17 @@ class PageController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        $validatedPage = $request->validate([
+        /* ============================================================
+           1) DECODIFICAR JSONS
+        ============================================================ */
+        $categorias = json_decode($request->categorias, true) ?? [];
+        $produtos = json_decode($request->produtos, true) ?? [];
+        $pageData = json_decode($request->page, true);
+
+        /* ============================================================
+           2) VALIDAR CAMPOS DA PÁGINA
+        ============================================================ */
+        $validatedPage = validator(['page' => $pageData], [
             'page.user_id' => 'required|exists:users,id',
             'page.key' => 'required|string|max:100',
             'page.title' => 'required|string|max:255',
@@ -146,55 +156,58 @@ class PageController extends Controller
             'page.cover_image' => 'nullable|string|max:255',
             'page.seo_title' => 'nullable|string|max:255',
             'page.seo_description' => 'nullable|string|max:255',
-        ]);
+        ])->validate();
 
         $page->update($validatedPage['page']);
 
-        // ==============================
-        // 🔥 CRUD de CATEGORIAS
-        // ==============================
-        $categorias = $request->input('categorias', []);
+        /* ============================================================
+           3) CRUD DE CATEGORIAS
+        ============================================================ */
         $categoriasPersistidas = [];
 
         foreach ($categorias as $cat) {
-            // Categoria nova
+            // Criar categoria nova
             if (!isset($cat['id'])) {
-                $categoriaCriada = Category::create([
+                $categoria = Category::create([
                     'user_id' => auth()->id(),
                     'name' => $cat['name']
                 ]);
-                $categoriasPersistidas[] = $categoriaCriada;
+                $cat['id'] = $categoria->id;
+                $categoriasPersistidas[] = $categoria;
                 continue;
-            } else {
-                // Atualizar categoria existente
-                Category::where('user_id', auth()->id())
-                    ->where('id', $cat['id'])
-                    ->update(['name' => $cat['name']]);
-
-                $categoriasPersistidas[] = Category::find($cat['id']);
             }
 
             // Atualizar categoria existente
-            /*Category::where('user_id', auth()->id())
+            Category::where('user_id', auth()->id())
                 ->where('id', $cat['id'])
-                ->update(['name' => $cat['name']]);*/
+                ->update([
+                    'name' => $cat['name']
+                ]);
+
+            $categoriasPersistidas[] = Category::find($cat['id']);
         }
 
-        // ==============================
-        // 🔥 CRUD de PRODUTOS
-        // ==============================
-        $produtos = $request->input('produtos', []);
+        /* ============================================================
+           4) MANUSEAR OS ARQUIVOS DE IMAGEM DOS PRODUTOS
+        ============================================================ */
+        $uploadedImages = $request->file('produtos_images', []);
 
-        foreach ($produtos as $p) {
-            // ==============================
-            // 🔥 NOVO PRODUTO
-            // ==============================
+        //return response()->json($uploadedImages);
+
+        // Vamos distribuir arquivos na ordem exata que vieram
+        $fileIndex = 0;
+
+        /* ============================================================
+           5) CRUD DOS PRODUTOS
+        ============================================================ */
+        foreach ($produtos as &$p) {
+            /* ---------- CRIAR ---------- */
             if (!isset($p['id'])) {
                 $produto = Product::create([
                     'user_id' => auth()->id(),
                     'name' => $p['name'],
                     'price' => $p['price'],
-                    'discount_price' => $p['discount_price'],
+                    'discount_price' => $p['discount_price'] ?? null,
                     'stock' => $p['stock'] ?? 0,
                     'description' => $p['description'] ?? null,
                     'featured' => $p['featured'] ?? false,
@@ -202,18 +215,15 @@ class PageController extends Controller
                     'category_id' => $p['category_id'],
                 ]);
 
-                // Salvar ID recém-criado para usar nas imagens
                 $p['id'] = $produto->id;
-            } else {
-                // ==============================
-                // 🔥 ATUALIZAR PRODUTO EXISTENTE
-                // ==============================
+            }
+            /* ---------- ATUALIZAR ---------- */ else {
                 Product::where('user_id', auth()->id())
                     ->where('id', $p['id'])
                     ->update([
                         'name' => $p['name'],
                         'price' => $p['price'],
-                        'discount_price' => $p['discount_price'],
+                        'discount_price' => $p['discount_price'] ?? null,
                         'stock' => $p['stock'] ?? 0,
                         'description' => $p['description'] ?? null,
                         'featured' => $p['featured'] ?? false,
@@ -222,28 +232,34 @@ class PageController extends Controller
                     ]);
             }
 
-            // ==============================
-            // 🔥 CRUD DAS IMAGENS DO PRODUTO
-            // ==============================
+            // 🔥 Excluir imagens antigas
             ProductImage::where('product_id', $p['id'])->delete();
 
+            // 🔥 Criar novas imagens
             if (isset($p['images']) && is_array($p['images'])) {
                 foreach ($p['images'] as $img) {
+                    $imagePath = null;
+
+                    // Se existir arquivo correspondente
+                    if (isset($uploadedImages[$fileIndex])) {
+                        $imagePath = $uploadedImages[$fileIndex]->store('products', 'public');
+                        $fileIndex++;
+                    }
+
                     ProductImage::create([
                         'product_id' => $p['id'],
-                        'image_path' => $img['image_path'] ?? null,
-                        'image_base64' => $img['image_base64'] ?? null,
+                        'image_path' => $imagePath,
                         'is_cover' => $img['is_cover'] ?? false,
                     ]);
                 }
             }
         }
-        // retorna erro
+
         return redirect()
             ->back()
             ->with([
-                'success', 'Página atualizada com sucesso!',
-                'categorias' => $categoriasPersistidas
+                'success' => 'Página atualizada com sucesso!',
+                'categorias' => $categoriasPersistidas,
             ]);
     }
 

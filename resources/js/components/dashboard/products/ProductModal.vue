@@ -9,15 +9,10 @@
 
         <div class="space-y-3">
           <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Imagens</label>
-          <DropzoneFile
-            :initial-files="localProduct.images"
-            @onCoverSelected="handleFiles"
-            :multiple="true"
-            :maxFiles="3"
-            :allowed-extensions="['jpg','png','webp']"
+          <DropzoneFile :initial-files="localProduct.images" @onCoverSelected="handleFiles" :multiple="true"
+            :maxFiles="3" :allowed-extensions="['jpg', 'png', 'webp']"
             title-file-types="Arraste ou clique para adicionar imagens"
-            display-file-types="JPG, PNG, WEBP (máx. 1MB)"
-          />
+            display-file-types="JPG, PNG, WEBP (máx. 1MB)" />
 
           <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Nome</label>
           <input v-model="localProduct.name" class="w-full border rounded-lg px-3 py-2" />
@@ -66,7 +61,8 @@
 
         <div class="mt-4 flex justify-end gap-3">
           <button class="px-3 py-1 rounded-lg border cursor-pointer" type="button" @click="close">Cancelar</button>
-          <button class="px-4 py-2 rounded-lg bg-emerald-500 text-white cursor-pointer" type="button" @click="save" :disabled="saving">
+          <button class="px-4 py-2 rounded-lg bg-emerald-500 text-white cursor-pointer" type="button" @click="save"
+            :disabled="saving">
             {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
         </div>
@@ -86,16 +82,16 @@ const props = defineProps({
   savingProp: { type: Boolean, default: false },
 })
 
-const emit = defineEmits<{ (e:'update:modelValue', v:boolean):void; (e:'save', p:any):void }>()
+const emit = defineEmits<{ (e: 'update:modelValue', v: boolean): void; (e: 'save', p: any): void }>()
 
 const localProduct = reactive(JSON.parse(JSON.stringify(props.novoProduto || {
-  id: null, name:'', price:'', discount_price:'', category_id:'', stock:0, description:'', is_public:true, featured:false, images:[]
+  id: null, name: '', price: '', discount_price: '', category_id: '', stock: 0, description: '', is_public: true, featured: false, images: []
 })))
 
 const modalTitle = `Editando ${localProduct.name}`
 const saving = ref(false)
 
-watch(() => props.novoProduto, (v) => {  
+watch(() => props.novoProduto, (v) => {
   Object.assign(localProduct, JSON.parse(JSON.stringify(v || {})))
   localProduct.featured = (localProduct.featured === 1 ? true : false)
 })
@@ -115,7 +111,7 @@ async function save() {
   saving.value = true
   try {
     // Emit save with the localProduct payload; parent handles persistence
-    
+
     emit('save', JSON.parse(JSON.stringify(localProduct)))
     emit('update:modelValue', false)
   } finally {
@@ -123,50 +119,30 @@ async function save() {
   }
 }
 
-async function handleFiles(files: any) {
-  const arr = Array.isArray(files) ? files : []
-  
-  const out = await Promise.all(
-    arr.map(async (f:any) => {
-      if (f.file) {
-        const base64 = await fileToBase64(f.file)
-        return {
-          id: null,
-          image_path: null,
-          image_base64: base64,
-          is_cover: false
-        }
-      }
-      if (f.url) {
-        return {
-          id: null,
-          image_path: null,
-          image_base64: f.url,
-          is_cover: false
-        }
-      }
-      return null
-    })
-  )
+async function handleFiles(files: any[]) {
+  console.log(files);
+  if (!Array.isArray(files)) return;
 
-  const cleaned = out.filter(Boolean)
+  localProduct.images = files.map((f: any) => ({
+    id: f.id ?? null,
+    file: f.file instanceof File ? f.file : null,
+    url: f.url ?? f.preview ?? null,
+    isOld: !f.file // se veio sem File, é imagem antiga
+  }));
 
-  console.log("IMAGENS:", cleaned.length)
-  localProduct.images = cleaned
 }
 
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = e => resolve(e.target?.result as string)
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-}
 
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity .15s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

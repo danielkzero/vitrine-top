@@ -204,35 +204,69 @@ function editarProduto(produto: any) {
   showAddProduct.value = true
 }
 
+
+
 async function salvarProduto(produtoRecebido: any) {
   if (!produtoRecebido.name || !produtoRecebido.price) return
 
-  // Usa o category_id vindo do modal (correto)
+  // Clone seguro
   const produtoProcessado = JSON.parse(JSON.stringify(produtoRecebido))
 
-  // Atualiza localmente
+  // Atualiza local
   if (produtoProcessado.id) {
-    const index = produtos.value.findIndex((p: any) => p.id === produtoProcessado.id)
-    if (index !== -1) produtos.value[index] = produtoProcessado
+    const i = produtos.value.findIndex(p => p.id === produtoProcessado.id)
+    if (i !== -1) produtos.value[i] = produtoProcessado
   } else {
-    produtoProcessado.id = null
     produtos.value.push(produtoProcessado)
   }
 
-  // Envia para o backend
+  /* ============================================================
+      FORM DATA FINAL
+  ============================================================ */
+  const form = new FormData()
+
+  form.append("page", JSON.stringify(page.value))
+  form.append("categorias", JSON.stringify(categorias.value))
+
+  // produto sem imagens — backend reconstrói depois
+  const produtoSemImagens = {
+    ...produtoProcessado,
+    images: produtoProcessado.images.map((img: any) => ({
+      id: img.id ?? null,
+      image_path: img.isOld ? img.url : null,
+      is_cover: img.is_cover ?? false
+    }))
+  }
+
+  form.append("produtos", JSON.stringify([produtoSemImagens]))
+
+  /* ============================================================
+      ANEXAR ARQUIVOS REAIS
+  ============================================================ */
+  let index = 0
+
+  for (const img of produtoProcessado.images) {
+    if (img.file) {
+      // Apenas imagens novas!
+      form.append(`produtos_images[${index}]`, img.file)
+    }
+    index++
+  }
+
   sending.value = true
+
   try {
-    await router.post(route('painel.pages.update', page.value.key), {
-      page: page.value,
-      produtos: [produtoProcessado],
-      categorias: categorias.value
-    }, { preserveScroll: true })
+    await router.post(route("painel.pages.update", page.value.key), form, {
+      forceFormData: true,
+      preserveScroll: true,
+    })
   } finally {
     sending.value = false
   }
 
   showAddProduct.value = false
 }
+
 
 // ---------- Imagens de produto (recebe Array<File> ou FileList, opcionalmente productId) ----------
 function onProductImageSelected(files: File[] | FileList, productId?: number | null) {

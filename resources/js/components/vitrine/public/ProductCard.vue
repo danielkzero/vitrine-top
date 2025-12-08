@@ -30,13 +30,13 @@ function open() { emit('open', props.product) }
     <div class="flex items-center justify-center h-28 mb-3 rounded-lg">
       <img
         v-if="product.images?.length"
-        :src="product.images[0].image_base64 || ('/' + product.images[0].image_path)"
+        :src="product.images[0].image || ('/' + product.images[0].image_path)"
         class="max-h-full object-contain"
         loading="lazy"
       />
       <div v-else class="text-slate-400">Sem imagem</div>
     </div>
-
+    
     <h4 class="text-sm font-semibold text-slate-800">{{ product.name }}</h4>
 
     <div class="mt-2">

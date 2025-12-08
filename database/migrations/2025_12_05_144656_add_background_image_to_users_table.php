@@ -8,14 +8,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->longText('background_image')->nullable()->after('logo_base64');
+            $table->longText('background_path')->nullable()->after('logo_path');
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('background_image');
+            $table->dropColumn('background_path');
         });
     }
 };

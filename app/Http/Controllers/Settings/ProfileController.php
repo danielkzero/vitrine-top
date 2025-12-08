@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -25,8 +26,9 @@ class ProfileController extends Controller
                 'business_name' => $user->business_name,
                 'slug' => $user->slug,
                 'subtitle' => $user->subtitle,
-                'avatar' => $user->avatar,
-                'logo_base64' => $user->logo_base64,
+                'avatar' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+                'logo_path' => $user->logo_path ? asset('storage/' . $user->logo_path) : null,
+                'background_path' => $user->background_path ? asset('storage/' . $user->background_path) : null,
                 'email' => $user->email,
                 'address' => $user->address,
                 'city' => $user->city,
@@ -39,6 +41,7 @@ class ProfileController extends Controller
         ]);
     }
 
+
     public function updateStore(Request $request)
     {
         $user = $request->user();
@@ -48,18 +51,60 @@ class ProfileController extends Controller
             'subtitle' => ['nullable', 'string'],
             'slug' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'logo_base64' => ['nullable', 'string'],
             'theme_color' => ['required', 'string', 'max:20'],
-            'background_image' => ['nullable', 'string'],
+            'logo_file' => ['nullable', 'image', 'max:2048'],
+            'background_file' => ['nullable', 'image', 'max:4096'],
         ]);
 
-        $user->update($data);
+        /* ================================
+           APAGAR LOGO ANTERIOR
+        ================================= */
+        if ($request->hasFile('logo_file')) {
+            // remove o /storage/ para o delete funcionar
+            if ($user->logo_path) {
+                $oldLogo = str_replace('/storage/', '', $user->logo_path);
+
+                if (Storage::disk('public')->exists($oldLogo)) {
+                    Storage::disk('public')->delete($oldLogo);
+                }
+            }
+
+            $path = $request->file('logo_file')->store('logos', 'public');
+            $user->logo_path = '/storage/' . $path;
+        }
+
+        /* ================================
+           APAGAR BACKGROUND ANTERIOR
+        ================================= */
+        if ($request->hasFile('background_file')) {
+            if ($user->background_path) {
+                $oldBg = str_replace('/storage/', '', $user->background_path);
+
+                if (Storage::disk('public')->exists($oldBg)) {
+                    Storage::disk('public')->delete($oldBg);
+                }
+            }
+
+            $path = $request->file('background_file')->store('backgrounds', 'public');
+            $user->background_path = '/storage/' . $path;
+        }
+
+        /* ================================
+           DADOS NORMAIS
+        ================================= */
+        $user->business_name = $data['business_name'];
+        $user->subtitle = $data['subtitle'] ?? null;
+        $user->slug = $data['slug'];
+        $user->description = $data['description'] ?? null;
+        $user->theme_color = $data['theme_color'];
+
+        $user->save();
 
         return back()->with('success', 'Configurações da loja atualizadas!');
     }
 
     /**
-     * Atualiza os dados do perfil.
+     * Atualiza os dados gerais do perfil do usuário.
      */
     public function update(Request $request)
     {
@@ -68,13 +113,7 @@ class ProfileController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'surname' => ['nullable', 'string', 'max:255'],
-            'business_name' => ['nullable', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255'],
-            'subtitle' => ['nullable', 'string'],
-            'avatar' => ['nullable', 'string'],
-            'logo_base64' => ['nullable', 'string'],
-            'background_image' => ['nullable', 'string'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'email', 'unique:users,email,' . $user->id],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'max:2'],
@@ -88,7 +127,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Exclui a conta do usuário.
+     * Remove a conta do usuário.
      */
     public function destroy(Request $request)
     {

@@ -15,9 +15,9 @@ return new class extends Migration
 
             $table->string('avatar')->nullable()->after('slug');
 
-            $table->longText('logo_base64')->nullable()->after('avatar');
+            $table->longText('logo_path')->nullable()->after('avatar');
 
-            $table->string('theme_color')->nullable()->after('logo_base64');
+            $table->string('theme_color')->nullable()->after('logo_path');
         });
     }
 
@@ -27,7 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['avatar', 'logo_base64', 'theme_color']);
+            $table->dropColumn(['avatar', 'logo_path', 'theme_color']);
         });
     }
 };

@@ -14,8 +14,10 @@ const props = defineProps({
     products: Array,
     categories: Array,
     user: Object,
-    settings: Object
+    settings: Object,
+    banners: Object
 })
+
 
 // mobile-first state
 const q = ref('')
@@ -137,7 +139,7 @@ onMounted(() => {
             <!-- ============================ -->
             <!-- BANNER CAROUSEL (opcional) -->
             <!-- ============================ -->
-            <BannerCarousel :images="props.user.banners" v-if="props.user.banners.length" />
+            <BannerCarousel :images="props.banners" v-if="props.banners.length" />
 
             <!-- categorias scroll -->
             <h2 class="text-xl font-bold items-center flex my-6">

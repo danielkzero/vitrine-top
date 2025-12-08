@@ -1,48 +1,157 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import ProductPageFull from '@/components/vitrine/public/ProductPageFull.vue'
-import { router } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
+import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
+import ProductPageFull from '@/components/vitrine/public/ProductPageFull.vue'
+import { publicUser, loadPublicUser } from "@/composables/usePublicUser"
 
-const props = defineProps({
-  user: Object,
-  settings: Object,
-  pages: Array,
-  products: Array,
-  categories: Array,
-  reviews: Array,
-  page: Object,
-  itemId: Number,
-})
 
-function goBackToProducts() {
-  router.get(route('vitrine.public.page', {
-    slug: props.user.slug,
-    page: props.page.key,
-  }))
+/* ===========================================================
+   1) PEGAR SLUG, PAGE E ID DA URL REAL
+   =========================================================== */
+const path = window.location.pathname.split('/').filter(Boolean)
+
+// /capware/catalogo/10 -> ["capware","catalogo","10"]
+const slug = path[0]
+const pageKey = path[1] ?? null
+const itemId = Number(path[2]) ?? null
+
+/* ===========================================================
+   2) STATES
+   =========================================================== */
+const user = ref<any>(null)
+const pages = ref<any[]>([])
+const currentPage = ref<any>(null)
+
+const product = ref(null)
+const banners = ref([])
+const reviews = ref([])
+
+
+/* ===========================================================
+   3) CARREGAR USER
+   =========================================================== */
+async function loadUser() {
+  const response = await axios.get(`/v1/users/${slug}`)
+  user.value = response.data?.data ?? response.data
 }
 
+/* ===========================================================
+   4) CARREGAR PÁGINAS
+   =========================================================== */
+async function loadPages() {
+  const response = await axios.get(`/v1/users/${slug}/pages`)
+
+  const list = Array.isArray(response.data)
+    ? response.data
+    : response.data.data ?? []
+
+  pages.value = list
+  currentPage.value =
+    list.find((p: any) => p.key === pageKey) ?? list[0] ?? null
+}
+
+/* ===========================================================
+   5) CARREGAR PRODUTO ESPECÍFICO
+   =========================================================== */
+async function loadProduct() {
+  const response = await axios.get(`/v1/users/${slug}/products/${itemId}`)
+  product.value = response.data?.data ?? response.data
+}
+
+/* ===========================================================
+   6) OUTROS DADOS
+   =========================================================== */
+async function loadBanners() {
+  const response = await axios.get(`/v1/users/${slug}/banners`)
+  banners.value = response.data?.data ?? response.data
+}
+
+async function loadReviews() {
+  const response = await axios.get(`/v1/users/${slug}/reviews`)
+  reviews.value = response.data?.data ?? response.data
+}
+
+/* ===========================================================
+   7) NAVEGAR DE VOLTA PARA A LISTA
+   =========================================================== */
+function goBackToProducts() {
+  router.get(
+    route("vitrine.public.page", {
+      slug,
+      page: currentPage.value.key,
+    })
+  )
+}
+
+/* ===========================================================
+   8) CARREGAMENTO INICIAL
+   =========================================================== */
+onMounted(async () => {
+  await loadPublicUser(slug)
+
+  await loadUser()
+
+  await loadPages()
+  await loadProduct()
+  await loadBanners()
+  await loadReviews()
+})
+
+
+const load = publicUser
+
+/* ===========================================================
+   9) HEAD
+   =========================================================== */
+const title = computed(() =>
+  product.value?.name
+    ? `${product.value.name} · ${user.value?.business_name}`
+    : user.value?.business_name
+)
 </script>
 
 <template>
-  <Head :title="props.settings?.site_title ?? props.user.business_name" />
 
-  <div class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-    <!-- CONTEÚDO: página de produto -->
+  <Head>
+    <title>{{ title }}</title>
+    <link rel="icon" type="image/png" :href="user?.logo_path ?? ''" />
+  </Head>
+
+  <div v-if="load && !user " class="flex flex-col items-center justify-center min-h-screen py-20">
+    <div class="relative w-20 h-20 flex items-center justify-center">
+
+      <!-- CÍRCULO ANIMADO -->
+      <div class="absolute inset-0 rounded-full border-4 border-amber-300/30 animate-ping"></div>
+
+      <!-- LOGO (só aparece quando user já carregou) -->
+      <img v-if="load?.logo_path" :src="load.logo_path"
+        class="w-20 h-20 object-cover rounded-2xl shadow-md ring-4 animate-spin-slow"
+        :class="`ring-[${user?.theme_color ?? '#6366f1'}]`" />
+
+      <!-- PLACEHOLDER ENQUANTO USER AINDA NÃO EXISTE -->
+      <div v-else class="w-20 h-20 rounded-2xl bg-slate-200 dark:bg-slate-700 animate-pulse"></div>
+    </div>
+
+    <p class="mt-6 text-slate-600 text-lg font-medium animate-pulse">
+      Carregando... 
+    </p>
+  </div>
+
+
+
+  <div v-else class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+
     <main class="container-custom mx-auto flex-grow">
-      <ProductPageFull
-        :products="props.products"
-        :itemId="props.itemId"
-        :user="props.user"
-        @back="goBackToProducts"
-      />
+      <ProductPageFull :product="product" :banners="banners" :reviews="reviews" :user="user" @back="goBackToProducts" />
     </main>
-
 
     <footer class="bg-white border-t mt-6">
       <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500 text-center">
-        © {{ new Date().getFullYear() }} {{ props.user.business_name }}
+        © {{ new Date().getFullYear() }} {{ user.business_name }}
       </div>
     </footer>
+
   </div>
 </template>

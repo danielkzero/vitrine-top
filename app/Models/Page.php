@@ -94,12 +94,12 @@ class Page extends Model
     {
         $defaultPages = [
             
-            ['key' => 'catalogo', 'title' => 'Catálogo', 'is_active' => true, 'type' => 'products', 'order' => 1],
-            ['key' => 'galeria', 'title' => 'Galeria', 'is_active' => false, 'type' => 'simple', 'order' => 2],
-            ['key' => 'links', 'title' => 'Links', 'is_active' => false, 'type' => 'links', 'order' => 3],
-            ['key' => 'sobre', 'title' => 'Sobre', 'is_active' => false, 'type' => 'simple', 'order' => 4],
-            ['key' => 'avaliacoes', 'title' => 'Avaliações', 'is_active' => true, 'type' => 'reviews', 'order' => 5],
-            ['key' => 'extra', 'title' => 'Página extra', 'is_active' => true, 'type' => 'simple', 'order' => 6],            
+            ['key' => 'catalogo', 'icon' => 'Book', 'title' => 'Catálogo', 'is_active' => true, 'type' => 'products', 'order' => 1],
+            ['key' => 'galeria', 'icon' => 'Image', 'title' => 'Galeria', 'is_active' => false, 'type' => 'simple', 'order' => 2],
+            ['key' => 'links', 'icon' => 'Link', 'title' => 'Links', 'is_active' => false, 'type' => 'links', 'order' => 3],
+            ['key' => 'sobre', 'icon' => 'BadgeInfo', 'title' => 'Sobre', 'is_active' => false, 'type' => 'simple', 'order' => 4],
+            ['key' => 'avaliacoes', 'icon' => 'Star', 'title' => 'Avaliações', 'is_active' => true, 'type' => 'reviews', 'order' => 5],
+            ['key' => 'extra', 'icon' => 'FileText', 'title' => 'Página extra', 'is_active' => true, 'type' => 'simple', 'order' => 6],            
             
         ];
 
@@ -109,6 +109,7 @@ class Page extends Model
             if (!in_array($page['key'], $existingKeys)) {
                 self::create([
                     'user_id' => $userId,
+                    'icon' => $page['icon'],
                     'key' => $page['key'],
                     'title' => $page['title'],
                     'is_active' => $page['is_active'],

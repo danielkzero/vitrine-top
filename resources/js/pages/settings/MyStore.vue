@@ -10,26 +10,29 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import DropzoneFile from '@/components/ui/dropzone-file/DropzoneFile.vue'
 
-import { Store, Palette, Upload, Save, Image } from 'lucide-vue-next'
-
+import { Store, Palette, Upload, Save } from 'lucide-vue-next'
 import { reactive, ref } from 'vue'
 import { edit } from '@/routes/store'
-import { type BreadcrumbItem } from '@/types'
 import { route } from 'ziggy-js'
+import type { BreadcrumbItem } from '@/types'
 import { getIcon } from '@/lib/iconMap'
 
 const page = usePage()
 const user = page.props.auth.user
 
-// Dados principais
+// Dados principais (AGORA usando image_url, não base64)
 const store = reactive({
     business_name: user.business_name ?? "",
     subtitle: user.subtitle ?? "",
     slug: user.slug ?? "",
     description: user.description ?? "",
-    logo_base64: user.logo_base64 ?? "",
-    background_image: user.background_image ?? "",
-    theme_color: user.theme_color ?? "#6366f1"
+    logo_path: user.logo_path ?? "",              // <--- URL da logo salva
+    background_path: user.background_path ?? "",  // <--- URL da imagem salva
+    theme_color: user.theme_color ?? "#6366f1",
+
+    // arquivos reais
+    logo_file: null as File | null,
+    background_file: null as File | null,
 })
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -39,63 +42,68 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ]
 
-function toBase64(file: File): Promise<string> {
-    return new Promise((resolve) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.readAsDataURL(file)
-    })
-}
-
-// LOGO
+/* ===========================================================
+   LOGO
+=========================================================== */
 async function handleLogoUpload(event: Event) {
     const target = event.target as HTMLInputElement
     const file = target.files?.[0]
-
     if (!file) return
-    if (file.size > 1024 * 1024) {
-        alert("A imagem deve ter no máximo 1MB!")
-        return
-    }
 
-    store.logo_base64 = await toBase64(file)
+    // preview
+    store.logo_path = URL.createObjectURL(file)
+    store.logo_file = file
 }
 
-// BACKGROUND
+/* ===========================================================
+   BACKGROUND
+=========================================================== */
 async function handleBackground(files: any[]) {
+    console.log(files);
     if (!files.length) return
 
     const f = files[0].file
+    if (!f) return
 
-    if (f && f.size > 1024 * 1024) {
-        alert("A imagem deve ter no máximo 1MB!")
-        return
-    }
+    store.background_path = URL.createObjectURL(f)
+    store.background_file = f
 
-    if (f) {
-        store.background_image = await toBase64(f)
-    } else if (files[0].url) {
-        store.background_image = files[0].url
-    }
+    console.log("FILE OK →", store.background_file)
 }
 
+/* ===========================================================
+   SALVAR CONFIGURAÇÕES (Agora com FormData)
+=========================================================== */
 function saveStore() {
-    router.put(route('store.update'), store, {
+    const form = new FormData()
+
+    form.append("business_name", store.business_name)
+    form.append("subtitle", store.subtitle)
+    form.append("slug", store.slug)
+    form.append("description", store.description)
+    form.append("theme_color", store.theme_color)
+
+    if (store.logo_file) {
+        form.append("logo_file", store.logo_file)
+    }
+
+    if (store.background_file) {
+        form.append("background_file", store.background_file)
+    }
+
+    form.append("_method", "PUT")
+
+    router.post(route("store.update"), form, {
+        forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
-            Object.assign(store, {
-                business_name: page.props.auth.user.business_name ?? "",
-                subtitle: page.props.auth.user.subtitle ?? "",
-                slug: page.props.auth.user.slug ?? "",
-                description: page.props.auth.user.description ?? "",
-                logo_base64: page.props.auth.user.logo_base64 ?? "",
-                background_image: page.props.auth.user.background_image ?? "",
-                theme_color: page.props.auth.user.theme_color ?? "#6366f1"
-            })
+            alert("Configurações atualizadas!")
         }
     })
 }
+
 </script>
+
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
@@ -177,11 +185,11 @@ function saveStore() {
                             <div class="pt-2">
                                 <h2 class="text-lg font-semibold mb-3 dark:text-white">Imagem de fundo</h2>
 
-                                <div v-if="store.background_image"
+                                <div v-if="store.background_path"
                                     class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                                     <div
                                         class="relative rounded-xl overflow-hidden shadow border bg-white dark:bg-slate-800 dark:border-white/10 group">
-                                        <img :src="store.background_image" class="w-full h-40 object-cover" />
+                                        <img :src="store.background_path" class="w-full h-40 object-cover" />
 
                                         <button
                                             class="absolute top-2 right-2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition">
@@ -202,7 +210,7 @@ function saveStore() {
                                 <label for="logo-upload"
                                     class="group cursor-pointer relative w-24 h-24 rounded-full overflow-hidden border border-slate-200/10 dark:border-white/10 shadow-sm flex items-center justify-center bg-slate-50/10 dark:bg-white/5 hover:shadow-md transition">
 
-                                    <img v-if="store.logo_base64" :src="store.logo_base64"
+                                    <img v-if="store.logo_path" :src="store.logo_path"
                                         class="absolute inset-0 w-full h-full object-cover" />
 
                                     <Store v-else
