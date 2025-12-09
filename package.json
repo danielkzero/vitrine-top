@@ -31,6 +31,7 @@
     },
     "dependencies": {
         "@fontsource/inter": "^5.2.8",
+        "@inertiajs/server": "^0.1.0",
         "@inertiajs/vue3": "^2.1.0",
         "@tailwindcss/typography": "^0.5.19",
         "@vueup/vue-quill": "^1.2.0",

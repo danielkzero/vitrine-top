@@ -47,10 +47,9 @@ onBeforeUnmount(() => {
                     v-for="banner in props.images"
                     :key="banner.id"
                     class="min-w-full h-44 md:h-[12rem] bg-cover bg-center"
-                    :style="{ backgroundImage: `url('${banner.image_base64}')` }"
+                    :style="{ backgroundImage: `url('${banner.image}')` }"
                 ></div>
             </div>
-
             <!-- Indicadores -->
             <div class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5">
                 <span

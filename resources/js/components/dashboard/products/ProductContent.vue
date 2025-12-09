@@ -148,13 +148,8 @@ function onEditProduct(prod: any) {
 }
 
 
-// When modal emits save, pass to parent salvarProduto (which expects novoProduto)
-function handleSaveProduct(payload: any) {
-    // parent salvarProduto expects novoProduto data available on parent scope.
-    // We call parent salvarProduto with payload (adapt parent to accept param or send via router)
-    // To keep compatibility with your existing salvarProduto, emit product through router here:    
+function handleSaveProduct(payload: any) {  
     props.salvarProduto && props.salvarProduto(payload)
-    // Alternatively, if parent expects to get novoProduto var mutated, you could assign.
 }
 
 // Save category from modal

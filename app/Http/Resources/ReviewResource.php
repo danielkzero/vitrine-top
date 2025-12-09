@@ -14,6 +14,7 @@ class ReviewResource extends JsonResource
             'comment'       => $this->comment,
             'customer_name' => $this->customer_name,
             'whatsapp'      => $this->whatsapp,
+            'created_at'    => $this->created_at,
         ];
     }
 }

@@ -50,16 +50,16 @@ class AppearanceController extends Controller
         // Upload de imagens
         if ($request->hasFile('cover_image')) {
             if ($settings->cover_image) {
-                Storage::disk('public')->delete($settings->cover_image);
+                Storage::disk('public_direct')->delete($settings->cover_image);
             }
-            $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
+            $data['cover_image'] = $request->file('cover_image')->store('covers', 'public_direct');
         }
 
         if ($request->hasFile('profile_image')) {
             if ($settings->profile_image) {
-                Storage::disk('public')->delete($settings->profile_image);
+                Storage::disk('public_direct')->delete($settings->profile_image);
             }
-            $data['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
+            $data['profile_image'] = $request->file('profile_image')->store('profiles', 'public_direct');
         }
 
         $settings->update($data);

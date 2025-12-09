@@ -11,6 +11,7 @@ import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { getIcon } from '@/lib/iconMap'
 import { publicUser, loadPublicUser } from "@/composables/usePublicUser"
+import LoadingPage from './LoadingPage.vue'
 
 /* ===========================================================
    1) PEGAR SLUG E PAGE DA URL REAL
@@ -65,19 +66,16 @@ async function loadPages() {
 async function loadDependencies() {
 
   if (!currentPage.value) return
-
-  banners.value = (await axios.get(`/v1/users/${slug}/banners`)).data?.data
+  
 
   if (currentPage.value.type === 'products') {
+    banners.value = (await axios.get(`/v1/users/${slug}/banners`)).data?.data
     products.value = (await axios.get(`/v1/users/${slug}/products`)).data?.data
+    categories.value = (await axios.get(`/v1/users/${slug}/categories`)).data?.data
   }
 
   if (currentPage.value.type === 'reviews') {
     reviews.value = (await axios.get(`/v1/users/${slug}/reviews`)).data?.data
-  }
-
-  if (currentPage.value.type === 'categories') {
-    categories.value = (await axios.get(`/v1/users/${slug}/categories`)).data?.data
   }
 }
 
@@ -125,24 +123,11 @@ const load = publicUser
 
 <template>
 
-  <Head>
-    <title>{{ user?.business_name }}</title>
-    <link rel="icon" type="image/png" :href="user?.logo_path ?? ''" />
-  </Head>
+<Head :title="user?.business_name">
+  <link rel="icon" type="image/png" :href="user?.logo_path || ''" />
+</Head>
 
-  <div v-if="load && !user" class="flex flex-col items-center justify-center min-h-screen py-20">
-    <div class="relative w-20 h-20 flex items-center justify-center">
-      <!-- CÍRCULO ANIMADO -->
-      <div class="absolute inset-0 rounded-full border-4 border-amber-300/30 animate-ping"></div>
-
-      <!-- LOGO ROTACIONANDO -->
-      <img :src="load?.logo_path" class="w-20 h-20 object-cover rounded-3xl shadow-md animate-spin-slow" />
-    </div>
-
-    <p class="mt-6 text-lg font-medium animate-pulse" :style="{ color: load?.theme_color }">
-      Carregando... 
-    </p>
-  </div>
+  <LoadingPage :user="user" v-model:load="load" v-if="load && !user" />
 
 
   <div v-else class="min-h-screen flex flex-col bg-slate-50 text-slate-900">

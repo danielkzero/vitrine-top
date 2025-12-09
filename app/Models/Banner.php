@@ -10,7 +10,7 @@ class Banner extends Model
         'user_id',
         'title',
         'subtitle',
-        'image_base64',
+        'image_url',
         'order',
         'is_active',
     ];

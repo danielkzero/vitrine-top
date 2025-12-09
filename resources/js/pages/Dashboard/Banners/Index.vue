@@ -10,31 +10,37 @@ const page = usePage()
 const banners = ref(page.props.banners || [])
 
 const uploading = ref(false)
-const newFiles = ref([])
+const newFiles = ref<File[]>([])
 const titulo = ref('')
 const subtitulo = ref('')
 
 /**
- * Quando Dropzone retornar novos arquivos
+ * Dropzone retorna os arquivos selecionados.
+ * Removemos qualquer base64 e guardamos apenas o FILE real.
  */
 async function handleFiles(files: any[]) {
   newFiles.value = files
 }
 
+/**
+ * Enviar banner com FILE real (sem base64)
+ */
 async function salvarBanner() {
   if (!newFiles.value.length) return alert("Selecione uma imagem!")
 
   uploading.value = true
 
+  const form = new FormData()
   const first = newFiles.value[0]
 
-  const payload = {
-    title: titulo.value,
-    subtitle: subtitulo.value,
-    image_base64: await toBase64(first.file),
-  }
+  form.append("title", titulo.value)
+  form.append("subtitle", subtitulo.value)
 
-  router.post(route('painel.banners.store'), payload, {
+  // se o DropzoneFile retorna {file: File, url: string}
+  form.append("image", first.file ?? first)  
+
+  router.post(route("painel.banners.store"), form, {
+    forceFormData: true,
     preserveScroll: true,
     onSuccess: () => {
       titulo.value = ""
@@ -46,24 +52,16 @@ async function salvarBanner() {
   })
 }
 
-
 function removerBanner(id: number) {
-  router.delete(route('painel.banners.destroy', id), {
+  router.delete(route("painel.banners.destroy", id), {
     preserveScroll: true,
     onSuccess: () => {
       banners.value = page.props.banners as any[]
     }
   })
 }
-
-function toBase64(file: File) {
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result)
-    reader.readAsDataURL(file)
-  })
-}
 </script>
+
 
 <template>
 
@@ -84,16 +82,6 @@ function toBase64(file: File) {
       <div class="bg-white dark:bg-slate-900 rounded-xl shadow p-6 border dark:border-white/10">
         <h2 class="text-lg font-semibold mb-3 dark:text-white">Adicionar Banner</h2>
 
-        <!-- 
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Título</label>
-        <input v-model="titulo" type="text" placeholder="Ex: Super Promoção!"
-          class="w-full border rounded-lg px-3 py-2 mb-4 dark:bg-slate-800 dark:border-white/20" />
-
-        
-        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Subtítulo</label>
-        <input v-model="subtitulo" type="text" placeholder="Ex: Descontos de até 50% OFF"
-          class="w-full border rounded-lg px-3 py-2 mb-4 dark:bg-slate-800 dark:border-white/20" />
-      -->
         <DropzoneFile :initial-files="[]" :multiple="false" :maxFiles="1"
           :allowed-extensions="['jpg', 'jpeg', 'png', 'webp']" title-file-types="Clique ou arraste uma imagem"
           display-file-types="JPG, PNG, WEBP – Máx. 1MB" @onCoverSelected="handleFiles" />
@@ -111,8 +99,7 @@ function toBase64(file: File) {
         <div v-if="banners.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           <div v-for="banner in banners" :key="banner.id"
             class="relative rounded-xl overflow-hidden shadow border bg-white dark:bg-slate-800 dark:border-white/10 group">
-            <img :src="banner.image_base64" class="w-full h-40 object-cover" />
-
+            <img :src="banner.image_url" class="w-full h-40 object-cover" />
             <button @click="removerBanner(banner.id)"
               class="absolute top-2 right-2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition">
               <component :is="getIcon('Trash')" class="w-4 h-4" />

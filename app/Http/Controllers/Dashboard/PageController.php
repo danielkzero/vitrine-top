@@ -137,9 +137,9 @@ class PageController extends Controller
         /* ============================================================
            1) DECODIFICAR JSONS
         ============================================================ */
-        $categorias = json_decode($request->categorias, true) ?? [];
-        $produtos = json_decode($request->produtos, true) ?? [];
-        $pageData = json_decode($request->page, true);
+        $categorias = $request->categoria ? json_decode($request->categorias, true) : [];
+        $produtos = $request->produtos ? json_decode($request->produtos, true) : [];
+        $pageData =json_decode($request->page, true);
 
         /* ============================================================
            2) VALIDAR CAMPOS DA PÁGINA
@@ -157,6 +157,8 @@ class PageController extends Controller
             'page.seo_title' => 'nullable|string|max:255',
             'page.seo_description' => 'nullable|string|max:255',
         ])->validate();
+
+         
 
         $page->update($validatedPage['page']);
 
@@ -192,8 +194,7 @@ class PageController extends Controller
         ============================================================ */
         $uploadedImages = $request->file('produtos_images', []);
 
-        //return response()->json($uploadedImages);
-
+       
         // Vamos distribuir arquivos na ordem exata que vieram
         $fileIndex = 0;
 
@@ -242,7 +243,7 @@ class PageController extends Controller
 
                     // Se existir arquivo correspondente
                     if (isset($uploadedImages[$fileIndex])) {
-                        $imagePath = $uploadedImages[$fileIndex]->store('products', 'public');
+                        $imagePath = '/storage/'.$uploadedImages[$fileIndex]->store('products', 'public_direct');
                         $fileIndex++;
                     }
 

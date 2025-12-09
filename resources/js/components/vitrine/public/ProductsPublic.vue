@@ -26,7 +26,7 @@ const viewMode = ref<'grid' | 'list'>('grid')
 const showModal = ref(false)
 const activeProduct = ref(null)
 const perPage = ref(12)
-const loading = ref(false)
+const loading = ref(true)
 
 // Produtos públicoss (filtra is_public e category)
 const publicProducts = computed(() => {
@@ -82,6 +82,7 @@ function openProduct(prod) {
     /*
     activeProduct.value = prod
     showModal.value = true*/
+    loading.value = false
 }
 
 // fechar
@@ -105,6 +106,30 @@ onMounted(() => {
     if (sentinel.value) io.observe(sentinel.value)
 })
 
+watch(
+    () => props.products,
+    (v) => {
+        if (Array.isArray(v) && v.length) {
+            loading.value = false
+        }
+    },
+    { immediate: true }
+)
+
+
+const STORAGE_KEY = 'vitrine_view_mode'
+
+onMounted(() => {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved === 'grid' || saved === 'list') {
+        viewMode.value = saved
+    }
+})
+
+function toggleViewMode() {
+    viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid'
+    localStorage.setItem(STORAGE_KEY, viewMode.value)
+}
 
 </script>
 
@@ -129,13 +154,12 @@ onMounted(() => {
                     </button>
                 </div>
 
-                <button @click="viewMode = viewMode === 'grid' ? 'list' : 'grid'"
+                <button type="button" @click="toggleViewMode"
                     class="p-2 bg-white rounded-xl shadow-sm border border-slate-100 ml-2">
                     <component :is="getIcon(viewMode === 'grid' ? 'LayoutGrid' : 'List')"
                         class="w-5 h-5 text-slate-700" />
                 </button>
             </div>
-
             <!-- ============================ -->
             <!-- BANNER CAROUSEL (opcional) -->
             <!-- ============================ -->
@@ -149,16 +173,15 @@ onMounted(() => {
                 <div class="flex gap-2">
                     <button
                         :class="['px-3 py-1.5 rounded-xl text-sm whitespace-nowrap', !selectedCategory ? `text-white` : 'bg-white border']"
-                        :style=" !selectedCategory ? { backgroundColor: props.user.theme_color } : '' "
-                        
+                        :style="!selectedCategory ? { backgroundColor: props.user.theme_color } : ''"
                         @click="selectedCategory = null">Todas</button>
 
                     <button v-for="c in categories" :key="c.id"
                         :class="['px-3 py-1.5 rounded-xl text-sm whitespace-nowrap', selectedCategory === c.id ? `text-white` : 'bg-white border']"
-                        :style="selectedCategory === c.id ? { backgroundColor: props.user.theme_color} : ''"
+                        :style="selectedCategory === c.id ? { backgroundColor: props.user.theme_color } : ''"
                         @click="selectedCategory = c.id">
                         <component :is="getIcon(c.icon || 'Store')" class="inline-block w-4 h-4 mr-2" />
-                        {{ c.name }} 
+                        {{ c.name }}
                     </button>
                 </div>
             </div>
@@ -169,18 +192,17 @@ onMounted(() => {
             <div v-if="!visibleProducts.length && !loading" class="text-center py-12 text-slate-400">
                 Nenhum produto disponível.
             </div>
-
             <div v-if="viewMode === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
-                <ProductCard v-for="p in visibleProducts" :key="p.id" :product="p" viewMode="grid"
-                    @open="openProduct" :user="props.user" />
+                <ProductCard v-for="p in visibleProducts" :key="p.id" :product="p" viewMode="grid" @open="openProduct"
+                    :user="props.user" />
 
                 <!-- skeletons -->
                 <ProductCardSkeleton v-if="loading" v-for="n in 6" :key="'sk' + n" />
             </div>
 
             <div v-else class="space-y-3">
-                <ProductCard v-for="p in visibleProducts" :key="p.id" :product="p" viewMode="list"
-                    @open="openProduct" />
+                <ProductCard v-for="p in visibleProducts" :key="p.id" :product="p" viewMode="list" @open="openProduct"
+                    :user="props.user" />
 
                 <ProductCardSkeleton v-if="loading" v-for="n in 3" :key="'skl' + n" />
             </div>

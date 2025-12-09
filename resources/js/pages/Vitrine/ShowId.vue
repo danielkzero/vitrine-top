@@ -5,7 +5,7 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import ProductPageFull from '@/components/vitrine/public/ProductPageFull.vue'
 import { publicUser, loadPublicUser } from "@/composables/usePublicUser"
-
+import LoadingPage from './LoadingPage.vue'
 
 /* ===========================================================
    1) PEGAR SLUG, PAGE E ID DA URL REAL
@@ -114,30 +114,11 @@ const title = computed(() =>
 
 <template>
 
-  <Head>
-    <title>{{ title }}</title>
-    <link rel="icon" type="image/png" :href="user?.logo_path ?? ''" />
+  <Head :title="user?.business_name">
+    <link rel="icon" type="image/png" :href="user?.logo_path || ''" />
   </Head>
 
-  <div v-if="load && !user " class="flex flex-col items-center justify-center min-h-screen py-20">
-    <div class="relative w-20 h-20 flex items-center justify-center">
-
-      <!-- CÍRCULO ANIMADO -->
-      <div class="absolute inset-0 rounded-full border-4 border-amber-300/30 animate-ping"></div>
-
-      <!-- LOGO (só aparece quando user já carregou) -->
-      <img v-if="load?.logo_path" :src="load.logo_path"
-        class="w-20 h-20 object-cover rounded-2xl shadow-md ring-4 animate-spin-slow"
-        :class="`ring-[${user?.theme_color ?? '#6366f1'}]`" />
-
-      <!-- PLACEHOLDER ENQUANTO USER AINDA NÃO EXISTE -->
-      <div v-else class="w-20 h-20 rounded-2xl bg-slate-200 dark:bg-slate-700 animate-pulse"></div>
-    </div>
-
-    <p class="mt-6 text-slate-600 text-lg font-medium animate-pulse">
-      Carregando... 
-    </p>
-  </div>
+  <LoadingPage :user="user" v-model:load="load" v-if="load && !user" />
 
 
 

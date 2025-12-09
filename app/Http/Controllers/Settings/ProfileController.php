@@ -64,12 +64,12 @@ class ProfileController extends Controller
             if ($user->logo_path) {
                 $oldLogo = str_replace('/storage/', '', $user->logo_path);
 
-                if (Storage::disk('public')->exists($oldLogo)) {
-                    Storage::disk('public')->delete($oldLogo);
+                if (Storage::disk('public_direct')->exists($oldLogo)) {
+                    Storage::disk('public_direct')->delete($oldLogo);
                 }
             }
 
-            $path = $request->file('logo_file')->store('logos', 'public');
+            $path = $request->file('logo_file')->store('logos', 'public_direct');
             $user->logo_path = '/storage/' . $path;
         }
 
@@ -80,12 +80,12 @@ class ProfileController extends Controller
             if ($user->background_path) {
                 $oldBg = str_replace('/storage/', '', $user->background_path);
 
-                if (Storage::disk('public')->exists($oldBg)) {
-                    Storage::disk('public')->delete($oldBg);
+                if (Storage::disk('public_direct')->exists($oldBg)) {
+                    Storage::disk('public_direct')->delete($oldBg);
                 }
             }
 
-            $path = $request->file('background_file')->store('backgrounds', 'public');
+            $path = $request->file('background_file')->store('backgrounds', 'public_direct');
             $user->background_path = '/storage/' . $path;
         }
 

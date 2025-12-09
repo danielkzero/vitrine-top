@@ -3,6 +3,8 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
+import { createServer } from '@inertiajs/server'
+
 
 export default defineConfig({
     plugins: [

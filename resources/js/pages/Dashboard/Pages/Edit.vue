@@ -209,8 +209,8 @@ function editarProduto(produto: any) {
 async function salvarProduto(produtoRecebido: any) {
   if (!produtoRecebido.name || !produtoRecebido.price) return
 
-  // Clone seguro
-  const produtoProcessado = JSON.parse(JSON.stringify(produtoRecebido))
+  // Clone SEGURO, mantém File!
+  const produtoProcessado = produtoRecebido
 
   // Atualiza local
   if (produtoProcessado.id) {
@@ -237,18 +237,17 @@ async function salvarProduto(produtoRecebido: any) {
       is_cover: img.is_cover ?? false
     }))
   }
-
+  
   form.append("produtos", JSON.stringify([produtoSemImagens]))
 
   /* ============================================================
       ANEXAR ARQUIVOS REAIS
   ============================================================ */
   let index = 0
-
   for (const img of produtoProcessado.images) {
-    if (img.file) {
-      // Apenas imagens novas!
+    if (img.file instanceof File) {
       form.append(`produtos_images[${index}]`, img.file)
+      console.log(img.file)
     }
     index++
   }
@@ -331,14 +330,13 @@ async function handleSubmit() {
   if (page.value.type === 'links') {
     page.value.content = JSON.stringify(links.value)
   }
-
-  sending.value = true
   console.log(page.value)
+  sending.value = true
   try {
     await router.post(route('painel.pages.update', page.value.key), {
-      page: page.value,
-      produtos: produtos.value,
-      categorias: categorias.value
+      page: JSON.stringify(page.value),
+      produtos: produtos.value ?? null,
+      categorias: categorias.value ?? null
     }, { preserveScroll: true })
   } catch (e) {
     console.error('Erro ao enviar', e)

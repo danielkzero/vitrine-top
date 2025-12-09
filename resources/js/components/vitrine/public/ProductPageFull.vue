@@ -34,6 +34,7 @@ const images = computed(() => product.value?.images ?? [])
    WHATSAPP
 ========================================== */
 function buyNow() {
+    props.user.phone_primary = "24999699849";
     const phone = (props.user?.phone_primary || '').replace(/\D/g, '') || ''
     const text = encodeURIComponent(
         `Olá, tenho interesse no produto: ${product.value?.name} (ID: ${product.value?.id}). Preço: ${
@@ -127,7 +128,7 @@ function submitReview() {
             <div class="text-sm font-semibold">Detalhes do Produto</div>
 
             <button class="p-2 bg-white rounded-xl border shadow-sm">
-                <component :is="getIcon('Heart')" class="w-5 h-5" />
+                <component :is="getIcon('Heart')" fill="var(--color-red-300)" class="w-5 h-5 text-red-500" />
             </button>
         </div>
 
@@ -168,7 +169,7 @@ function submitReview() {
                     :style="{ borderColor: activeIndex === i ? props.user.theme_color : '#ccc' }"
                 >
                     <img
-                        :src="img.image || '/' + img.image_path"
+                        :src="img.image || img.image_path"
                         class="w-20 h-14 object-cover rounded-md"
                     />
                 </div>
@@ -206,7 +207,7 @@ function submitReview() {
                 </div>
 
                 <div class="flex items-center gap-1">
-                    <component :is="getIcon('Star')" class="w-4 h-4 text-yellow-400" />
+                    <component :is="getIcon('Star')" fill="var(--color-amber-200)" class="w-4 h-4 text-amber-400" />
                     <span>{{ product?.rating ?? '—' }}</span>
                 </div>
             </div>
@@ -268,13 +269,14 @@ function submitReview() {
                                 class="w-full border rounded-xl p-3 mb-2"
                             />
 
-                            <div class="flex gap-1">
+                            <div class="flex gap-1 ">
                                 <component
                                     v-for="i in 5"
                                     :key="i"
                                     :is="getIcon(i <= form.rating ? 'Star' : 'StarOff')"
                                     @click="form.rating = i"
-                                    class="w-6 h-6 cursor-pointer"
+                                    :fill="i <= form.rating ? 'var(--color-amber-200)' : 'var(--color-slate-200)'"
+                                    class="w-6 h-6 cursor-pointer" :class="i <= form.rating ? 'text-amber-400' : 'text-slate-400'"
                                 />
                             </div>
 
@@ -317,7 +319,8 @@ function submitReview() {
                                 :key="n"
                                 :is="getIcon(n <= r.rating ? 'Star' : 'StarOff')"
                                 class="w-4 h-4"
-                                :class="n <= r.rating ? 'text-yellow-400' : 'text-slate-400'"
+                                :fill="n <= r.rating ? 'var(--color-yellow-200)' : 'var(--color-slate-200)'"
+                                :class="n <= r.rating ? 'text-amber-400' : 'text-slate-400'"
                             />
                         </div>
 
