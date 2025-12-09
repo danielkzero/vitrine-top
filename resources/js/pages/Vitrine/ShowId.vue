@@ -69,7 +69,7 @@ async function loadBanners() {
 }
 
 async function loadReviews() {
-  const response = await axios.get(`/v1/users/${slug}/reviews`)
+  const response = await axios.get(`/v1/users/${slug}/products/${itemId}/reviews`)
   reviews.value = response.data?.data ?? response.data
 }
 

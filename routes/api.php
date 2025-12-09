@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
     // Products
     Route::get('users/{slug}/products', [ProductController::class, 'index']);
     Route::get('users/{slug}/products/{id}', [ProductController::class, 'show']);
+    Route::get('users/{slug}/products/{id}/reviews', [ReviewController::class, 'product']);
 
     // Categories
     Route::get('users/{slug}/categories', [CategoryController::class, 'index']);
@@ -33,5 +34,7 @@ Route::prefix('v1')->group(function () {
     Route::get('users/{slug}/banners', [BannerController::class, 'index']);
 
     // Reviews
+    
     Route::get('users/{slug}/reviews', [ReviewController::class, 'index']);
+    
 });
