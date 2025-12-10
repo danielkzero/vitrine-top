@@ -71,8 +71,7 @@ withDefaults(
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
-                    <BaseButton v-if="$page.props.auth.user" as="Link" :href="['/painel']" variant="ghost"
-                        size="sm">
+                    <BaseButton v-if="$page.props.auth.user" as="Link" :href="['/painel']" variant="ghost" size="sm">
                         Painel
                     </BaseButton>
                     <template v-else>
@@ -111,9 +110,15 @@ withDefaults(
                     Funciona</a>
                 <a href="#planos" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Planos</a>
                 <hr class="border-slate-100" />
-                <a href="#" class="text-base font-medium text-slate-600">Entrar</a>
-                <a href="#planos" @click="isMenuOpen = false" class="text-base font-medium text-emerald-600">Criar conta
-                    grátis</a>
+                <a v-if="$page.props.auth.user" :href="['/painel']"
+                    class="text-base font-medium text-emerald-600">Painel</a>
+                <template v-else>
+                    <a :href="['/login']" class="text-base font-medium text-slate-600">Entrar</a>
+                     <BaseButton v-if="canRegister" as="Link" :href="register()" variant="dark" size="lg"
+                            trailing-icon="ArrowRight">
+                            Criar conta grátis
+                        </BaseButton>
+                </template>
             </div>
         </nav>
 
@@ -261,7 +266,7 @@ withDefaults(
                         <h3 class="text-xl font-bold text-slate-800 mb-2">{{ content.plans.monthly.name }}</h3>
                         <div class="mb-2">
                             <span class="text-4xl font-extrabold text-slate-900">{{ content.plans.monthly.price
-                            }}</span>
+                                }}</span>
                             <span class="text-slate-500"> {{ content.plans.monthly.per }}</span>
                         </div>
                         <p class="text-xs text-slate-400 mb-6"></p>

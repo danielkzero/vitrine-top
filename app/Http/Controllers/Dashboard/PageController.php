@@ -137,7 +137,7 @@ class PageController extends Controller
         /* ============================================================
            1) DECODIFICAR JSONS
         ============================================================ */
-        $categorias = $request->categoria ? json_decode($request->categorias, true) : [];
+        $categorias = $request->categorias ? json_decode($request->categorias, true) : [];
         $produtos = $request->produtos ? json_decode($request->produtos, true) : [];
         $pageData =json_decode($request->page, true);
 

@@ -19,7 +19,9 @@ class UserResource extends JsonResource
             'subtitle'          => $this->subtitle,
             'theme_color'       => $this->theme_color,
             'is_active'         => $this->is_active,
-            'background_path'   => $this->background_path
+            'background_path'   => $this->background_path,
+            'whatsapp'          => $this->whatsapp,
+            'description'       => $this->description
         ];
     }
 }

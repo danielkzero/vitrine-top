@@ -138,10 +138,8 @@ async function salvarCategoria(categoriaNome: string) {
   // Criar categoria nova sem ID
   categorias.value.push({ name });
 
-  console.log('Categorias enviadas:', categorias.value);
-
   await router.post(route('painel.pages.update', page.value.key),
-    { page: page.value, categorias: categorias.value },
+    { page: JSON.stringify(page.value), categorias: JSON.stringify(categorias.value) },
     {
       preserveScroll: true,
       onSuccess: () => {
@@ -247,7 +245,6 @@ async function salvarProduto(produtoRecebido: any) {
   for (const img of produtoProcessado.images) {
     if (img.file instanceof File) {
       form.append(`produtos_images[${index}]`, img.file)
-      console.log(img.file)
     }
     index++
   }
@@ -330,7 +327,6 @@ async function handleSubmit() {
   if (page.value.type === 'links') {
     page.value.content = JSON.stringify(links.value)
   }
-  console.log(page.value)
   sending.value = true
   try {
     await router.post(route('painel.pages.update', page.value.key), {

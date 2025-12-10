@@ -12,6 +12,5 @@ export const mainNavItems: NavItem[] = [
 ];
 
 export const footerNavItems: NavItem[] = [
-    { title: 'Repositório', href: 'https://github.com/laravel/vue-starter-kit', icon: Layers },
-    { title: 'Documentação', href: 'https://laravel.com/docs/starter-kits#vue', icon: FileText }
+   
 ];

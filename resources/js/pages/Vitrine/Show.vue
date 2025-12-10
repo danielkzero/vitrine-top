@@ -12,6 +12,7 @@ import axios from 'axios'
 import { getIcon } from '@/lib/iconMap'
 import { publicUser, loadPublicUser } from "@/composables/usePublicUser"
 import LoadingPage from './LoadingPage.vue'
+import BaseButton from '@/components/ui/button/BaseButton.vue';
 
 /* ===========================================================
    1) PEGAR SLUG E PAGE DA URL REAL
@@ -66,7 +67,7 @@ async function loadPages() {
 async function loadDependencies() {
 
   if (!currentPage.value) return
-  
+
 
   if (currentPage.value.type === 'products') {
     banners.value = (await axios.get(`/v1/users/${slug}/banners`)).data?.data
@@ -123,9 +124,9 @@ const load = publicUser
 
 <template>
 
-<Head :title="user?.business_name">
-  <link rel="icon" type="image/png" :href="user?.logo_path || ''" />
-</Head>
+  <Head :title="user?.business_name">
+    <link rel="icon" type="image/png" :href="user?.logo_path || ''" />
+  </Head>
 
   <LoadingPage :user="user" v-model:load="load" v-if="load && !user" />
 
@@ -170,8 +171,16 @@ const load = publicUser
 
     <!-- FOOTER -->
     <footer class="bg-white border-t pb-24 mt-6">
+      <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500">
+        <h2 class="text-xl md:text-xl font-extrabold drop-shadow-lg items-center flex mb-3">Sobre</h2>
+        {{ user.description }}
+      </div>
       <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500 text-center">
         © {{ new Date().getFullYear() }} {{ user.business_name }}
+        <div class="container-custom mx-auto px-4 text-xs mt-2 text-slate-500 text-center">
+          Desenvolvido por
+          <a href="https://vitrinetop.hydradigital.com.br" target="_blank" class="font-extrabold">vitrine.top</a>
+        </div>
       </div>
     </footer>
 

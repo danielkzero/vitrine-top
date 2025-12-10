@@ -34,13 +34,12 @@ const images = computed(() => product.value?.images ?? [])
    WHATSAPP
 ========================================== */
 function buyNow() {
-    props.user.phone_primary = "24999699849";
-    const phone = (props.user?.phone_primary || '').replace(/\D/g, '') || ''
+
+    const phone = (props.user?.whatsapp || '').replace(/\D/g, '') || ''
     const text = encodeURIComponent(
-        `Olá, tenho interesse no produto: ${product.value?.name} (ID: ${product.value?.id}). Preço: ${
-            product.value.discount_price
-                ? formatCurrency(product.value.discount_price)
-                : formatCurrency(product.value.price)
+        `Olá, tenho interesse no produto: ${product.value?.name} (ID: ${product.value?.id}). Preço: ${product.value.discount_price
+            ? formatCurrency(product.value.discount_price)
+            : formatCurrency(product.value.price)
         }`
     )
 
@@ -114,6 +113,37 @@ function submitReview() {
         }
     )
 }
+
+// =======================================
+// FAVORITOS (localStorage)
+// =======================================
+const FAVORITES_KEY = 'favorite_products';
+
+// Carrega favoritos do localStorage
+const favorites = ref<number[]>(JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'));
+
+// Salva no localStorage sempre que mudar
+watch(
+    favorites,
+    (val) => {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(val));
+    },
+    { deep: true }
+);
+
+// Verifica se o produto atual é favorito
+const isFavorite = computed(() => favorites.value.includes(product.value?.id));
+
+// Alterna favorito ON/OFF
+function toggleFavorite() {
+    const id = product.value.id;
+
+    if (favorites.value.includes(id)) {
+        favorites.value = favorites.value.filter((p) => p !== id);
+    } else {
+        favorites.value.push(id);
+    }
+}
 </script>
 
 <template>
@@ -127,19 +157,21 @@ function submitReview() {
 
             <div class="text-sm font-semibold">Detalhes do Produto</div>
 
-            <button class="p-2 bg-white rounded-xl border shadow-sm">
-                <component :is="getIcon('Heart')" fill="var(--color-red-300)" class="w-5 h-5 text-red-500" />
+            <button @click="toggleFavorite" class="p-2 bg-white rounded-xl border shadow-sm">
+                <component :is="getIcon('Heart')" :fill="isFavorite ? 'var(--color-red-400)' : 'var(--color-slate-300)'"
+                    :class="[
+                        'w-5 h-5',
+                        isFavorite ? 'text-red-500' : 'text-slate-400'
+                    ]" />
             </button>
+
         </div>
 
         <!-- IMAGEM PRINCIPAL -->
         <div class="p-4 flex items-center justify-center">
             <div class="relative w-full h-60 flex items-center justify-center">
-                <img
-                    v-if="images.length"
-                    :src="images[activeIndex]?.image || '/' + images[activeIndex]?.image_path"
-                    class="max-h-full object-contain"
-                />
+                <img v-if="images.length" :src="images[activeIndex]?.image || '/' + images[activeIndex]?.image_path"
+                    class="max-h-full object-contain" />
 
                 <div v-else class="h-40 w-full bg-slate-100 flex items-center justify-center rounded-lg">
                     Sem imagem
@@ -147,13 +179,9 @@ function submitReview() {
 
                 <!-- dots -->
                 <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-                    <div
-                        v-for="(img, idx) in images"
-                        :key="idx"
-                        @click="activeIndex = idx"
+                    <div v-for="(img, idx) in images" :key="idx" @click="activeIndex = idx"
                         class="w-3 h-3 rounded-full cursor-pointer"
-                        :style="{ backgroundColor: props.user.theme_color, opacity: activeIndex === idx ? 1 : 0.3 }"
-                    />
+                        :style="{ backgroundColor: props.user.theme_color, opacity: activeIndex === idx ? 1 : 0.3 }" />
                 </div>
             </div>
         </div>
@@ -161,17 +189,10 @@ function submitReview() {
         <!-- MINIATURAS -->
         <div class="px-4 pb-3">
             <div class="flex gap-2 overflow-x-auto">
-                <div
-                    v-for="(img, i) in images"
-                    :key="i"
-                    @click="activeIndex = i"
+                <div v-for="(img, i) in images" :key="i" @click="activeIndex = i"
                     class="p-1 rounded-lg cursor-pointer border"
-                    :style="{ borderColor: activeIndex === i ? props.user.theme_color : '#ccc' }"
-                >
-                    <img
-                        :src="img.image || img.image_path"
-                        class="w-20 h-14 object-cover rounded-md"
-                    />
+                    :style="{ borderColor: activeIndex === i ? props.user.theme_color : '#ccc' }">
+                    <img :src="img.image || img.image_path" class="w-20 h-14 object-cover rounded-md" />
                 </div>
             </div>
         </div>
@@ -214,11 +235,8 @@ function submitReview() {
 
             <!-- AÇÕES -->
             <div class="flex gap-3 mt-3">
-                <button
-                    @click="buyNow"
-                    class="flex-1 text-white py-3 rounded-2xl font-semibold"
-                    :style="{ backgroundColor: props.user.theme_color }"
-                >
+                <button @click="buyNow" class="flex-1 text-white py-3 rounded-2xl font-semibold"
+                    :style="{ backgroundColor: props.user.theme_color }">
                     <div class="flex justify-center items-center">
                         <component :is="getIcon('ShoppingBag')" class="w-5 h-5 mr-2" />
                         Comprar via WhatsApp
@@ -238,10 +256,8 @@ function submitReview() {
                         Avaliações ({{ reviews.length }})
                     </button>
 
-                    <button
-                        @click="toggleForm"
-                        class="bg-slate-600 text-white py-2 px-4 rounded-full font-semibold flex items-center"
-                    >
+                    <button @click="toggleForm"
+                        class="bg-slate-600 text-white py-2 px-4 rounded-full font-semibold flex items-center">
                         <component :is="getIcon('UserStar')" class="w-5 h-5 mr-2" />
                         {{ showForm ? 'Fechar' : 'Avaliar' }}
                     </button>
@@ -249,49 +265,28 @@ function submitReview() {
 
                 <!-- FORMULÁRIO -->
                 <transition name="fade">
-                    <div
-                        v-if="showForm"
-                        class="mt-4 p-4 bg-slate-50 rounded-xl border"
-                    >
+                    <div v-if="showForm" class="mt-4 p-4 bg-slate-50 rounded-xl border">
                         <form @submit.prevent="submitReview">
 
-                            <input
-                                v-model="form.customer_name"
-                                type="text"
-                                placeholder="Seu nome"
-                                class="w-full border rounded-xl p-3 mb-2"
-                            />
+                            <input v-model="form.customer_name" type="text" placeholder="Seu nome"
+                                class="w-full border rounded-xl p-3 mb-2" />
 
-                            <input
-                                v-model="form.whatsapp"
-                                type="text"
-                                placeholder="Seu WhatsApp"
-                                class="w-full border rounded-xl p-3 mb-2"
-                            />
+                            <input v-model="form.whatsapp" type="text" placeholder="Seu WhatsApp"
+                                class="w-full border rounded-xl p-3 mb-2" />
 
                             <div class="flex gap-1 ">
-                                <component
-                                    v-for="i in 5"
-                                    :key="i"
-                                    :is="getIcon(i <= form.rating ? 'Star' : 'StarOff')"
+                                <component v-for="i in 5" :key="i" :is="getIcon(i <= form.rating ? 'Star' : 'StarOff')"
                                     @click="form.rating = i"
                                     :fill="i <= form.rating ? 'var(--color-amber-200)' : 'var(--color-slate-200)'"
-                                    class="w-6 h-6 cursor-pointer" :class="i <= form.rating ? 'text-amber-400' : 'text-slate-400'"
-                                />
+                                    class="w-6 h-6 cursor-pointer"
+                                    :class="i <= form.rating ? 'text-amber-400' : 'text-slate-400'" />
                             </div>
 
-                            <textarea
-                                v-model="form.comment"
-                                rows="4"
-                                placeholder="Comentário"
-                                class="w-full border rounded-xl p-3 mt-3"
-                            ></textarea>
+                            <textarea v-model="form.comment" rows="4" placeholder="Comentário"
+                                class="w-full border rounded-xl p-3 mt-3"></textarea>
 
-                            <button
-                                type="submit"
-                                class="w-full py-3 rounded-xl text-white font-semibold mt-3"
-                                :style="{ backgroundColor: props.user.theme_color }"
-                            >
+                            <button type="submit" class="w-full py-3 rounded-xl text-white font-semibold mt-3"
+                                :style="{ backgroundColor: props.user.theme_color }">
                                 Enviar Avaliação
                             </button>
 
@@ -301,11 +296,7 @@ function submitReview() {
 
                 <!-- LISTA DE REVIEWS -->
                 <div class="mt-3 space-y-3">
-                    <div
-                        v-for="r in reviews.slice(0, 5)"
-                        :key="r.id"
-                        class="p-3 bg-slate-50 rounded-xl"
-                    >
+                    <div v-for="r in reviews.slice(0, 5)" :key="r.id" class="p-3 bg-slate-50 rounded-xl">
                         <div class="flex justify-between">
                             <b>{{ r.customer_name }}</b>
                             <small class="text-slate-400">
@@ -314,24 +305,17 @@ function submitReview() {
                         </div>
 
                         <div class="flex gap-1 mt-1">
-                            <component
-                                v-for="n in 5"
-                                :key="n"
-                                :is="getIcon(n <= r.rating ? 'Star' : 'StarOff')"
+                            <component v-for="n in 5" :key="n" :is="getIcon(n <= r.rating ? 'Star' : 'StarOff')"
                                 class="w-4 h-4"
                                 :fill="n <= r.rating ? 'var(--color-yellow-200)' : 'var(--color-slate-200)'"
-                                :class="n <= r.rating ? 'text-amber-400' : 'text-slate-400'"
-                            />
+                                :class="n <= r.rating ? 'text-amber-400' : 'text-slate-400'" />
                         </div>
 
                         <p class="text-sm text-slate-700 mt-1">{{ r.comment }}</p>
                     </div>
 
-                    <button
-                        @click="loadMoreReviews"
-                        class="w-full text-sm mt-2"
-                        :style="{ color: props.user.theme_color }"
-                    >
+                    <button @click="loadMoreReviews" class="w-full text-sm mt-2"
+                        :style="{ color: props.user.theme_color }">
                         Carregar mais avaliações
                     </button>
                 </div>
@@ -347,6 +331,7 @@ function submitReview() {
 .fade-leave-active {
     transition: all 0.2s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;

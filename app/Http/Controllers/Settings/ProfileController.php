@@ -37,6 +37,7 @@ class ProfileController extends Controller
                 'phone_primary' => $user->phone_primary,
                 'plan' => $user->plan,
                 'is_active' => $user->is_active,
+                'whatsapp' => $user->whatsapp
             ],
         ]);
     }
@@ -54,6 +55,7 @@ class ProfileController extends Controller
             'theme_color' => ['required', 'string', 'max:20'],
             'logo_file' => ['nullable', 'image', 'max:2048'],
             'background_file' => ['nullable', 'image', 'max:4096'],
+            'whatsapp' => ['nullable', 'string', 'max:20'],
         ]);
 
         /* ================================
@@ -97,6 +99,7 @@ class ProfileController extends Controller
         $user->slug = $data['slug'];
         $user->description = $data['description'] ?? null;
         $user->theme_color = $data['theme_color'];
+        $user->whatsapp = $data['whatsapp'];
 
         $user->save();
 
@@ -108,7 +111,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user();        
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -119,6 +122,7 @@ class ProfileController extends Controller
             'state' => ['nullable', 'string', 'max:2'],
             'zip' => ['nullable', 'string', 'max:10'],
             'phone_primary' => ['nullable', 'string', 'max:20'],
+            'whatsapp' => ['nullable', 'string', 'max:20'],
         ]);
 
         $user->update($data);

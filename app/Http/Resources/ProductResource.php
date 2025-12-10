@@ -22,6 +22,7 @@ class ProductResource extends JsonResource
             'seo_title'       => $this->seo_title,
             'seo_description' => $this->seo_description,
             'rating'          => $this->rating,
+            'featured'        => $this->featured,
 
             'images'          => ImageResource::collection($this->whenLoaded('images')),
             'category'        => new CategoryResource($this->whenLoaded('category')),

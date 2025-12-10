@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\Page;
+use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Product;
-use App\Models\Order;
-use App\Models\Category;
-use App\Models\Page;
 use Inertia\Inertia;
 
 class BaseController extends Controller
@@ -26,21 +27,20 @@ class BaseController extends Controller
 
     public function index(Request $request)
     {
-        $productsCount = Product::count();
-        $activeProducts = Product::where('is_public', true)->count();
-        $pendingOrders = Order::where('status', 'pending')->count();
-        $totalRevenue = Order::where('status', 'completed')->sum('total');
+        $productsCount = Product::where(['user_id' => $this->user->id])->count();
+        $activeProducts = Product::where(['is_public' => true, 'user_id' => $this->user->id])->count();
+        $totalProductImage = ProductImage::whereHas('product', function ($q) {
+            $q->where('user_id', $this->user->id);
+        })->count();
+        $totalRevenue = Order::where(['status' => 'completed', 'user_id' => $this->user->id])->sum('total');
         $recentOrders = Order::with('user')->latest()->take(5)->get();
 
         return Inertia::render('Painel', [
             'user' => $this->user,
             'stats' => [
                 'products' => [
-                    'active' => $activeProducts,
                     'total' => $productsCount,
-                ],
-                'orders' => [
-                    'pending' => $pendingOrders,
+                    'imagesCount' => $totalProductImage
                 ],
                 'revenue' => [
                     'total' => $totalRevenue,

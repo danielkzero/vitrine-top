@@ -31,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'state',
         'zip',
         'phone_primary',
+        'whatsapp',
         'plan',
         'billing_customer_id',
         'is_active',

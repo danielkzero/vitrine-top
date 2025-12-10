@@ -129,8 +129,16 @@ const title = computed(() =>
     </main>
 
     <footer class="bg-white border-t mt-6">
+      <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500">
+        <h2 class="text-xl md:text-xl font-extrabold drop-shadow-lg items-center flex mb-3">Sobre</h2>
+        {{ user.description }}
+      </div>
       <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500 text-center">
         © {{ new Date().getFullYear() }} {{ user.business_name }}
+        <div class="container-custom mx-auto px-4 text-xs mt-2 text-slate-500 text-center">
+          Desenvolvido por
+          <a href="https://vitrinetop.hydradigital.com.br" target="_blank" class="font-extrabold">vitrine.top</a>
+        </div>
       </div>
     </footer>
 

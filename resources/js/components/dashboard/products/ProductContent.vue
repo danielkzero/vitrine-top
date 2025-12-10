@@ -154,7 +154,6 @@ function handleSaveProduct(payload: any) {
 
 // Save category from modal
 function saveCategoria() {
-    console.log(novaCategoriaLocal.value)
     if (!novaCategoriaLocal.value || !novaCategoriaLocal.value.trim()) return
     // update local and ask parent to persist
     props.salvarCategoria && props.salvarCategoria(novaCategoriaLocal.value)

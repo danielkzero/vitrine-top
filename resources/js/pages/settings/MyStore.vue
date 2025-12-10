@@ -29,6 +29,7 @@ const store = reactive({
     logo_path: user.logo_path ?? "",              // <--- URL da logo salva
     background_path: user.background_path ?? "",  // <--- URL da imagem salva
     theme_color: user.theme_color ?? "#6366f1",
+    whatsapp: user.whatsapp ?? "",
 
     // arquivos reais
     logo_file: null as File | null,
@@ -59,7 +60,6 @@ async function handleLogoUpload(event: Event) {
    BACKGROUND
 =========================================================== */
 async function handleBackground(files: any[]) {
-    console.log(files);
     if (!files.length) return
 
     const f = files[0].file
@@ -67,8 +67,6 @@ async function handleBackground(files: any[]) {
 
     store.background_path = URL.createObjectURL(f)
     store.background_file = f
-
-    console.log("FILE OK →", store.background_file)
 }
 
 /* ===========================================================
@@ -82,6 +80,7 @@ function saveStore() {
     form.append("slug", store.slug)
     form.append("description", store.description)
     form.append("theme_color", store.theme_color)
+    form.append("whatsapp", store.whatsapp)
 
     if (store.logo_file) {
         form.append("logo_file", store.logo_file)
@@ -151,7 +150,14 @@ function saveStore() {
                         </div>
 
                         <div class="grid gap-2">
-                            <Label>Descrição</Label>
+                            <Label>Whatsapp</Label>
+                            <div class="flex items-center gap-1">
+                                <Input v-model="store.whatsapp" placeholder="+5511999999999" />
+                            </div>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label>Sobre no rodapé</Label>
                             <Textarea v-model="store.description" :rows="4" placeholder="Descreva sua loja..." />
                         </div>
                     </div>
@@ -185,8 +191,7 @@ function saveStore() {
                             <div class="pt-2">
                                 <h2 class="text-lg font-semibold mb-3 dark:text-white">Imagem de fundo</h2>
 
-                                <div v-if="store.background_path"
-                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                                <div v-if="store.background_path">
                                     <div
                                         class="relative rounded-xl overflow-hidden shadow border bg-white dark:bg-slate-800 dark:border-white/10 group">
                                         <img :src="store.background_path" class="w-full h-40 object-cover" />

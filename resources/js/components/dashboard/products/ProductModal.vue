@@ -147,7 +147,6 @@ watch(
 /* SALVAR */
 async function save() {
   saving.value = true
-  console.log(localProduct.value)
   emit("save", localProduct.value)
   emit("update:modelValue", false)
   saving.value = false

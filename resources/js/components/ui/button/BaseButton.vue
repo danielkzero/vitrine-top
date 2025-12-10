@@ -30,6 +30,7 @@ interface Props {
     block?: boolean;
     disabled?: boolean;
     loading?: boolean;
+    target?: '_self' | '_blank';
 
     as?: 'button' | 'Link' | 'a';
 
@@ -54,6 +55,7 @@ const props = withDefaults(defineProps<Props>(), {
     as: 'button',
     leadingIcon: null,
     trailingIcon: null,
+    target: '_self',
 });
 
 const emit = defineEmits<{
@@ -88,6 +90,7 @@ const componentProps = computed(() => {
     if (props.as === 'a') {
         return {
             href: props.href,
+            target: props.target,
         };
     }
 

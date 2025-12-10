@@ -31,9 +31,8 @@ const loading = ref(true)
 // Produtos públicoss (filtra is_public e category)
 const publicProducts = computed(() => {
     let items = (props.products ?? []).filter(p => !!p.is_public)
-
     if (selectedCategory.value) {
-        items = items.filter(p => p.category_id === selectedCategory.value)
+        items = items.filter(p => p.category.id === selectedCategory.value)
     }
 
     if (q.value && q.value.trim().length) {
@@ -180,7 +179,7 @@ function toggleViewMode() {
                         :class="['px-3 py-1.5 rounded-xl text-sm whitespace-nowrap', selectedCategory === c.id ? `text-white` : 'bg-white border']"
                         :style="selectedCategory === c.id ? { backgroundColor: props.user.theme_color } : ''"
                         @click="selectedCategory = c.id">
-                        <component :is="getIcon(c.icon || 'Store')" class="inline-block w-4 h-4 mr-2" />
+                        <!--<component :is="getIcon(c.icon || 'Store')" class="inline-block w-4 h-4 mr-2" />-->
                         {{ c.name }}
                     </button>
                 </div>

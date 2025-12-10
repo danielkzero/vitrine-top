@@ -14,7 +14,7 @@ import { getIcon } from '@/lib/iconMap';
 
         <!-- Card principal -->
         <div
-            class="relative bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[620px] flex flex-col">
+            class="relative bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden md:max-h-[620px] flex flex-col">
 
             <!-- Barra fake de navegador (mantida) -->
             <div class="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center gap-2">
