@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             // Armazenar em E.164 (ex: +5511999999999). 20 chars é suficiente.
             $table->string('whatsapp', 20)->nullable()->after('phone_primary');
+            $table->string('description')->nullable()->after('whatsapp');
             // Opcional: índice para buscas rápidas
             $table->index('whatsapp');
         });
@@ -21,6 +22,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropIndex(['whatsapp']);
             $table->dropColumn('whatsapp');
+            $table->dropColumn('description');
         });
     }
 };
