@@ -271,7 +271,7 @@ withDefaults(
                         </div>
                         <p class="text-xs text-slate-400 mb-6"></p>
 
-                        <BaseButton variant="dark" block class="mb-6">
+                        <BaseButton variant="dark" block class="mb-6" :href="register()" as="Link">
                             Escolher Mensal
                         </BaseButton>
 
@@ -299,7 +299,7 @@ withDefaults(
                         </div>
                         <p class="text-xs text-slate-400 mb-8">{{ content.plans.annual.note }}</p>
 
-                        <BaseButton variant="primary" block class="mb-8">
+                        <BaseButton variant="primary" block class="mb-8" :href="register()" as="Link">
                             Escolher Anual
                         </BaseButton>
 
