@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('key')->unique();
+            $table->string('key');
             $table->string('title');
             $table->string('icon')->nullable();
             $table->boolean('is_active')->default(true);
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('seo_title')->nullable();
             $table->string('seo_description')->nullable();
             $table->timestamps();
+            $table->unique(['user_id', 'key']);
         });
     }
 
