@@ -147,7 +147,14 @@ watch(
 /* SALVAR */
 async function save() {
   saving.value = true
-  emit("save", localProduct.value)
+
+  const payload = {
+    ...localProduct.value,
+    price: normalizePrice(localProduct.value.price),
+    discount_price: normalizePrice(localProduct.value.discount_price),
+  }
+
+  emit("save", payload)
   emit("update:modelValue", false)
   saving.value = false
 }
@@ -166,6 +173,22 @@ function handleFiles(files) {
     isOld: !(f.file instanceof File),
   }))
 }
+
+function normalizePrice(value: any): number {
+  if (value === null || value === undefined || value === "") {
+    return 0
+  }
+
+  let v = String(value)
+    .replace(/\s/g, "")        // remove espaços
+    .replace(/[R$\$]/g, "")    // remove R e $
+    .replace(/\./g, "")        // remove separador de milhar
+    .replace(",", ".")         // vírgula -> ponto
+
+  const n = parseFloat(v)
+  return isNaN(n) ? 0 : n
+}
+
 </script>
 
 
