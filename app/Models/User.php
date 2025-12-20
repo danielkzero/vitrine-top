@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\VerifyEmailCustom;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -116,5 +118,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 $user->slug = str()->slug($user->business_name);
             }
         });
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailCustom);
     }
 }
