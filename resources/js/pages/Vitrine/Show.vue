@@ -142,11 +142,11 @@ const load = publicUser
 
       <div class="relative z-10 text-center text-white px-4">
         <h1 class="text-4xl md:text-5xl font-extrabold drop-shadow-lg items-center flex">
-          <img :src="user.logo_path" class="w-14 mr-3 rounded-2xl bg-amber-50 shadow" />
-          {{ user.business_name }}
+          <img v-if="user.logo_path" :src="user?.logo_path" class="w-14 mr-3 rounded-2xl bg-amber-50 shadow" />
+          {{ user?.business_name }}
         </h1>
         <p class="mt-3 text-lg opacity-90">
-          {{ user.subtitle ?? '' }}
+          {{ user?.subtitle ?? '' }}
         </p>
       </div>
     </header>
@@ -173,10 +173,10 @@ const load = publicUser
     <footer class="bg-white border-t pb-24 mt-6">
       <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500">
         <h2 class="text-xl md:text-xl font-extrabold drop-shadow-lg items-center flex mb-3">Sobre</h2>
-        {{ user.description }}
+        {{ user?.description }}
       </div>
       <div class="container-custom mx-auto px-4 py-6 text-sm text-slate-500 text-center">
-        © {{ new Date().getFullYear() }} {{ user.business_name }}
+        © {{ new Date().getFullYear() }} {{ user?.business_name }}
         <div class="container-custom mx-auto px-4 text-xs mt-2 text-slate-500 text-center">
           Desenvolvido por
           <a href="https://vitrinetop.hydradigital.com.br" target="_blank" class="font-extrabold">vitrine.top</a>
