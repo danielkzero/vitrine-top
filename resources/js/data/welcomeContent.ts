@@ -75,14 +75,14 @@ const welcomeContent = {
       name: 'Mensal',
       price: 'R$ 24,90',
       per: '/mês',
-      bullets: ['Produtos ilimitados', 'Vendas ilimitadas', 'Suporte por e-mail', 'Sem fidelidade, cancele quando quiser']
+      bullets: ['30 produtos', 'Vendas ilimitadas', 'Suporte por e-mail', 'Sem fidelidade, cancele quando quiser']
     },
     annual: {
       name: 'Anual',
       price: 'R$ 19,90',
       per: '/mês',
       note: 'R$ 238,80 à vista no PIX ou 12x no cartão (consulte taxas)',
-      bullets: ['Tudo do plano mensal', 'Domínio personalizado (em breve)', 'Suporte prioritário WhatsApp', 'Selos de verificação na loja'],
+      bullets: ['Tudo do plano mensal', 'Suporte prioritário WhatsApp', 'Selos de verificação na loja'],
       badge: 'MAIS POPULAR'
     }
   }
