@@ -36,7 +36,7 @@ const isFavorite = computed(() => favorites.value.includes(props.product?.id));
 </script>
 
 <template>
-  <!-- MODO GRID --> 
+  <!-- MODO GRID -->
   <article v-if="viewMode === 'grid'" @click="open"
     class="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition cursor-pointer relative overflow-hidden">
     <div v-if="product.featured"
@@ -46,9 +46,9 @@ const isFavorite = computed(() => favorites.value.includes(props.product?.id));
     </div>
 
     <div class="absolute top-2 right-2" v-if="isFavorite">
-      <component 
-        :is="getIcon('Heart')" 
-        :fill="isFavorite ? 'var(--color-red-400)' : 'var(--color-slate-300)'" 
+      <component
+        :is="getIcon('Heart')"
+        :fill="isFavorite ? 'var(--color-red-400)' : 'var(--color-slate-300)'"
         :class="[ 'w-5 h-5', isFavorite ? 'text-red-500' : 'text-slate-400' ]" />
     </div>
 
@@ -70,7 +70,7 @@ const isFavorite = computed(() => favorites.value.includes(props.product?.id));
       <div class="font-bold" :style="{ color: props.user?.theme_color }">
         {{ formatCurrency(product.discount_price || product.price) }}
       </div>
-      <div class="text-xs text-slate-400">Estoque: {{ product.stock }}</div>
+      <div class="text-xs text-slate-400" v-if="product.stock">Estoque: {{ product.stock }}</div>
     </div>
   </article>
 
@@ -106,7 +106,7 @@ const isFavorite = computed(() => favorites.value.includes(props.product?.id));
           <div class="font-bold" :style="{ color: props.user?.theme_color }">
             {{ formatCurrency(product.discount_price || product.price) }}
           </div>
-          <div class="text-xs text-slate-400 whitespace-nowrap">Estoque: {{ product.stock }}</div>
+          <div class="text-xs text-slate-400 whitespace-nowrap" v-if="product.stock">Estoque: {{ product.stock }}</div>
         </div>
       </div>
 
