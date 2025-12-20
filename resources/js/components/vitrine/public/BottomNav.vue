@@ -36,7 +36,7 @@ function go(page) {
       >
         <component :is="getIcon(page.icon || 'Home')" class="w-6 h-6 mb-1" />
         <span class="text-[10px] font-medium truncate max-w-[60px]">{{ page.title }}</span>
-        <div :class="'w-1.5 h-1.5 rounded-full mt-1'" 
+        <div :class="'w-1.5 h-1.5 rounded-full mt-1'"
           :style="{ backgroundColor: props.user.theme_color }"
           v-if="props.activeKey === page.key"></div>
       </button>
