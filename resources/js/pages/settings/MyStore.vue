@@ -97,6 +97,7 @@ function saveStore() {
         preserveScroll: true,
         onSuccess: () => {
             alert("Configurações atualizadas!")
+            router.visit(route("painel.index"), { replace: true })
         }
     })
 }
