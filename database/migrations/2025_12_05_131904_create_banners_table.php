@@ -17,8 +17,8 @@ return new class extends Migration {
             $table->string('title')->nullable();
             $table->string('subtitle')->nullable();
 
-            // imagem pequena base64
-            $table->longText('image_base64')->nullable();
+            // url da imagem
+            $table->longText('image_url')->nullable();
 
             // ordem exibida na vitrine
             $table->integer('order')->default(0);

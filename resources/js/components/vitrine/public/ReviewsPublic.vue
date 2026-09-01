@@ -5,7 +5,7 @@ defineProps({ reviews: Array })
 
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div v-for="r in reviews" :key="r.id" class="bg-white p-4 border rounded-xl">
+    <div v-for="r in reviews" :key="r.id" class="bg-white p-4 border rounded-xl md:rounded-none md:border-0 md:bg-transparent md:shadow-none">
       <div class="flex items-center justify-between">
         <div class="font-semibold">{{ r.customer_name ?? 'Cliente' }}</div>
         <div class="text-xs text-slate-400">{{ new Date(r.created_at).toLocaleDateString('pt-BR') }}</div>

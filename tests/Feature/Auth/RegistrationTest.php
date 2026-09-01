@@ -15,5 +15,5 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('painel', absolute: false));
+    $response->assertRedirect(route('painel.index', absolute: false));
 });

@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
 
 
 <template>
-    <div v-if="props.images?.length" class="w-full md:h-[12rem] mt-4 select-none">
+    <div v-if="props.images?.length" class="w-full md:h-[12rem] mt-4 md:mt-0 select-none">
 
         <!-- CONTAINER -->
         <div class="
@@ -37,6 +37,11 @@ onBeforeUnmount(() => {
             rounded-2xl
             shadow-[0_8px_25px_rgba(0,0,0,0.12)]
             bg-white
+            md:rounded-xl
+            md:border
+            md:border-slate-200/80
+            md:bg-white
+            md:shadow-[0_18px_42px_rgba(15,23,42,0.12)]
         ">
             <!-- Slides -->
             <div
@@ -46,7 +51,7 @@ onBeforeUnmount(() => {
                 <div
                     v-for="banner in props.images"
                     :key="banner.id"
-                    class="min-w-full h-44 md:h-[12rem] bg-cover bg-center"
+                    class="min-w-full h-44 md:h-[14rem] bg-cover bg-center"
                     :style="{ backgroundImage: `url('${banner.image}')` }"
                 ></div>
             </div>

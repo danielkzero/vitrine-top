@@ -1,16 +1,13 @@
 import { routes } from './routes';
-import { Home, FileText, Layers, Star, CreditCard, Settings } from 'lucide-vue-next';
+import { CreditCard, FileText, Home, Layers, MessageCircleMore } from 'lucide-vue-next';
 import type { NavItem } from '@/types';
 
 export const mainNavItems: NavItem[] = [
     { title: 'Painel', href: routes.painel.index, icon: Home },
-    { title: 'Páginas', href: routes.painel.pages.index, icon: FileText },
+    { title: 'Paginas', href: routes.painel.pages.index, icon: FileText },
     { title: 'Banners', href: routes.painel.banners.index, icon: Layers },
-    /*{ title: 'Avaliações', href: routes.painel.reviews.index, icon: Star },
-    { title: 'Assinaturas', href: routes.painel.subscriptions.index, icon: CreditCard },
-    { title: 'Configurações', href: routes.painel.payments.index, icon: Settings },*/
+    { title: 'Avaliacoes', href: routes.painel.reviews.index, icon: MessageCircleMore },
+    { title: 'Assinatura e cobranca', href: routes.painel.billing.index, icon: CreditCard },
 ];
 
-export const footerNavItems: NavItem[] = [
-   
-];
+export const footerNavItems: NavItem[] = [];

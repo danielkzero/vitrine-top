@@ -9,7 +9,7 @@ const props = defineProps({
 <template>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <a v-for="(link, idx) in JSON.parse(page.content)" :key="idx" :href="link.url" target="_blank" rel="noopener noreferrer"
-      class="flex items-center gap-3 p-4 bg-white border rounded-xl hover:shadow transition">
+      class="flex items-center gap-3 p-4 bg-white border rounded-xl hover:shadow transition md:rounded-none md:border-0 md:bg-transparent md:shadow-none">
       <component :is="getIcon(link.icon || 'Share2')" class="w-6 h-6"
       :style="{ color: props.user.theme_color }" />
       <div>

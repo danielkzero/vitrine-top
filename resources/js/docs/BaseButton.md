@@ -101,7 +101,7 @@ interface Props {
 ```vue
 <BaseButton
   as="Link"
-  :href="route('painel')"
+  :href="route('painel.index')"
   leadingIcon="ArrowRight"
 >
   Ir para o painel

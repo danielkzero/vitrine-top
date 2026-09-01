@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Services\PlanLimitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class BannerController extends Controller
 {
+    public function __construct(private readonly PlanLimitService $planLimitService)
+    {
+    }
+
     public function index()
     {
         $banners = Banner::where('user_id', auth()->id())
@@ -22,33 +28,40 @@ class BannerController extends Controller
 
     public function store(Request $request)
     {
-        // Agora NÃO usamos mais base64 — recebemos um ARQUIVO REAL
+        $count = Banner::where('user_id', auth()->id())->count();
+        try {
+            $this->planLimitService->ensureCanAddBanner(auth()->user(), $count);
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors());
+        }
+
         $data = $request->validate([
-            'title'    => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
             'subtitle' => 'nullable|string|max:255',
-            'image'    => 'required|image|max:1024', // 1MB (em KB)
+            'image' => 'required|image|max:1024',
         ]);
 
-        // Salva no storage público
         $path = $request->file('image')->store('banners', 'public_direct');
 
         Banner::create([
-            'user_id'    => auth()->id(),
-            'title'      => $data['title'] ?? null,
-            'subtitle'   => $data['subtitle'] ?? null,
-            'image_url'  => '/storage/'.$path, // agora salvamos caminho, não base64
+            'user_id' => auth()->id(),
+            'title' => $data['title'] ?? null,
+            'subtitle' => $data['subtitle'] ?? null,
+            'image_url' => '/storage/'.$path,
         ]);
 
-        return back()->with('success', 'Banner criado!');
+        return back()->with('success', 'Banner criado.');
     }
 
     public function destroy(Banner $banner)
     {
         abort_if($banner->user_id !== auth()->id(), 403);
 
-        // Remover arquivo físico
-        if ($banner->image_url && Storage::disk('public_direct')->exists($banner->image_url)) {
-            Storage::disk('public_direct')->delete($banner->image_url);
+        if ($banner->image_url) {
+            $storedPath = ltrim(str_replace('/storage/', '', $banner->image_url), '/');
+            if (Storage::disk('public_direct')->exists($storedPath)) {
+                Storage::disk('public_direct')->delete($storedPath);
+            }
         }
 
         $banner->delete();

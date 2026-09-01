@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { login, register } from '@/routes';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
@@ -30,14 +30,48 @@ onUnmounted(() => {
     window.removeEventListener('scroll', onScroll);
 });
 
-withDefaults(
+type PlanCard = {
+    code: 'basic' | 'medium' | 'plus' | 'premium';
+    name: string;
+    monthly_price: number;
+    annual_price_total: number;
+    annual_monthly_equivalent: number;
+    limits: {
+        products: number;
+        product_images: number | null;
+        gallery_images: number;
+        banners: number;
+    };
+    trial_days: number;
+};
+
+const props = withDefaults(
     defineProps<{
         canRegister: boolean;
+        planCatalog: PlanCard[];
+        trialDays: number;
     }>(),
     {
         canRegister: true,
+        planCatalog: () => [],
+        trialDays: 14,
     },
 );
+
+const planOrder: Record<PlanCard['code'], number> = {
+    basic: 1,
+    medium: 2,
+    plus: 3,
+    premium: 4,
+};
+
+const orderedPlans = computed(() =>
+    [...props.planCatalog].sort((a, b) => planOrder[a.code] - planOrder[b.code]),
+);
+
+function formatBrl(value: number): string {
+    return value.toFixed(2).replace('.', ',');
+}
 </script>
 
 
@@ -68,6 +102,8 @@ withDefaults(
                         Funciona</a>
                     <a href="#planos"
                         class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Planos</a>
+                    <a href="#trial"
+                        class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Trial</a>
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
@@ -79,7 +115,7 @@ withDefaults(
                             Entrar
                         </BaseButton>
 
-                        <BaseButton v-if="canRegister" as="Link" :href="register()" variant="pill" size="sm"
+                        <BaseButton v-if="props.canRegister" as="Link" :href="register()" variant="pill" size="sm"
                             trailing-icon="ArrowRight">
                             Criar conta grátis
                         </BaseButton>
@@ -109,12 +145,13 @@ withDefaults(
                 <a href="#como-funciona" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Como
                     Funciona</a>
                 <a href="#planos" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Planos</a>
+                <a href="#trial" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Trial</a>
                 <hr class="border-slate-100" />
                 <a v-if="$page.props.auth.user" :href="['/painel']"
                     class="text-base font-medium text-emerald-600">Painel</a>
                 <template v-else>
                     <a :href="['/login']" class="text-base font-medium text-slate-600">Entrar</a>
-                     <BaseButton v-if="canRegister" as="Link" :href="register()" variant="dark" size="lg"
+                     <BaseButton v-if="props.canRegister" as="Link" :href="register()" variant="dark" size="lg"
                             trailing-icon="ArrowRight">
                             Criar conta grátis
                         </BaseButton>
@@ -254,65 +291,86 @@ withDefaults(
         </section>
 
         <!-- Plans Section -->
-        <section id="planos" class="py-20 bg-white">
+        <section id="planos" class="py-24 bg-gradient-to-b from-white to-slate-50">
             <div class="max-w-7xl mx-auto px-6">
-                <div class="text-center max-w-3xl mx-auto mb-12">
-                    <h2 class="text-3xl font-bold text-slate-900 mb-4">Planos</h2>
-                    <p class="text-slate-600">Escolha o plano ideal para sua loja.</p>
+                <div class="text-center max-w-3xl mx-auto mb-14">
+                    <h2 class="text-4xl font-extrabold text-slate-900 mb-4">Planos Para Crescer</h2>
+                    <p class="text-slate-600">Escolha o plano ideal para sua fase. O Plano Médio é o mais equilibrado para vender com escala.</p>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-8 items-start mx-auto max-w-4xl md:p-8">
-                    <div class="w-full max-w-md p-8 bg-white border border-slate-100 rounded-2xl text-center">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">{{ content.plans.monthly.name }}</h3>
-                        <div class="mb-2">
-                            <span class="text-4xl font-extrabold text-slate-900">{{ content.plans.monthly.price
-                                }}</span>
-                            <span class="text-slate-500"> {{ content.plans.monthly.per }}</span>
+                <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
+                    <article
+                        v-for="plan in orderedPlans"
+                        :key="plan.code"
+                        class="relative rounded-3xl p-6 border transition-all duration-300 hover:-translate-y-1"
+                        :class="plan.code === 'medium'
+                            ? 'bg-gradient-to-b from-emerald-600 to-emerald-500 text-white border-emerald-500 shadow-2xl shadow-emerald-500/30 xl:scale-105'
+                            : 'bg-white border-slate-200 text-slate-900 hover:shadow-xl'"
+                    >
+                        <div v-if="plan.code === 'medium'" class="absolute -top-3 left-1/2 -translate-x-1/2">
+                            <span class="px-4 py-1 rounded-full text-xs font-bold tracking-wide bg-slate-900 text-white">
+                                MAIS ESCOLHIDO
+                            </span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-6"></p>
 
-                        <BaseButton variant="dark" block class="mb-6" :href="register()" as="Link">
-                            Escolher Mensal
-                        </BaseButton>
-
-                        <ul class="space-y-4">
-                            <li v-for="(b, idx) in content.plans.monthly.bullets" :key="idx"
-                                class="flex items-start gap-3">
-                                <component :is="getIcon('CheckCircle2')" class="w-5 h-5 text-emerald-500" />
-                                <span class="text-sm text-slate-600">{{ b }}</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div
-                        class="w-full max-w-md p-8 bg-white border-2 border-emerald-500 rounded-2xl shadow-xl relative transform lg:-translate-y-4">
-                        <div
-                            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide shadow-lg">
-                            {{ content.plans.annual.badge }}</div>
-
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">{{ content.plans.annual.name }}</h3>
-                        <p class="text-emerald-600 text-sm font-medium mb-6">Economize 20% em comparação ao mensal</p>
-
-                        <div class="mb-2">
-                            <span class="text-5xl font-extrabold text-slate-900">{{ content.plans.annual.price }}</span>
-                            <span class="text-slate-500"> {{ content.plans.annual.per }}</span>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold">{{ plan.name }}</h3>
+                            <span
+                                class="text-[11px] uppercase font-semibold px-2 py-1 rounded-full"
+                                :class="plan.code === 'medium' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'"
+                            >
+                                {{ plan.code }}
+                            </span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-8">{{ content.plans.annual.note }}</p>
 
-                        <BaseButton variant="primary" block class="mb-8" :href="register()" as="Link">
-                            Escolher Anual
-                        </BaseButton>
+                        <div class="mt-5">
+                            <p class="text-sm opacity-90">Mensal</p>
+                            <p class="text-3xl font-extrabold">R$ {{ formatBrl(plan.monthly_price) }}</p>
+                            <p class="text-xs mt-1 opacity-80">Anual: R$ {{ formatBrl(plan.annual_monthly_equivalent) }}/mês</p>
+                            <p class="text-xs opacity-80">Total anual: R$ {{ formatBrl(plan.annual_price_total) }}</p>
+                        </div>
 
-                        <ul class="space-y-4">
-                            <li v-for="(b, idx) in content.plans.annual.bullets" :key="idx"
-                                class="flex items-start gap-3">
-                                <component :is="getIcon('CheckCircle2')" class="w-5 h-5 text-emerald-500" />
-                                <span class="text-sm text-slate-600">{{ b }}</span>
-                            </li>
+                        <ul class="mt-5 space-y-2 text-sm">
+                            <li>Produtos: {{ plan.limits.products }}</li>
+                            <li>Fotos/produto: {{ plan.limits.product_images ?? 'Ilimitadas' }}</li>
+                            <li>Galeria: {{ plan.limits.gallery_images }} fotos</li>
+                            <li>Banners: {{ plan.limits.banners }}</li>
+                            <li>Trial: {{ plan.trial_days }} dias</li>
                         </ul>
-                    </div>
 
-                    <div class="hidden md:block"></div>
+                        <BaseButton
+                            v-if="props.canRegister"
+                            :variant="plan.code === 'medium' ? 'dark' : 'primary'"
+                            block
+                            class="mt-6"
+                            :href="register()"
+                            as="Link"
+                        >
+                            Quero este plano
+                        </BaseButton>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="trial" class="py-20 bg-slate-50 border-t border-slate-100">
+            <div class="max-w-5xl mx-auto px-6">
+                <div class="rounded-3xl border border-slate-200 bg-white p-8 md:p-10">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-4">Como funciona o trial de {{ props.trialDays }} dias</h2>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
+                        <div class="rounded-xl bg-slate-50 p-4 border">
+                            <p class="font-semibold mb-2">1. Cadastro imediato</p>
+                            <p>Ao criar a conta, voce entra com acesso completo durante o periodo de teste.</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 p-4 border">
+                            <p class="font-semibold mb-2">2. Aviso de regularizacao</p>
+                            <p>No fim do trial, a plataforma exige escolha de plano e pagamento para continuar.</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 p-4 border">
+                            <p class="font-semibold mb-2">3. Continuidade da vitrine</p>
+                            <p>Com assinatura paga em dia, painel e vitrine publica seguem ativos sem bloqueios.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

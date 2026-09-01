@@ -2,41 +2,65 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use App\Enums\SubscriptionStatus;
 use App\Models\Subscription;
-use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CheckSubscriptionStatus extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'subscriptions:check-status';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Verifica e atualiza o status das assinaturas expiradas ou pendentes';
+    protected $description = 'Atualiza status de assinatura e ativa/desativa contas conforme pagamento';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): void
     {
-         $today = Carbon::now();
+        $today = now()->startOfDay();
 
-        Subscription::where('status', 'trial')
+        Subscription::where('status', SubscriptionStatus::TRIAL->value)
             ->whereDate('trial_ends_at', '<', $today)
-            ->update(['status' => 'expired']);
+            ->update(['status' => SubscriptionStatus::EXPIRED->value]);
 
-        Subscription::where('status', 'active')
+        Subscription::where('status', SubscriptionStatus::ACTIVE->value)
             ->whereDate('next_billing_at', '<', $today)
-            ->update(['status' => 'past_due']);
+            ->update(['status' => SubscriptionStatus::PAST_DUE->value]);
 
-        $this->info('Verificação de assinaturas concluída com sucesso!');
+        Subscription::whereIn('status', [
+            SubscriptionStatus::EXPIRED->value,
+            SubscriptionStatus::PAST_DUE->value,
+            SubscriptionStatus::CANCELLED->value,
+        ])
+            ->with('user')
+            ->get()
+            ->each(function (Subscription $subscription) {
+                if ($subscription->user && $subscription->user->is_active) {
+                    $subscription->user->update(['is_active' => false]);
+                }
+            });
+
+        Subscription::whereIn('status', [
+            SubscriptionStatus::TRIAL->value,
+            SubscriptionStatus::ACTIVE->value,
+        ])
+            ->with('user')
+            ->get()
+            ->each(function (Subscription $subscription) use ($today) {
+                if (!$subscription->user) {
+                    return;
+                }
+
+                if ($subscription->status === SubscriptionStatus::TRIAL && $subscription->trial_ends_at && $subscription->trial_ends_at->lt($today)) {
+                    return;
+                }
+
+                if ($subscription->status === SubscriptionStatus::ACTIVE && $subscription->next_billing_at && $subscription->next_billing_at->lt($today)) {
+                    return;
+                }
+
+                if (!$subscription->user->is_active) {
+                    $subscription->user->update(['is_active' => true]);
+                }
+            });
+
+        $this->info('Status de assinaturas atualizado.');
     }
 }

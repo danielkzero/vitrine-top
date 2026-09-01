@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Dashboard\BannerController;
+use App\Http\Middleware\EnsureAccountIsInGoodStanding;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::middleware('auth')
+Route::middleware(['auth', EnsureAccountIsInGoodStanding::class])
     ->prefix('painel')
     ->group(function () {
         Route::get('/banners', [BannerController::class, 'index'])

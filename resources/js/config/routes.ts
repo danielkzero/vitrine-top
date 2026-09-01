@@ -22,6 +22,10 @@ export const routes = {
         payments: {
             index: '/painel/payments',
         },
+        billing: {
+            index: '/painel/cobranca',
+            required: '/painel/assinatura',
+        },
         settings: '/painel/settings',
         banners: {
             index: '/painel/banners'

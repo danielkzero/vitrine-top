@@ -8,14 +8,21 @@ use App\Models\Page;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Review;
+use App\Services\PlanLimitService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class PageController extends Controller
 {
+    public function __construct(private readonly PlanLimitService $planLimitService)
+    {
+    }
+
     /**
-     * Lista todas as páginas do usuário autenticado.
+     * Lista todas as paginas do usuario autenticado.
      */
     public function index()
     {
@@ -24,6 +31,7 @@ class PageController extends Controller
         Page::ensureDefaultPages($user->id);
 
         $pages = Page::where('user_id', auth()->id())
+            ->withCount('visits')
             ->ordered()
             ->paginate(10)
             ->through(fn($page) => [
@@ -36,14 +44,19 @@ class PageController extends Controller
                 'order' => $page->order,
                 'public_url' => $page->public_url,
                 'type' => $page->type,
+                'total_visits' => $page->total_visits,
+                'unique_visits' => $page->visits_count,
             ]);
 
         $avaliacoes = Review::where('user_id', auth()->id())->get();
 
-        $produtos = Product::with('images')->where('user_id', auth()->id())->get()->map(function ($produto) {
-            $produto->imagensParaExcluir = [];
-            return $produto;
-        });;
+        $produtos = Product::with('images')
+            ->where('user_id', auth()->id())
+            ->get()
+            ->map(function ($produto) {
+                $produto->imagensParaExcluir = [];
+                return $produto;
+            });
 
         $categorias = Category::where('user_id', auth()->id())->get();
 
@@ -56,7 +69,7 @@ class PageController extends Controller
     }
 
     /**
-     * Exibe o formulário de criação.
+     * Exibe o formulario de criacao.
      */
     public function create()
     {
@@ -64,16 +77,15 @@ class PageController extends Controller
     }
 
     /**
-     * Armazena uma nova página.
+     * Armazena uma nova pagina.
      */
     public function store(Request $request)
     {
-        // Limite máximo de páginas por usuário
         $maxPages = 6;
         if (Page::where('user_id', auth()->id())->count() >= $maxPages) {
             return redirect()
                 ->back()
-                ->withErrors(['max' => "Você atingiu o limite máximo de $maxPages páginas."]);
+                ->withErrors(['max' => "Voce atingiu o limite maximo de $maxPages paginas."]);
         }
 
         $data = $request->validate([
@@ -93,22 +105,23 @@ class PageController extends Controller
         Page::create($data);
 
         return redirect()
-            ->route('dashboard.pages.index')
-            ->with('success', 'Página criada com sucesso!');
+            ->route('painel.pages.index')
+            ->with('success', 'Pagina criada com sucesso!');
     }
 
     /**
-     * Exibe o formulário de edição.
+     * Exibe o formulario de edicao.
      */
     public function edit(string $key)
     {
-        // Busca a página pelo campo "key"
-        $page = Page::where('key', $key)->firstOrFail();
+        $page = Page::where('key', $key)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
-        // Define dados extras conforme o tipo da página
         $avaliacoes = [];
-        if ($page->type === 'reviews')
+        if ($page->type === 'reviews') {
             $avaliacoes = Review::where('user_id', auth()->id())->get();
+        }
 
         $produtos = [];
         $categorias = [];
@@ -126,7 +139,7 @@ class PageController extends Controller
     }
 
     /**
-     * Atualiza uma página existente.
+     * Atualiza uma pagina existente.
      */
     public function update(Request $request, string $key)
     {
@@ -134,77 +147,108 @@ class PageController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        /* ============================================================
-           1) DECODIFICAR JSONS
-        ============================================================ */
         $categorias = $request->categorias ? json_decode($request->categorias, true) : [];
         $produtos = $request->produtos ? json_decode($request->produtos, true) : [];
-        $pageData =json_decode($request->page, true);
+        $pageData = json_decode($request->page, true);
 
-        /* ============================================================
-           2) VALIDAR CAMPOS DA PÁGINA
-        ============================================================ */
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($pageData)) {
+            return back()->withErrors(['page' => 'Formato invalido dos dados enviados.']);
+        }
+
+        $newProducts = collect($produtos)
+            ->filter(fn($product) => empty($product['id']) && !empty($product['name']) && isset($product['price']))
+            ->count();
+        $existingProductsCount = Product::where('user_id', auth()->id())->count();
+
+        try {
+            $this->planLimitService->ensureCanAddProducts(auth()->user(), $existingProductsCount, $newProducts);
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors());
+        }
+
+        foreach ($produtos as $product) {
+            if (!isset($product['images']) || !is_array($product['images'])) {
+                continue;
+            }
+
+            try {
+                $this->planLimitService->ensureProductImagesWithinLimit(auth()->user(), count($product['images']));
+            } catch (ValidationException $e) {
+                return back()->withErrors($e->errors());
+            }
+        }
+
+        if (($pageData['type'] ?? null) === 'gallery') {
+            $galleryImagesCount = is_array($pageData['content'] ?? null) ? count($pageData['content']) : 0;
+
+            try {
+                $this->planLimitService->ensureGalleryWithinLimit(auth()->user(), $galleryImagesCount);
+            } catch (ValidationException $e) {
+                return back()->withErrors($e->errors());
+            }
+        }
+
         $validatedPage = validator(['page' => $pageData], [
-            'page.user_id' => 'required|exists:users,id',
-            'page.key' => 'required|string|max:100',
             'page.title' => 'required|string|max:255',
             'page.icon' => 'nullable|string|max:100',
             'page.is_active' => 'boolean',
             'page.order' => 'nullable|integer',
-            'page.type' => 'required|string',
+            'page.type' => 'required|in:products,reviews,links,simple',
             'page.content' => 'nullable|string',
             'page.cover_image' => 'nullable|string|max:255',
             'page.seo_title' => 'nullable|string|max:255',
             'page.seo_description' => 'nullable|string|max:255',
         ])->validate();
 
-         
+        $categoriasPersistidas = DB::transaction(function () use ($validatedPage, $page, $categorias, $produtos, $request) {
+            $page->update($validatedPage['page']);
 
-        $page->update($validatedPage['page']);
+            $categoriasPersistidas = [];
+            foreach ($categorias as $cat) {
+                if (empty($cat['name'])) {
+                    continue;
+                }
 
-        /* ============================================================
-           3) CRUD DE CATEGORIAS
-        ============================================================ */
-        $categoriasPersistidas = [];
+                if (!isset($cat['id'])) {
+                    $categoria = Category::create([
+                        'user_id' => auth()->id(),
+                        'name' => $cat['name'],
+                    ]);
+                    $categoriasPersistidas[] = $categoria;
+                    continue;
+                }
 
-        foreach ($categorias as $cat) {
-            // Criar categoria nova
-            if (!isset($cat['id'])) {
-                $categoria = Category::create([
-                    'user_id' => auth()->id(),
-                    'name' => $cat['name']
-                ]);
-                $cat['id'] = $categoria->id;
-                $categoriasPersistidas[] = $categoria;
-                continue;
+                Category::where('user_id', auth()->id())
+                    ->where('id', $cat['id'])
+                    ->update(['name' => $cat['name']]);
+
+                $categoriaAtualizada = Category::where('user_id', auth()->id())
+                    ->where('id', $cat['id'])
+                    ->first();
+
+                if ($categoriaAtualizada) {
+                    $categoriasPersistidas[] = $categoriaAtualizada;
+                }
             }
 
-            // Atualizar categoria existente
-            Category::where('user_id', auth()->id())
-                ->where('id', $cat['id'])
-                ->update([
-                    'name' => $cat['name']
-                ]);
+            $uploadedImages = $request->file('produtos_images', []);
+            $fileIndex = 0;
+            $plan = $this->planLimitService->getPlanForUser(auth()->user());
+            $productImagesLimit = $plan->product_images_limit;
 
-            $categoriasPersistidas[] = Category::find($cat['id']);
-        }
+            foreach ($produtos as $p) {
+                if (empty($p['name']) || !isset($p['price'])) {
+                    continue;
+                }
 
-        /* ============================================================
-           4) MANUSEAR OS ARQUIVOS DE IMAGEM DOS PRODUTOS
-        ============================================================ */
-        $uploadedImages = $request->file('produtos_images', []);
+                $categoryId = $p['category_id'] ?? null;
+                if ($categoryId) {
+                    $categoryId = Category::where('user_id', auth()->id())
+                        ->where('id', $categoryId)
+                        ->value('id');
+                }
 
-       
-        // Vamos distribuir arquivos na ordem exata que vieram
-        $fileIndex = 0;
-
-        /* ============================================================
-           5) CRUD DOS PRODUTOS
-        ============================================================ */
-        foreach ($produtos as &$p) {
-            /* ---------- CRIAR ---------- */
-            if (!isset($p['id'])) {
-                $produto = Product::create([
+                $productPayload = [
                     'user_id' => auth()->id(),
                     'name' => $p['name'],
                     'price' => $p['price'],
@@ -213,53 +257,59 @@ class PageController extends Controller
                     'description' => $p['description'] ?? null,
                     'featured' => $p['featured'] ?? false,
                     'is_public' => $p['is_public'] ?? true,
-                    'category_id' => $p['category_id'],
-                ]);
+                    'category_id' => $categoryId,
+                ];
 
-                $p['id'] = $produto->id;
-            }
-            /* ---------- ATUALIZAR ---------- */ else {
-                Product::where('user_id', auth()->id())
-                    ->where('id', $p['id'])
-                    ->update([
-                        'name' => $p['name'],
-                        'price' => $p['price'],
-                        'discount_price' => $p['discount_price'] ?? null,
-                        'stock' => $p['stock'] ?? 0,
-                        'description' => $p['description'] ?? null,
-                        'featured' => $p['featured'] ?? false,
-                        'is_public' => $p['is_public'] ?? true,
-                        'category_id' => $p['category_id'],
-                    ]);
-            }
+                if (!isset($p['id'])) {
+                    $produto = Product::create($productPayload);
+                    $productId = $produto->id;
+                } else {
+                    Product::where('user_id', auth()->id())
+                        ->where('id', $p['id'])
+                        ->update($productPayload);
+                    $productId = $p['id'];
+                }
 
-            // 🔥 Excluir imagens antigas
-            ProductImage::where('product_id', $p['id'])->delete();
+                ProductImage::whereHas('product', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })->where('product_id', $productId)->delete();
 
-            // 🔥 Criar novas imagens
-            if (isset($p['images']) && is_array($p['images'])) {
-                foreach ($p['images'] as $img) {
-                    $imagePath = null;
+                if (!isset($p['images']) || !is_array($p['images'])) {
+                    continue;
+                }
 
-                    // Se existir arquivo correspondente
+                $images = $p['images'];
+                if ($productImagesLimit !== null) {
+                    $images = array_slice($images, 0, $productImagesLimit);
+                }
+
+                foreach ($images as $img) {
+                    $imagePath = $img['image_path'] ?? null;
+
                     if (isset($uploadedImages[$fileIndex])) {
-                        $imagePath = '/storage/'.$uploadedImages[$fileIndex]->store('products', 'public_direct');
+                        $imagePath = '/storage/' . $uploadedImages[$fileIndex]->store('products', 'public_direct');
                         $fileIndex++;
                     }
 
+                    if (!$imagePath) {
+                        continue;
+                    }
+
                     ProductImage::create([
-                        'product_id' => $p['id'],
+                        'product_id' => $productId,
                         'image_path' => $imagePath,
                         'is_cover' => $img['is_cover'] ?? false,
                     ]);
                 }
             }
-        }
+
+            return $categoriasPersistidas;
+        });
 
         return redirect()
             ->back()
             ->with([
-                'success' => 'Página atualizada com sucesso!',
+                'success' => 'Pagina atualizada com sucesso!',
                 'categorias' => $categoriasPersistidas,
             ]);
     }
@@ -268,12 +318,17 @@ class PageController extends Controller
     {
         $request->validate([
             'pages' => 'required|array',
-            'pages.*.id' => 'required|integer|exists:pages,id',
+            'pages.*.id' => [
+                'required',
+                'integer',
+                Rule::exists('pages', 'id')->where(fn($query) => $query->where('user_id', auth()->id())),
+            ],
             'pages.*.order' => 'required|integer',
         ]);
 
         foreach ($request->pages as $p) {
             Page::where('id', $p['id'])
+                ->where('user_id', auth()->id())
                 ->update(['order' => $p['order']]);
         }
 
@@ -281,7 +336,7 @@ class PageController extends Controller
     }
 
     /**
-     * Remove uma página.
+     * Remove uma pagina.
      */
     public function destroy(Page $page)
     {
@@ -289,11 +344,11 @@ class PageController extends Controller
 
         $page->delete();
 
-        return back()->with('success', 'Página removida com sucesso!');
+        return back()->with('success', 'Pagina removida com sucesso!');
     }
 
     /**
-     * Exibe uma página pública (fora do dashboard).
+     * Exibe uma pagina publica (fora do dashboard).
      */
     public function show(string $key)
     {
@@ -313,7 +368,7 @@ class PageController extends Controller
     }
 
     /**
-     * Protege o acesso de outros usuários.
+     * Protege o acesso de outros usuarios.
      */
     private function authorizeAccess(Page $page)
     {

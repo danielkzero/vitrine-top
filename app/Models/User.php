@@ -96,6 +96,30 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Subscription::class);
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function currentPlan(): ?Plan
+    {
+        $subscription = $this->subscription;
+
+        if (!$subscription) {
+            return null;
+        }
+
+        if ($subscription->relationLoaded('planModel') && $subscription->planModel) {
+            return $subscription->planModel;
+        }
+
+        if ($subscription->plan_id) {
+            return Plan::find($subscription->plan_id);
+        }
+
+        return null;
+    }
+
     public function payments()
     {
         return $this->hasMany(Payment::class);
@@ -104,6 +128,36 @@ class User extends Authenticatable implements MustVerifyEmail
     public function banners()
     {
         return $this->hasMany(Banner::class);
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
+
+    public function pageViews()
+    {
+        return $this->hasMany(PageView::class);
+    }
+
+    public function productViews()
+    {
+        return $this->hasMany(ProductView::class);
     }
 
     /**

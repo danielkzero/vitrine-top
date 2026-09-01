@@ -93,14 +93,14 @@ class Page extends Model
     public static function ensureDefaultPages($userId)
     {
         $defaultPages = [
-            
+
             ['key' => 'catalogo', 'icon' => 'Book', 'title' => 'Catálogo', 'is_active' => true, 'type' => 'products', 'order' => 1],
             ['key' => 'galeria', 'icon' => 'Image', 'title' => 'Galeria', 'is_active' => false, 'type' => 'simple', 'order' => 2],
             ['key' => 'links', 'icon' => 'Link', 'title' => 'Links', 'is_active' => false, 'type' => 'links', 'order' => 3],
             ['key' => 'sobre', 'icon' => 'BadgeInfo', 'title' => 'Sobre', 'is_active' => false, 'type' => 'simple', 'order' => 4],
             ['key' => 'avaliacoes', 'icon' => 'Star', 'title' => 'Avaliações', 'is_active' => true, 'type' => 'reviews', 'order' => 5],
-            ['key' => 'extra', 'icon' => 'FileText', 'title' => 'Página extra', 'is_active' => true, 'type' => 'simple', 'order' => 6],            
-            
+            ['key' => 'extra', 'icon' => 'FileText', 'title' => 'Página extra', 'is_active' => true, 'type' => 'simple', 'order' => 6],
+
         ];
 
         $existingKeys = self::where('user_id', $userId)->pluck('key')->toArray();
@@ -122,5 +122,15 @@ class Page extends Model
                 ]);
             }
         }
+    }
+
+    public function visits()
+    {
+        return $this->hasMany(PageVisit::class);
+    }
+
+    public function pageViews()
+    {
+        return $this->hasMany(PageView::class);
     }
 }

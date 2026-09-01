@@ -9,28 +9,29 @@ use Inertia\Inertia;
 
 class ReviewController extends BaseController
 {
-    /**
-     * GET /dashboard/reviews
-     */
     public function index(Request $request)
     {
         $reviews = Review::where('user_id', $this->user->id)
+            ->with('product:id,name')
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Retorno dinâmico (JSON ou Inertia)
         if ($request->wantsJson()) {
             return $this->json(['reviews' => $reviews]);
         }
 
         return Inertia::render('Dashboard/Reviews/Index', [
             'reviews' => $reviews,
+            'stats' => [
+                'total' => $reviews->count(),
+                'approved' => $reviews->where('status', 'approved')->count(),
+                'pending' => $reviews->where('status', 'pending')->count(),
+                'rejected' => $reviews->where('status', 'rejected')->count(),
+                'average_rating' => round((float) ($reviews->avg('rating') ?? 0), 1),
+            ],
         ]);
     }
 
-    /**
-     * POST /dashboard/reviews
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -50,14 +51,11 @@ class ReviewController extends BaseController
         return redirect()
             ->back()
             ->with([
-                'message' => 'Avaliação criada com sucesso.',
+                'message' => 'Avaliacao criada com sucesso.',
                 'review' => $review,
             ]);
     }
 
-    /**
-     * GET /dashboard/reviews/{review}
-     */
     public function show(Review $review)
     {
         $this->authorizeOwnership($review);
@@ -65,49 +63,48 @@ class ReviewController extends BaseController
         return $this->json(['review' => $review]);
     }
 
-    /**
-     * PUT/PATCH /dashboard/reviews/{review}
-     */
     public function update(Request $request, Review $review)
     {
         $this->authorizeOwnership($review);
 
         $data = $request->validate([
-            'customer_name' => ['required', 'string', 'max:255'],
-            'product_id' => 'required|integer|exists:products,id',
+            'customer_name' => ['sometimes', 'string', 'max:255'],
+            'product_id' => 'sometimes|integer|exists:products,id',
             'whatsapp' => 'nullable|string|max:20',
-            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'rating' => ['sometimes', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string'],
-            'status' => ['nullable', 'in:pending,approved,rejected'],
+            'status' => ['sometimes', 'in:pending,approved,rejected'],
         ]);
 
         $review->update($data);
 
-        return $this->json([
-            'message' => 'Avaliação atualizada com sucesso.',
-            'review' => $review,
-        ]);
+        if ($request->wantsJson()) {
+            return $this->json([
+                'message' => 'Avaliacao atualizada com sucesso.',
+                'review' => $review,
+            ]);
+        }
+
+        return back()->with('success', 'Avaliacao atualizada com sucesso.');
     }
 
-    /**
-     * DELETE /dashboard/reviews/{review}
-     */
-    public function destroy(Review $review)
+    public function destroy(Request $request, Review $review)
     {
         $this->authorizeOwnership($review);
 
         $review->delete();
 
-        return $this->json(['message' => 'Avaliação removida com sucesso.']);
+        if ($request->wantsJson()) {
+            return $this->json(['message' => 'Avaliacao removida com sucesso.']);
+        }
+
+        return back()->with('success', 'Avaliacao removida com sucesso.');
     }
 
-    /**
-     * Helper para verificar se pertence ao usuário autenticado.
-     */
     protected function authorizeOwnership(Review $review)
     {
         if ($review->user_id !== $this->user->id) {
-            abort(403, 'Esta avaliação não pertence ao usuário autenticado.');
+            abort(403, 'Esta avaliacao nao pertence ao usuario autenticado.');
         }
     }
 }

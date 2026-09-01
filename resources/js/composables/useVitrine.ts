@@ -1,15 +1,15 @@
-// src/composables/useVitrine.ts
+﻿// src/composables/useVitrine.ts
 import axios from 'axios'
 import { ref, computed, UnwrapRef } from 'vue'
 
 /**
  * Composable para carregar dados da vitrine via API (REST).
- * - Usa cache simples em memória por slug
+ * - Usa cache simples em memÃ³ria por slug
  * - Faz carregamento condicional (pages => only load products/reviews/categories when needed)
- * - Retorna métodos de reload e helpers
+ * - Retorna mÃ©todos de reload e helpers
  */
 
-// Tipagens mínimas (adicione mais campos conforme necessidade)
+// Tipagens mÃ­nimas (adicione mais campos conforme necessidade)
 export interface User {
   id: number
   slug: string
@@ -80,12 +80,12 @@ export function useVitrineApi() {
 
     try {
       loading.value = true
-      const res = await axios.get(`/v1/users/${encodeURIComponent(slug)}`)
+      const res = await axios.get(`/api/v1/users/${encodeURIComponent(slug)}`)
       const user = res.data
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), user })
       return user
     } catch (err: any) {
-      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar usuário'
+      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar usuÃ¡rio'
       throw err
     } finally {
       loading.value = false
@@ -98,12 +98,12 @@ export function useVitrineApi() {
 
     try {
       loading.value = true
-      const res = await axios.get(`/v1/users/${encodeURIComponent(slug)}/pages`)
+      const res = await axios.get(`/api/v1/users/${encodeURIComponent(slug)}/pages`)
       const pages: Page[] = res.data
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), pages })
       return pages
     } catch (err: any) {
-      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar páginas'
+      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar pÃ¡ginas'
       throw err
     } finally {
       loading.value = false
@@ -116,7 +116,7 @@ export function useVitrineApi() {
 
     try {
       loading.value = true
-      const res = await axios.get(`/v1/users/${encodeURIComponent(slug)}/products`)
+      const res = await axios.get(`/api/v1/users/${encodeURIComponent(slug)}/products`)
       const products: Product[] = res.data?.data ?? res.data // paginate or plain list
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), products })
       return products
@@ -131,7 +131,7 @@ export function useVitrineApi() {
   async function fetchProductById(slug: string, id: number) {
     try {
       loading.value = true
-      const res = await axios.get(`/v1/users/${encodeURIComponent(slug)}/products/${id}`)
+      const res = await axios.get(`/api/v1/users/${encodeURIComponent(slug)}/products/${id}`)
       return res.data
     } catch (err: any) {
       error.value = err?.response?.data?.message || err.message || 'Erro ao carregar produto'
@@ -147,7 +147,7 @@ export function useVitrineApi() {
 
     try {
       loading.value = true
-      const res = await axios.get(`/v1/users/${encodeURIComponent(slug)}/categories`)
+      const res = await axios.get(`/api/v1/users/${encodeURIComponent(slug)}/categories`)
       const categories = res.data
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), categories })
       return categories
@@ -165,7 +165,7 @@ export function useVitrineApi() {
 
     try {
       loading.value = true
-      const res = await axios.get(`/v1/users/${encodeURIComponent(slug)}/banners`)
+      const res = await axios.get(`/api/v1/users/${encodeURIComponent(slug)}/banners`)
       const banners = res.data
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), banners })
       return banners
@@ -183,7 +183,7 @@ export function useVitrineApi() {
 
     try {
       loading.value = true
-      const res = await axios.get(`/v1/users/${encodeURIComponent(slug)}/reviews`)
+      const res = await axios.get(`/api/v1/users/${encodeURIComponent(slug)}/reviews`)
       const reviews = res.data?.data ?? res.data
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), reviews })
       return reviews

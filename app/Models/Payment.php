@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -101,7 +102,7 @@ class Payment extends Model
         ]);
 
         // Se estiver vinculada a uma assinatura, pode atualizar o status dela
-        if ($this->subscription && $this->subscription->status !== 'active') {
+        if ($this->subscription && $this->subscription->status !== SubscriptionStatus::ACTIVE) {
             $this->subscription->activate($this->method);
         }
     }
