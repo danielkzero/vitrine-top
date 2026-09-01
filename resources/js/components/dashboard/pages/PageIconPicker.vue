@@ -4,8 +4,7 @@
     <button
       type="button"
       @click="open = !open"
-      class="flex items-center justify-center w-10 h-10 rounded-lg
-             border border-slate-200 hover:bg-slate-100 transition"
+      class="flex h-10 w-10 items-center justify-center rounded-lg border border-border transition hover:bg-accent hover:text-accent-foreground"
     >
       <component
         :is="getIcon(modelValue)"
@@ -16,18 +15,17 @@
     <!-- Picker -->
     <div
       v-if="open"
-      class="mt-2 grid md:grid-cols-6 grid-cols-3 gap-2 border p-3 rounded-xl 
-             bg-white dark:bg-white/10 shadow-xl z-20"
+      class="z-20 mt-2 grid grid-cols-3 gap-2 rounded-xl border border-border bg-popover p-3 text-popover-foreground shadow-xl md:grid-cols-6"
     >
       <button
         v-for="icon in icons"
         :key="icon.name"
         type="button"
         @click="select(icon.name)"
-        class="p-2 hover:bg-gray-100 rounded-xl flex flex-col items-center gap-1"
+        class="flex flex-col items-center gap-1 rounded-xl p-2 hover:bg-accent hover:text-accent-foreground"
       >
         <component :is="getIcon(icon.name)" class="h-6 w-6" />
-        <div class="text-xs mt-1 text-gray-500 text-center">
+        <div class="mt-1 text-center text-xs text-muted-foreground">
           {{ icon.label }}
         </div>
       </button>

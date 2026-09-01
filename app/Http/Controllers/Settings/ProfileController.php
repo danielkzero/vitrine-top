@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
@@ -18,7 +20,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        return Inertia::render('Settings/Profile', [
+        return Inertia::render('settings/Profile', [
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -26,9 +28,9 @@ class ProfileController extends Controller
                 'business_name' => $user->business_name,
                 'slug' => $user->slug,
                 'subtitle' => $user->subtitle,
-                'avatar' => $user->avatar ? asset('storage/' . $user->avatar) : null,
-                'logo_path' => $user->logo_path ? asset('storage/' . $user->logo_path) : null,
-                'background_path' => $user->background_path ? asset('storage/' . $user->background_path) : null,
+                'avatar' => $user->avatar ? asset('storage/'.$user->avatar) : null,
+                'logo_path' => $user->logo_path ? asset('storage/'.$user->logo_path) : null,
+                'background_path' => $user->background_path ? asset('storage/'.$user->background_path) : null,
                 'email' => $user->email,
                 'address' => $user->address,
                 'city' => $user->city,
@@ -37,11 +39,10 @@ class ProfileController extends Controller
                 'phone_primary' => $user->phone_primary,
                 'plan' => $user->plan,
                 'is_active' => $user->is_active,
-                'whatsapp' => $user->whatsapp
+                'whatsapp' => $user->whatsapp,
             ],
         ]);
     }
-
 
     public function updateStore(Request $request)
     {
@@ -50,7 +51,12 @@ class ProfileController extends Controller
         $data = $request->validate([
             'business_name' => ['required', 'string', 'max:255'],
             'subtitle' => ['nullable', 'string'],
-            'slug' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users', 'slug')->ignore($user->id),
+            ],
             'description' => ['nullable', 'string'],
             'theme_color' => ['required', 'string', 'max:20'],
             'logo_file' => ['nullable', 'image', 'max:2048'],
@@ -72,7 +78,7 @@ class ProfileController extends Controller
             }
 
             $path = $request->file('logo_file')->store('logos', 'public_direct');
-            $user->logo_path = '/storage/' . $path;
+            $user->logo_path = '/storage/'.$path;
         }
 
         /* ================================
@@ -88,7 +94,7 @@ class ProfileController extends Controller
             }
 
             $path = $request->file('background_file')->store('backgrounds', 'public_direct');
-            $user->background_path = '/storage/' . $path;
+            $user->background_path = '/storage/'.$path;
         }
 
         /* ================================
@@ -96,7 +102,7 @@ class ProfileController extends Controller
         ================================= */
         $user->business_name = $data['business_name'];
         $user->subtitle = $data['subtitle'] ?? null;
-        $user->slug = $data['slug'];
+        $user->slug = Str::slug($data['slug']);
         $user->description = $data['description'] ?? null;
         $user->theme_color = $data['theme_color'];
         $user->whatsapp = $data['whatsapp'];
@@ -111,12 +117,12 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = $request->user();        
+        $user = $request->user();
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'surname' => ['nullable', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'email', 'unique:users,email,'.$user->id],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'max:2'],
@@ -141,7 +147,7 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        if (!Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             return back()->withErrors(['password' => 'A senha informada está incorreta.']);
         }
 

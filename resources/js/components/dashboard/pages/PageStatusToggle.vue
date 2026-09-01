@@ -5,8 +5,8 @@
     class="inline-flex items-center justify-center text-sm font-medium rounded-xl px-3 py-2
            transition border"
     :class="modelValue
-      ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
-      : 'bg-gray-200 text-gray-600 border-gray-300'"
+      ? 'border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+      : 'border-border bg-muted text-muted-foreground'"
   >
     <component
       :is="modelValue ? getIcon('Eye') : getIcon('EyeOff')"

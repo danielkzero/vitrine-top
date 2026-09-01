@@ -22,20 +22,20 @@ const props = withDefaults(defineProps<Props>(), {
 const statusClasses = computed(() => {
     return props.active
         ? 'bg-emerald-100 text-emerald-700'
-        : 'bg-gray-200 text-gray-600'
+        : 'bg-muted text-muted-foreground'
 })
 </script>
 
 <template>
     <div
-        class="bg-white border border-slate-100 rounded-xl p-5 shadow-sm hover:shadow-md transition group flex flex-col justify-between">
+        class="group flex flex-col justify-between rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm transition hover:shadow-md">
         <!-- Header -->
         <div>
             <div class="flex items-center justify-between mb-3">
                 <!-- Ícone + título -->
                 <div class="flex items-center gap-2">
                     <component :is="getIcon(icon)" class="w-5 h-5 text-sky-600" />
-                    <h2 class="font-semibold text-slate-800 truncate">{{ title }}</h2>
+                    <h2 class="truncate font-semibold text-foreground">{{ title }}</h2>
                 </div>
 
                 <!-- Badge -->
@@ -43,7 +43,7 @@ const statusClasses = computed(() => {
             </div>
 
             <!-- Descrição -->
-            <p class="text-slate-600 text-sm line-clamp-3">
+            <p class="line-clamp-3 text-sm text-muted-foreground">
                 {{ description }}
             </p>
         </div>

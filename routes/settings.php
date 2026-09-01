@@ -21,7 +21,7 @@ Route::middleware(['auth', EnsureAccountIsInGoodStanding::class])->group(functio
         ->name('user-password.update');
 
     Route::get('settings/appearance', function () {
-        return Inertia::render('Settings/Appearance');
+        return Inertia::render('settings/Appearance');
     })->name('appearance.edit');
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
@@ -29,7 +29,7 @@ Route::middleware(['auth', EnsureAccountIsInGoodStanding::class])->group(functio
 
     // NOVA ROTA DA LOJA
     Route::get('settings/store', function () {
-        return Inertia::render('Settings/MyStore');
+        return Inertia::render('settings/MyStore');
     })->name('store.edit');
 
     Route::put('settings/store', [ProfileController::class, 'updateStore'])

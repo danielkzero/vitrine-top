@@ -52,42 +52,42 @@ const summaryCards = computed(() => [
     label: 'Pedidos',
     value: formatNumber(analytics.value.total_orders),
     icon: 'ReceiptText',
-    color: 'text-sky-700',
+    color: 'text-sky-700 dark:text-sky-300',
     accent: 'bg-sky-400',
   },
   {
     label: 'Faturamento',
     value: formatCurrency(analytics.value.total_revenue),
     icon: 'CircleDollarSign',
-    color: 'text-emerald-700',
+    color: 'text-emerald-700 dark:text-emerald-300',
     accent: 'bg-emerald-400',
   },
   {
     label: 'Clientes',
     value: formatNumber(analytics.value.customers_count),
     icon: 'UsersRound',
-    color: 'text-indigo-700',
+    color: 'text-indigo-700 dark:text-indigo-300',
     accent: 'bg-indigo-400',
   },
   {
     label: 'Visitas',
     value: formatNumber(analytics.value.visits_count),
     icon: 'MousePointerClick',
-    color: 'text-amber-700',
+    color: 'text-amber-700 dark:text-amber-300',
     accent: 'bg-amber-400',
   },
   {
-    label: 'Paginas vistas',
+    label: 'Páginas vistas',
     value: formatNumber(analytics.value.page_views_count),
     icon: 'FileText',
-    color: 'text-fuchsia-700',
+    color: 'text-fuchsia-700 dark:text-fuchsia-300',
     accent: 'bg-fuchsia-400',
   },
   {
     label: 'Produtos vistos',
     value: formatNumber(analytics.value.product_views_count),
     icon: 'PackageSearch',
-    color: 'text-cyan-700',
+    color: 'text-cyan-700 dark:text-cyan-300',
     accent: 'bg-cyan-400',
   },
 ])
@@ -185,8 +185,8 @@ onMounted(async () => {
     <div class="container mx-auto px-4 py-6 flex flex-col gap-6">
       <div class="md:flex md:justify-start gap-3 space-y-3">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Painel</h1>
-          <p class="text-gray-500 dark:text-gray-200">Visao geral da sua loja e operacao de pedidos</p>
+          <h1 class="text-3xl font-bold text-foreground">Painel</h1>
+          <p class="text-muted-foreground">Visão geral da sua loja e operação de pedidos</p>
         </div>
 
         <div class="ms-auto gap-3 flex">
@@ -196,9 +196,9 @@ onMounted(async () => {
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <article v-for="card in summaryCards" :key="card.label" class="relative rounded-xl bg-white p-5 border border-slate-100 shadow-lg" :class="card.color">
+        <article v-for="card in summaryCards" :key="card.label" class="relative rounded-xl border border-border bg-card p-5 shadow-sm" :class="card.color">
           <div class="absolute left-0 top-0 h-full w-2 rounded-l-xl" :class="card.accent"></div>
-          <div class="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+          <div class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-muted">
             <component :is="getIcon(card.icon)" class="w-5 h-5" />
           </div>
           <p class="font-semibold text-sm">{{ card.label }}</p>
@@ -206,19 +206,19 @@ onMounted(async () => {
         </article>
       </div>
 
-      <section class="rounded-2xl border border-slate-100 bg-white shadow-lg">
-        <div class="p-4 border-b border-slate-100">
-          <h3 class="font-semibold text-slate-800">Consumo do plano</h3>
+      <section class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="border-b border-border p-4">
+          <h3 class="font-semibold text-foreground">Consumo do plano</h3>
         </div>
         <div class="p-4 grid md:grid-cols-2 gap-4">
           <article v-for="resource in resourceCards" :key="resource.label" class="border rounded-xl p-4">
             <div class="flex items-center justify-between mb-2">
-              <p class="text-sm font-medium text-slate-700">{{ resource.label }}</p>
-              <p class="text-xs text-slate-500">
+              <p class="text-sm font-medium text-foreground">{{ resource.label }}</p>
+              <p class="text-xs text-muted-foreground">
                 {{ formatNumber(resource.used) }} / {{ resource.limit === null ? 'ilimitado' : formatNumber(resource.limit) }}
               </p>
             </div>
-            <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-2 overflow-hidden rounded-full bg-muted">
               <div
                 class="h-full rounded-full bg-indigo-500"
                 :style="{ width: resource.limit && resource.limit > 0 ? `${Math.min(100, (resource.used / resource.limit) * 100)}%` : '100%' }"
@@ -229,10 +229,10 @@ onMounted(async () => {
       </section>
 
       <div class="grid gap-6 lg:grid-cols-2">
-        <section class="rounded-2xl border border-slate-100 bg-white shadow-lg">
-          <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="font-semibold text-slate-800">Receita por periodo</h3>
-            <select v-model="selectedRange" class="text-sm border rounded-lg px-2 py-1" @change="loadAnalytics">
+        <section class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+          <div class="flex items-center justify-between border-b border-border p-4">
+            <h3 class="font-semibold text-foreground">Receita por período</h3>
+            <select v-model="selectedRange" class="rounded-lg border border-input bg-background px-2 py-1 text-sm text-foreground" @change="loadAnalytics">
               <option value="7d">7 dias</option>
               <option value="30d">30 dias</option>
               <option value="90d">90 dias</option>
@@ -240,69 +240,69 @@ onMounted(async () => {
           </div>
 
           <div class="p-4 space-y-3">
-            <div v-if="loadingAnalytics" class="text-sm text-slate-500">Carregando relatorio...</div>
-            <div v-else-if="!periodRows.length" class="text-sm text-slate-500">Sem dados para o periodo selecionado.</div>
+            <div v-if="loadingAnalytics" class="text-sm text-muted-foreground">Carregando relatório...</div>
+            <div v-else-if="!periodRows.length" class="text-sm text-muted-foreground">Sem dados para o período selecionado.</div>
             <div v-for="row in periodRows" :key="row.period" class="space-y-1">
-              <div class="flex items-center justify-between text-xs text-slate-500">
+              <div class="flex items-center justify-between text-xs text-muted-foreground">
                 <span>{{ row.period }}</span>
                 <span>{{ formatCurrency(row.revenue) }} • {{ formatNumber(row.orders_count) }} pedidos</span>
               </div>
-              <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div class="h-2 overflow-hidden rounded-full bg-muted">
                 <div class="h-full rounded-full bg-sky-500" :style="{ width: barWidth(row) }"></div>
               </div>
             </div>
           </div>
         </section>
 
-        <section class="rounded-2xl border border-slate-100 bg-white shadow-lg">
-          <div class="p-4 border-b border-slate-100">
-            <h3 class="font-semibold text-slate-800">Produtos mais vendidos</h3>
+        <section class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+          <div class="border-b border-border p-4">
+            <h3 class="font-semibold text-foreground">Produtos mais vendidos</h3>
           </div>
 
           <div class="p-4 space-y-2">
-            <div v-if="loadingAnalytics" class="text-sm text-slate-500">Carregando ranking...</div>
-            <div v-else-if="!analytics.top_products?.length" class="text-sm text-slate-500">Sem vendas no periodo.</div>
+            <div v-if="loadingAnalytics" class="text-sm text-muted-foreground">Carregando ranking...</div>
+            <div v-else-if="!analytics.top_products?.length" class="text-sm text-muted-foreground">Sem vendas no período.</div>
             <article v-for="product in analytics.top_products" :key="product.product_id" class="flex items-center justify-between border rounded-lg p-3">
               <p class="text-sm font-medium">{{ product.name }}</p>
-              <span class="text-xs px-2 py-1 rounded-full bg-slate-100">{{ formatNumber(product.sold_quantity) }} un.</span>
+              <span class="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">{{ formatNumber(product.sold_quantity) }} un.</span>
             </article>
           </div>
         </section>
       </div>
 
-      <section class="rounded-2xl border border-slate-100 bg-white shadow-lg">
-        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 class="font-semibold text-slate-800">Pedidos recentes</h3>
+      <section class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="flex items-center justify-between border-b border-border p-4">
+          <h3 class="font-semibold text-foreground">Pedidos recentes</h3>
           <BaseButton as="Link" :href="['/painel/cobranca']" variant="ghost" size="sm">Financeiro</BaseButton>
         </div>
 
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-slate-500">
+            <thead class="bg-muted text-muted-foreground">
               <tr>
                 <th class="text-left px-4 py-3">Pedido</th>
                 <th class="text-left px-4 py-3">Cliente</th>
                 <th class="text-left px-4 py-3">Total</th>
                 <th class="text-left px-4 py-3">Status</th>
-                <th class="text-left px-4 py-3">Acao</th>
+                <th class="text-left px-4 py-3">Ação</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="loadingOrders">
-                <td class="px-4 py-3 text-slate-500" colspan="5">Carregando pedidos...</td>
+                <td class="px-4 py-3 text-muted-foreground" colspan="5">Carregando pedidos...</td>
               </tr>
               <tr v-else-if="!orders.length">
-                <td class="px-4 py-3 text-slate-500" colspan="5">Nenhum pedido registrado.</td>
+                <td class="px-4 py-3 text-muted-foreground" colspan="5">Nenhum pedido registrado.</td>
               </tr>
               <tr v-for="order in orders" :key="order.id" class="border-t">
                 <td class="px-4 py-3 font-medium">{{ order.order_number || `#${order.id}` }}</td>
                 <td class="px-4 py-3">{{ order.customer?.name || order.customer_name || '-' }}</td>
                 <td class="px-4 py-3">{{ formatCurrency(order.total) }}</td>
                 <td class="px-4 py-3">
-                  <span class="px-2 py-1 rounded-full bg-slate-100 text-xs">{{ order.status }}</span>
+                  <span class="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">{{ order.status }}</span>
                 </td>
                 <td class="px-4 py-3">
-                  <select class="border rounded px-2 py-1 text-xs" :value="order.status" @change="(e: any) => updateOrderStatus(order.id, e.target.value)">
+                  <select class="rounded border border-input bg-background px-2 py-1 text-xs text-foreground" :value="order.status" @change="(e: any) => updateOrderStatus(order.id, e.target.value)">
                     <option value="pending">pending</option>
                     <option value="confirmed">confirmed</option>
                     <option value="preparing">preparing</option>

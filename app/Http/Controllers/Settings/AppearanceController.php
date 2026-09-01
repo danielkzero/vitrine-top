@@ -24,7 +24,7 @@ class AppearanceController extends Controller
             ]
         );
 
-        return Inertia::render('Settings/Appearance', [
+        return Inertia::render('settings/Appearance', [
             'settings' => $settings,
         ]);
     }

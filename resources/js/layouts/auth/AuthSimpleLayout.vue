@@ -11,7 +11,7 @@ defineProps<{
 
 <template>
     <div
-        class="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10"
+        class="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted/40 p-6 text-foreground md:p-10 dark:bg-background"
     >
         <div class="w-full max-w-sm">
             <div class="flex flex-col gap-8">

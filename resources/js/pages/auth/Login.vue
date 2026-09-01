@@ -22,11 +22,11 @@ defineProps<{
 <template>
     <AuthBase
         title="Entre na sua conta"
-        description="Insira seu e-mail e senha a baixo para logar-se"
+        description="Insira seu e-mail e senha abaixo para entrar"
     >
         <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 text-center text-sm font-medium text-emerald-600 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded">
+        <div v-if="status" class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-center text-sm font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
             {{ status }}
         </div>
 
@@ -34,7 +34,7 @@ defineProps<{
             v-bind="store.form()"
             :reset-on-success="['password']"
             v-slot="{ errors, processing }"
-            class="max-w-md mx-auto w-full bg-white border border-slate-100 rounded-2xl p-8 shadow-2xl flex flex-col gap-6"
+            class="mx-auto flex w-full max-w-md flex-col gap-6 rounded-2xl border border-border bg-card p-8 text-card-foreground shadow-xl dark:shadow-black/30"
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
@@ -58,7 +58,7 @@ defineProps<{
                         <TextLink
                             v-if="canResetPassword"
                             :href="request()"
-                            class="text-sm"
+                            class="text-sm text-muted-foreground hover:text-foreground"
                             :tabindex="5"
                         >
                             Esqueceu sua senha?
@@ -77,7 +77,7 @@ defineProps<{
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <Label for="remember" class="flex items-center space-x-3 text-sm text-slate-700">
+                    <Label for="remember" class="flex items-center space-x-3 text-sm text-foreground">
                         <Checkbox id="remember" name="remember" :tabindex="3" />
                         <span class="select-none">Lembrar-me</span>
                     </Label>
@@ -95,9 +95,9 @@ defineProps<{
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-slate-500" v-if="canRegister">
+            <div class="text-center text-sm text-muted-foreground" v-if="canRegister">
                 Não tem uma conta?
-                <TextLink :href="register()" :tabindex="5" class="text-emerald-600 font-medium">Cadastre-se</TextLink>
+                <TextLink :href="register()" :tabindex="5" class="font-medium text-emerald-600 dark:text-emerald-400">Cadastre-se</TextLink>
             </div>
         </Form>
     </AuthBase>

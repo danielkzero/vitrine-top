@@ -16,6 +16,6 @@ const props = defineProps<{ page: any }>();
       class="rounded-lg mb-6 w-full object-cover"
     />
 
-    <div class="prose max-w-none" v-html="props.page.content"></div>
+    <div class="prose max-w-none dark:prose-invert" v-html="props.page.content"></div>
   </div>
 </template>

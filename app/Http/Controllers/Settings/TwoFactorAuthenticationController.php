@@ -24,7 +24,7 @@ class TwoFactorAuthenticationController extends Controller
     {
         $user = $request->user();
 
-        return Inertia::render('Settings/TwoFactor', [
+        return Inertia::render('settings/TwoFactor', [
             'enabled' => !is_null($user->two_factor_secret),
             'qrCode' => $this->getQrCode($user),
             'recoveryCodes' => $this->getRecoveryCodes($user),

@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import DropzoneFile from '@/components/ui/dropzone-file/DropzoneFile.vue'
 
 import { Store, Palette, Upload, Save } from 'lucide-vue-next'
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { edit } from '@/routes/store'
 import { route } from 'ziggy-js'
 import type { BreadcrumbItem } from '@/types'
@@ -35,6 +35,25 @@ const store = reactive({
     logo_file: null as File | null,
     background_file: null as File | null,
 })
+
+const slugWasEdited = ref(false)
+
+function slugify(value: string): string {
+    return value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+}
+
+watch(
+    () => store.business_name,
+    (name) => {
+        if (!slugWasEdited.value) store.slug = slugify(name)
+    },
+)
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -143,10 +162,10 @@ function saveStore() {
                         </div>
 
                         <div class="grid gap-2">
-                            <Label>Slug *</Label>
+                            <Label>URL da loja *</Label>
                             <div class="flex items-center gap-1">
                                 <span class="text-slate-500 dark:text-slate-400">vitrine.top/</span>
-                                <Input v-model="store.slug" placeholder="minha-loja" />
+                                <Input v-model="store.slug" placeholder="minha-loja" @input="slugWasEdited = true" />
                             </div>
                         </div>
 

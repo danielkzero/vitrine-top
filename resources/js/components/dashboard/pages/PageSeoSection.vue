@@ -1,8 +1,8 @@
 <template>
-  <div class="md:border p-4 rounded-xl space-y-4 md:shadow">
+  <div class="space-y-4 rounded-xl p-4 text-foreground md:border md:border-border md:bg-card md:shadow-sm">
     <!-- Header -->
     <h2
-      class="text-2xl font-extrabold flex gap-2 p-3 border bg-gray-100/50 dark:bg-white/10 rounded-xl"
+      class="flex gap-2 rounded-xl border border-border bg-muted/50 p-3 text-2xl font-extrabold"
     >
       <component :is="getIcon('SquareCheckBig')" class="h-6 w-6 text-sky-400" />
       <span
@@ -18,7 +18,7 @@
       <input
         v-model="page.seo_title"
         type="text"
-        class="w-full border rounded-xl px-3 py-2"
+        class="w-full rounded-xl border border-input bg-background px-3 py-2 text-foreground"
         placeholder="Título exibido no Google"
       />
     </div>
@@ -28,7 +28,7 @@
       <label class="block text-sm font-medium mb-1">Descrição SEO</label>
       <textarea
         v-model="page.seo_description"
-        class="w-full border rounded-xl px-3 py-2 h-24"
+        class="h-24 w-full rounded-xl border border-input bg-background px-3 py-2 text-foreground"
         placeholder="Descrição que aparece nos resultados do Google"
       ></textarea>
     </div>

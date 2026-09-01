@@ -72,15 +72,15 @@ function removerBanner(id: number) {
 
       <!-- TÍTULO -->
       <header>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Gerenciar Banners</h1>
-        <p class="text-gray-500 dark:text-gray-400">
+        <h1 class="text-3xl font-bold text-foreground">Gerenciar Banners</h1>
+        <p class="text-muted-foreground">
           Adicione banners para sua vitrine. Tamanho recomendado: <b>750x200</b>, até <b>1MB</b>.
         </p>
       </header>
 
       <!-- DROPZONE -->
-      <div class="bg-white dark:bg-slate-900 rounded-xl shadow p-6 border dark:border-white/10">
-        <h2 class="text-lg font-semibold mb-3 dark:text-white">Adicionar Banner</h2>
+      <div class="rounded-xl border border-border bg-card p-6 text-card-foreground shadow-sm">
+        <h2 class="mb-3 text-lg font-semibold">Adicionar Banner</h2>
 
         <DropzoneFile :initial-files="[]" :multiple="false" :maxFiles="1"
           :allowed-extensions="['jpg', 'jpeg', 'png', 'webp']" title-file-types="Clique ou arraste uma imagem"
@@ -94,11 +94,11 @@ function removerBanner(id: number) {
 
       <!-- LISTA DE BANNERS -->
       <div class="pt-2">
-        <h2 class="text-lg font-semibold mb-3 dark:text-white">Seus Banners</h2>
+        <h2 class="mb-3 text-lg font-semibold text-foreground">Seus Banners</h2>
 
         <div v-if="banners.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           <div v-for="banner in banners" :key="banner.id"
-            class="relative rounded-xl overflow-hidden shadow border bg-white dark:bg-slate-800 dark:border-white/10 group">
+            class="group relative overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             <img :src="banner.image_url" class="w-full h-40 object-cover" />
             <button @click="removerBanner(banner.id)"
               class="absolute top-2 right-2 p-2 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition">
@@ -107,7 +107,7 @@ function removerBanner(id: number) {
           </div>
         </div>
 
-        <p v-else class="text-gray-400 dark:text-gray-500 text-sm">Nenhum banner enviado ainda.</p>
+        <p v-else class="text-sm text-muted-foreground">Nenhum banner enviado ainda.</p>
       </div>
 
     </div>

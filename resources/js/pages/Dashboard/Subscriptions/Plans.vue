@@ -24,11 +24,11 @@ defineProps<{
 <template>
   <Head title="Planos" />
 
-  <div class="min-h-screen bg-slate-50 p-6">
-    <div class="max-w-5xl mx-auto bg-white rounded-xl shadow p-6 space-y-6">
+  <div class="min-h-screen bg-background p-6 text-foreground">
+    <div class="mx-auto max-w-5xl space-y-6 rounded-xl border border-border bg-card p-6 text-card-foreground shadow-sm">
       <div class="text-center">
         <h1 class="text-2xl font-bold">Planos da plataforma</h1>
-        <p class="text-sm text-slate-600 mt-2">
+        <p class="mt-2 text-sm text-muted-foreground">
           Todos os planos incluem trial gratis de {{ trial_days }} dias.
         </p>
       </div>
@@ -37,18 +37,18 @@ defineProps<{
         <article
           v-for="plan in plans"
           :key="plan.id"
-          class="rounded-xl border border-slate-200 p-4 bg-slate-50"
+          class="rounded-xl border border-border bg-muted/50 p-4"
         >
           <p class="font-semibold text-lg">{{ plan.name }}</p>
-          <p class="text-sm text-slate-600 mt-1">
+          <p class="mt-1 text-sm text-muted-foreground">
             Mensal: R$ {{ plan.monthly_price.toFixed(2).replace('.', ',') }}
           </p>
-          <p class="text-sm text-slate-600">
-            Anual: R$ {{ plan.annual_monthly_equivalent.toFixed(2).replace('.', ',') }}/mes
+          <p class="text-sm text-muted-foreground">
+            Anual: R$ {{ plan.annual_monthly_equivalent.toFixed(2).replace('.', ',') }}/mês
             (R$ {{ plan.annual_price_total.toFixed(2).replace('.', ',') }} total)
           </p>
 
-          <ul class="mt-3 text-sm text-slate-700 space-y-1">
+          <ul class="mt-3 space-y-1 text-sm text-foreground">
             <li>Produtos: {{ plan.limits.products }}</li>
             <li>Fotos por produto: {{ plan.limits.product_images ?? 'Ilimitadas' }}</li>
             <li>Fotos na galeria: {{ plan.limits.gallery_images }}</li>
@@ -68,4 +68,3 @@ defineProps<{
     </div>
   </div>
 </template>
-

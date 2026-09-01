@@ -14,7 +14,7 @@ class PasswordController extends Controller
      */
     public function edit()
     {
-        return Inertia::render('Settings/Password');
+        return Inertia::render('settings/Password');
     }
 
     /**

@@ -30,15 +30,15 @@ const breadcrumbs = [
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium mb-1">Título</label>
-                        <input v-model="form.title" class="w-full border rounded p-2" required />
+                        <input v-model="form.title" class="w-full rounded border border-input bg-background p-2 text-foreground" required />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-1">Ícone</label>
-                        <input v-model="form.icon" class="w-full border rounded p-2" />
+                        <input v-model="form.icon" class="w-full rounded border border-input bg-background p-2 text-foreground" />
                     </div>
 
-                    <select v-model="form.type" class="w-full border rounded p-2" required>
+                    <select v-model="form.type" class="w-full rounded border border-input bg-background p-2 text-foreground" required>
                         <option value="products">Produtos</option>
                         <option value="reviews">Avaliações</option>
                         <option value="links">Links</option>
@@ -48,7 +48,7 @@ const breadcrumbs = [
 
                     <div>
                         <label class="block text-sm font-medium mb-1">Conteúdo</label>
-                        <textarea v-model="form.content" class="w-full border rounded p-2 min-h-[150px]" />
+                        <textarea v-model="form.content" class="min-h-[150px] w-full rounded border border-input bg-background p-2 text-foreground" />
                     </div>
 
                     <div class="flex items-center space-x-2">
@@ -57,7 +57,7 @@ const breadcrumbs = [
                     </div>
 
                     <div class="flex justify-end mt-4">
-                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary/80"
+                        <button type="submit" class="rounded bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/80"
                             :disabled="form.processing">
                             Salvar
                         </button>

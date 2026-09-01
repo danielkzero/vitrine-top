@@ -49,8 +49,8 @@ function saveOrder() {
     <main class="flex flex-col gap-6 p-6 px-4 container mx-auto">
 
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">Gerenciamento de Páginas</h1>
-        <p class="text-gray-500">
+        <h1 class="text-3xl font-bold text-foreground">Gerenciamento de Páginas</h1>
+        <p class="text-muted-foreground">
           Arraste para reorganizar suas páginas.
         </p>
       </div>
@@ -70,7 +70,7 @@ function saveOrder() {
 
             <!-- Handle para arrastar -->
             <div
-              class="drag-handle absolute top-2 right-2 p-2 cursor-grab text-gray-400 hover:text-gray-700"
+              class="drag-handle absolute right-2 top-2 cursor-grab p-2 text-muted-foreground hover:text-foreground"
               title="Arrastar para reordenar"
             >
               <component :is="getIcon('Grip')"></component>
@@ -93,7 +93,7 @@ function saveOrder() {
       </draggable>
 
       <!-- Sem páginas -->
-      <div v-if="!loading && pages.length === 0" class="text-center text-gray-500 mt-10">
+      <div v-if="!loading && pages.length === 0" class="mt-10 text-center text-muted-foreground">
         Nenhuma página encontrada.
       </div>
 

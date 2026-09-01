@@ -51,7 +51,7 @@
     />
 
     <template v-else>
-      <p class="text-sm text-slate-500">Tipo de página não suportado.</p>
+      <p class="text-sm text-muted-foreground">Tipo de página não suportado.</p>
     </template>
   </div>
 </template>
