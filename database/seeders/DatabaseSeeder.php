@@ -13,16 +13,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            PlanSeeder::class,
-            EcommerceDemoSeeder::class,
-        ]);
+        $this->call(PlanSeeder::class);
 
-        // User::factory(10)->create();
+        User::query()->updateOrCreate(
+            ['email' => 'danikzero@hotmail.com'],
+            [
+                'name' => 'Daniel',
+                'email_verified_at' => now(),
+                'password' => 'V1p@@2025Put',
+                'two_factor_secret' => null,
+                'two_factor_recovery_codes' => null,
+                'two_factor_confirmed_at' => null,
+            ],
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->call(MinhaLojinhaSeeder::class);
+        $this->call(EcommerceDemoSeeder::class);
     }
 }

@@ -3,7 +3,16 @@
 /node_modules
 /public/build
 /public/hot
-/public/storage
+/public/storage/**
+!/public/storage/backgrounds/
+!/public/storage/backgrounds/Se2BxakocfDuNDCCf0TXiARS7y5dHUNpycN698HG.png
+!/public/storage/logos/
+!/public/storage/logos/uvmCoA6HCyhF4p90sMcTK3tNvLSUegFnTFYeVuwE.png
+!/public/storage/products/
+!/public/storage/products/6hfF3NyUT4FAaWJevUTrS7xAzgmp8ns80szSD3EV.png
+!/public/storage/products/OpOZhKv277oXz6r3aBxumUjt4svrrUShnvaVP9o0.png
+!/public/storage/products/NBP65qrPS5jhBM31P9Ng6Flno6loQPlcxKOhfVCi.png
+!/public/storage/products/vyW1nfvebnCFo2y72GSTvWVKxQf5kRzhTRnoJGOq.png
 /storage/*.key
 /storage/pail
 /resources/js/actions
