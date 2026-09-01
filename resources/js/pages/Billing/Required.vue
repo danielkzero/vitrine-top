@@ -3,6 +3,16 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import moment from 'moment'
 import 'moment/locale/pt-br'
+import {
+  ArrowRight,
+  Barcode,
+  Check,
+  CreditCard,
+  LoaderCircle,
+  QrCode,
+  ShieldCheck,
+  WalletCards,
+} from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 
 moment.locale('pt-br')
@@ -94,6 +104,29 @@ const planForm = useForm({
 const payForm = useForm({
   method: 'pix',
 })
+
+const paymentMethods = computed(() => [
+  {
+    value: 'pix', label: 'PIX', icon: QrCode,
+    description: 'Aprovação rápida e pagamento por QR Code.', detail: 'Liberação imediata',
+    enabled: props.payment_gateway.supports_pix,
+  },
+  {
+    value: 'credit_card', label: 'Cartão de crédito', icon: CreditCard,
+    description: 'Pague com segurança usando seu cartão.', detail: 'Processamento seguro',
+    enabled: props.payment_gateway.supports_credit_card,
+  },
+  {
+    value: 'boleto', label: 'Boleto bancário', icon: Barcode,
+    description: 'Pague pelo banco de sua preferência.', detail: 'Compensação bancária', enabled: true,
+  },
+].filter((method) => method.enabled))
+
+const selectedPaymentMethod = computed(() => paymentMethods.value.find((method) => method.value === payForm.method))
+
+if (!selectedPaymentMethod.value && paymentMethods.value[0]) {
+  payForm.method = paymentMethods.value[0].value
+}
 
 const deleteForm = useForm({
   password: '',
@@ -319,33 +352,109 @@ function statusLabel(status: string) {
         </div>
 
         <div class="space-y-6">
-          <div class="rounded-2xl border bg-white p-5 md:p-6 space-y-3">
-            <h2 class="text-lg font-semibold text-slate-900">Efetuar pagamento</h2>
-            <p class="text-sm text-slate-600">
-              Gateway preparado: <b>{{ payment_gateway.provider }}</b>
-            </p>
-            <label class="text-sm font-medium text-slate-700">Método</label>
-            <select v-model="payForm.method" class="w-full border rounded-lg p-2">
-              <option v-if="payment_gateway.supports_pix" value="pix">PIX</option>
-              <option v-if="payment_gateway.supports_credit_card" value="credit_card">Cartão de crédito</option>
-              <option value="boleto">Boleto</option>
-            </select>
+          <div class="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+            <header class="border-b border-border bg-muted/40 p-5 md:p-6">
+              <div class="flex items-start gap-3">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                  <WalletCards class="h-5 w-5" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-lg font-semibold text-foreground">Efetuar pagamento</h2>
+                  <p class="mt-1 text-sm text-muted-foreground">Escolha como deseja pagar sua assinatura.</p>
+                </div>
+              </div>
 
-            <button
-              class="w-full rounded-lg bg-emerald-600 text-white py-2.5 font-semibold disabled:opacity-50"
-              :disabled="payForm.processing"
-              @click="payNow"
-            >
-              Confirmar pagamento
-            </button>
+              <div class="mt-4 flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
+                <ShieldCheck class="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span>Pagamento seguro por <b class="text-foreground">{{ payment_gateway.provider }}</b></span>
+              </div>
+            </header>
 
-            <Link
-              v-if="!is_blocked"
-              :href="route('painel.index')"
-              class="block text-center text-sm text-slate-600 hover:text-slate-900"
-            >
-              Voltar ao painel
-            </Link>
+            <div class="space-y-5 p-5 md:p-6">
+              <fieldset>
+                <legend class="mb-3 text-sm font-semibold text-foreground">Forma de pagamento</legend>
+                <div class="grid gap-3">
+                  <button
+                    v-for="method in paymentMethods"
+                    :key="method.value"
+                    type="button"
+                    class="group relative flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-all"
+                    :class="payForm.method === method.value
+                      ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/15 dark:bg-emerald-950/30'
+                      : 'border-border bg-background hover:border-emerald-300 hover:bg-muted/50'"
+                    @click="payForm.method = method.value"
+                  >
+                    <div
+                      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border"
+                      :class="payForm.method === method.value
+                        ? 'border-emerald-200 bg-white text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                        : 'border-border bg-muted text-muted-foreground'"
+                    >
+                      <component :is="method.icon" class="h-5 w-5" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="font-semibold text-foreground">{{ method.label }}</p>
+                      <p class="mt-0.5 text-xs leading-relaxed text-muted-foreground">{{ method.description }}</p>
+                      <p class="mt-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">{{ method.detail }}</p>
+                    </div>
+                    <div
+                      class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border"
+                      :class="payForm.method === method.value ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-border'"
+                    >
+                      <Check v-if="payForm.method === method.value" class="h-3 w-3" stroke-width="3" />
+                    </div>
+                  </button>
+                </div>
+              </fieldset>
+
+              <div class="rounded-xl border border-border bg-muted/40 p-4">
+                <div class="flex items-center justify-between gap-3 text-sm">
+                  <span class="text-muted-foreground">Plano</span>
+                  <span class="font-semibold text-foreground">{{ subscription.plan_name }}</span>
+                </div>
+                <div class="mt-2 flex items-center justify-between gap-3 text-sm">
+                  <span class="text-muted-foreground">Ciclo</span>
+                  <span class="font-medium text-foreground">{{ subscription.billing_period === 'annual' ? 'Anual' : 'Mensal' }}</span>
+                </div>
+                <div class="my-3 border-t border-border"></div>
+                <div class="flex items-end justify-between gap-3">
+                  <div>
+                    <p class="text-xs text-muted-foreground">Total a pagar</p>
+                    <p class="mt-1 text-2xl font-bold text-foreground">{{ formatCurrency(subscription.price) }}</p>
+                  </div>
+                  <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                    {{ selectedPaymentMethod?.label }}
+                  </span>
+                </div>
+              </div>
+
+              <p v-if="payForm.errors.method" class="text-sm text-destructive">{{ payForm.errors.method }}</p>
+
+              <button
+                class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-emerald-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+                :disabled="payForm.processing"
+                @click="payNow"
+              >
+                <LoaderCircle v-if="payForm.processing" class="h-4 w-4 animate-spin" />
+                <template v-else>
+                  Confirmar pagamento
+                  <ArrowRight class="h-4 w-4" />
+                </template>
+              </button>
+
+              <p class="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+                <ShieldCheck class="h-3.5 w-3.5" />
+                Seus dados de pagamento são protegidos.
+              </p>
+
+              <Link
+                v-if="!is_blocked"
+                :href="route('painel.index')"
+                class="block text-center text-sm text-muted-foreground hover:text-foreground"
+              >
+                Voltar ao painel
+              </Link>
+            </div>
           </div>
 
           <div class="rounded-2xl border border-red-200 bg-red-50 p-5 md:p-6 space-y-2">
@@ -372,4 +481,3 @@ function statusLabel(status: string) {
     </div>
   </AppLayout>
 </template>
-
