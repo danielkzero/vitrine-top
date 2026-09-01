@@ -20,7 +20,11 @@ class Product extends Model
         'discount_price',
         'stock',
         'is_public',
+        'featured',
         'allow_whatsapp',
+        'conversion_type',
+        'external_url',
+        'cta_label',
         'cover_image',
         'seo_title',
         'seo_description',
@@ -114,6 +118,6 @@ class Product extends Model
 
     public function getPublicUrlAttribute()
     {
-        return url("/produto/{$this->id}-" . Str::slug($this->name));
+        return url("/produto/{$this->id}-".Str::slug($this->name));
     }
 }

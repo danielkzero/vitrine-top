@@ -10,9 +10,10 @@ const props = defineProps({
   viewMode: { type: String, default: 'grid' },
   favoriteProductIds: { type: Array as () => number[], default: () => [] },
   canFavorite: { type: Boolean, default: false },
+  catalogMode: { type: String, default: 'store' },
 })
 
-const emit = defineEmits(['open', 'add-cart', 'toggle-favorite'])
+const emit = defineEmits(['open', 'add-cart', 'toggle-favorite', 'lead'])
 
 function open() {
   emit('open', props.product)
@@ -21,6 +22,37 @@ function open() {
 function addToCart(event: Event) {
   event.stopPropagation()
   emit('add-cart', props.product)
+}
+
+const effectiveAction = computed(() => {
+  const action = props.product?.conversion_type || 'cart'
+  if (props.catalogMode === 'affiliate' && action === 'cart') return 'external'
+  if (props.catalogMode === 'showcase' && action === 'cart') return 'whatsapp'
+  return action
+})
+
+const ctaLabel = computed(() => props.product?.cta_label || ({
+  cart: 'Adicionar ao carrinho',
+  external: 'Ver oferta',
+  whatsapp: 'Falar no WhatsApp',
+  lead: 'Quero saber mais',
+}[effectiveAction.value] ?? 'Ver produto'))
+
+function convert(event: Event) {
+  event.stopPropagation()
+
+  if (effectiveAction.value === 'cart') return emit('add-cart', props.product)
+  if (effectiveAction.value === 'lead') return emit('lead', props.product)
+
+  if (effectiveAction.value === 'external') {
+    if (props.product?.external_url) window.open(props.product.external_url, '_blank', 'noopener,noreferrer')
+    else emit('open', props.product)
+    return
+  }
+
+  const phone = String(props.user?.whatsapp || '').replace(/\D/g, '')
+  const text = encodeURIComponent(`Olá, tenho interesse em ${props.product?.name}.`)
+  window.open(phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
 }
 
 function toggleFavorite(event: Event) {
@@ -57,8 +89,8 @@ const isFavorite = computed(() => props.favoriteProductIds.includes(Number(props
       <div class="text-xs text-slate-400" v-if="product.stock">Estoque: {{ product.stock }}</div>
     </div>
 
-    <button class="mt-3 w-full rounded-lg text-white py-2 text-sm md:rounded-lg md:py-2.5 md:font-medium" :style="{ backgroundColor: props.user?.theme_color }" @click="addToCart">
-      Adicionar
+    <button class="mt-3 w-full rounded-lg text-white py-2 text-sm md:rounded-lg md:py-2.5 md:font-medium" :style="{ backgroundColor: props.user?.theme_color }" @click="convert">
+      {{ ctaLabel }}
     </button>
   </article>
 
@@ -83,7 +115,7 @@ const isFavorite = computed(() => props.favoriteProductIds.includes(Number(props
           <div class="text-xs text-slate-400 whitespace-nowrap" v-if="product.stock">Estoque: {{ product.stock }}</div>
         </div>
       </div>
-      <button class="mt-2 rounded-lg border px-3 py-1.5 text-xs md:rounded-lg md:px-4 md:py-2" @click="addToCart">Adicionar ao carrinho</button>
+      <button class="mt-2 rounded-lg border px-3 py-1.5 text-xs md:rounded-lg md:px-4 md:py-2" @click="convert">{{ ctaLabel }}</button>
     </div>
   </article>
 </template>

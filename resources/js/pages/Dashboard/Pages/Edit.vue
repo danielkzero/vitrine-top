@@ -26,6 +26,7 @@ const rawProdutos = inertia.props.produtos ?? []
 
 // Transformação defensiva: garante arrays e campos esperados
 const page = ref<any>({ ...rawPage })
+page.value.catalog_mode ||= 'store'
 const avaliacoes = ref<any[]>(Array.isArray(rawAvaliacoes) ? rawAvaliacoes : [])
 const categorias = ref<any[]>(Array.isArray(rawCategorias) ? rawCategorias : [])
 const produtos = ref<any[]>(
@@ -123,7 +124,8 @@ const novaCategoria = ref('')
 
 const novoProduto = ref<any>({
   id: null, name: '', price: '', discount_price: '', category_id: categoriaSelecionada.value,
-  stock: '', description: '', is_public: true, featured: false, images: [], imagensParaExcluir: []
+  stock: '', description: '', is_public: true, featured: false, images: [], imagensParaExcluir: [],
+  conversion_type: 'cart', external_url: '', cta_label: ''
 })
 
 function nomeCategoria(id: number) {

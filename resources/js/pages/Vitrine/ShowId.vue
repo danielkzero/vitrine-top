@@ -273,7 +273,7 @@ onMounted(async () => {
 
         <div class="mt-4 flex justify-end gap-2 md:hidden">
           <button class="px-3 py-1.5 rounded-full border bg-white text-xs font-semibold" @click="customerPanelOpen = true">{{ customer ? 'Minha conta' : 'Entrar' }}</button>
-          <button class="px-3 py-1.5 rounded-full border bg-white text-xs font-semibold" @click="cartPanelOpen = true">Carrinho {{ Number(displayTotals?.items_count || 0) }}</button>
+          <button v-if="['store', 'hybrid'].includes(currentPage?.catalog_mode || 'store')" class="px-3 py-1.5 rounded-full border bg-white text-xs font-semibold" @click="cartPanelOpen = true">Carrinho {{ Number(displayTotals?.items_count || 0) }}</button>
         </div>
 
         <ProductPageFull
@@ -283,6 +283,7 @@ onMounted(async () => {
           :user="user"
           :is-customer-authenticated="isAuthenticated"
           :favorite-product-ids="favoriteProductIds"
+          :catalog-mode="currentPage?.catalog_mode || 'store'"
           @back="goBackToProducts"
           @add-cart="handleAddCart"
           @toggle-favorite="handleToggleFavorite"

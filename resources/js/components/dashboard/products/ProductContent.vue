@@ -1,12 +1,30 @@
 <template>
     <div v-if="page.type === 'products'" class="space-y-4">
-        <p class="text-slate-600 text-sm leading-relaxed">
+        <section class="grid gap-3 rounded-xl border border-border bg-muted/40 p-4 md:grid-cols-[220px_1fr]">
+            <div>
+                <label for="catalog-mode" class="text-sm font-semibold text-foreground">Modo do catálogo</label>
+                <p class="mt-1 text-xs text-muted-foreground">Define a experiência padrão desta página.</p>
+            </div>
+            <div>
+                <select id="catalog-mode" v-model="page.catalog_mode"
+                    class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground">
+                    <option value="store">Loja própria — carrinho e checkout</option>
+                    <option value="affiliate">Afiliados — links para ofertas externas</option>
+                    <option value="presell">Presell — conteúdo persuasivo antes da oferta</option>
+                    <option value="showcase">Vitrine — apresentação e contato</option>
+                    <option value="hybrid">Híbrido — produtos próprios e externos</option>
+                </select>
+                <p class="mt-2 text-xs text-muted-foreground">{{ catalogModeHelp }}</p>
+            </div>
+        </section>
+
+        <p class="text-sm leading-relaxed text-muted-foreground">
             Os <b>produtos</b> do seu catálogo. Gerencie categorias e produtos — adicione, edite ou remova.
         </p>
 
         <!-- Header: ações -->
         <div class="flex items-center gap-3">
-            <div class="overflow-x-auto p-2 bg-gray-100 w-full rounded-lg">
+            <div class="w-full overflow-x-auto rounded-lg bg-muted p-2">
                 <div class="flex gap-2">
                     <button @click="showAddCategoryLocal = true" type="button"
                         class="cursor-pointer inline-flex whitespace-nowrap items-center text-sm gap-2 px-3 py-1 rounded-lg bg-emerald-500 text-white">
@@ -36,16 +54,16 @@
                     @edit="onEditProduct" />
             </div>
 
-            <div v-if="!produtosFiltrados.length" class="text-gray-400 text-sm italic mt-3">
+            <div v-if="!produtosFiltrados.length" class="mt-3 text-sm italic text-muted-foreground">
                 Nenhum produto nesta categoria.
             </div>
         </div>
 
         <!-- Modal: Nova Categoria -->
         <div v-if="showAddCategoryLocal" class="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl w-11/12 max-w-sm">
+            <div class="w-11/12 max-w-sm rounded-xl border border-border bg-card p-4 text-card-foreground shadow-xl">
                 <h4 class="font-semibold mb-2">Nova Categoria</h4>
-                <input v-model="novaCategoriaLocal" class="w-full border rounded-lg px-3 py-2 mb-3"
+                <input v-model="novaCategoriaLocal" class="mb-3 w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground"
                     placeholder="Nome da categoria" />
                 <div class="flex justify-end gap-2">
                     <button class="px-3 py-1" @click="showAddCategoryLocal = false">Cancelar</button>
@@ -99,6 +117,14 @@ watch(() => props.novaCategoria, (v) => novaCategoriaLocal.value = v || '')
 // expose helper
 const categoriasReverse = computed(() => [...props.categorias].reverse())
 
+const catalogModeHelp = computed(() => ({
+    store: 'Todos os produtos usam a compra interna, salvo quando você alterar a ação individual.',
+    affiliate: 'Ideal para comissionados: os botões direcionam para páginas externas de parceiros.',
+    presell: 'Use o conteúdo da página para apresentar benefícios, provas e contexto antes dos produtos.',
+    showcase: 'Apresenta o catálogo sem checkout; prioriza WhatsApp ou formulário de contato.',
+    hybrid: 'Misture carrinho, links externos, WhatsApp e captura de contato no mesmo catálogo.',
+}[props.page.catalog_mode || 'store']))
+
 const produtosFiltrados = computed(() => {
     return (props.produtos || []).filter((p: any) => p.category_id === categoriaSelecionadaLocal.value)
 })
@@ -127,7 +153,10 @@ function openNewProduct() {
         description: '',
         is_public: true,
         featured: false,
-        images: []
+        images: [],
+        conversion_type: props.page.catalog_mode === 'affiliate' ? 'external' : props.page.catalog_mode === 'showcase' ? 'whatsapp' : 'cart',
+        external_url: '',
+        cta_label: '',
     }
     showAddProductLocal.value = true
 }

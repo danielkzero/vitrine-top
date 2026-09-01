@@ -21,7 +21,8 @@ class Page extends Model
         'cover_image',
         'seo_title',
         'seo_description',
-        'type'
+        'type',
+        'catalog_mode',
     ];
 
     protected $casts = [
@@ -60,7 +61,7 @@ class Page extends Model
         static::creating(function ($page) {
             // Gera automaticamente a chave única se não for informada
             if (empty($page->key)) {
-                $page->key = Str::slug($page->title) . '-' . Str::random(4);
+                $page->key = Str::slug($page->title).'-'.Str::random(4);
             }
         });
     }
@@ -106,7 +107,7 @@ class Page extends Model
         $existingKeys = self::where('user_id', $userId)->pluck('key')->toArray();
 
         foreach ($defaultPages as $page) {
-            if (!in_array($page['key'], $existingKeys)) {
+            if (! in_array($page['key'], $existingKeys)) {
                 self::create([
                     'user_id' => $userId,
                     'icon' => $page['icon'],
@@ -118,7 +119,7 @@ class Page extends Model
                     'cover_image' => '',
                     'seo_title' => '',
                     'seo_description' => '',
-                    'type' => $page['type']
+                    'type' => $page['type'],
                 ]);
             }
         }

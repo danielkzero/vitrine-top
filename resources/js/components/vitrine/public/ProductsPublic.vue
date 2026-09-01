@@ -29,6 +29,8 @@ const selectedCategory = ref(props.page?.category_id ?? null)
 const viewMode = ref<'grid' | 'list'>('grid')
 const perPage = ref(12)
 const loading = ref(true)
+const catalogMode = computed(() => props.page?.catalog_mode || 'store')
+const cartEnabled = computed(() => ['store', 'hybrid'].includes(catalogMode.value))
 
 const publicProducts = computed(() => {
   let items = (props.products ?? []).filter((p: any) => !!p.is_public)
@@ -91,6 +93,10 @@ function handleToggleFavorite(product: any) {
   emit('toggle-favorite', product)
 }
 
+function handleLead() {
+  emit('open-customer-panel')
+}
+
 const sentinel = ref<HTMLElement | null>(null)
 
 onMounted(() => {
@@ -131,9 +137,18 @@ function toggleViewMode() {
 
 <template>
   <div class="text-slate-900">
+    <section v-if="catalogMode === 'presell' && page?.content"
+      class="prose mb-6 max-w-none rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+      v-html="page.content">
+    </section>
+
+    <div v-if="catalogMode === 'affiliate'" class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+      Alguns links desta página podem gerar comissão para o vendedor, sem custo adicional para você.
+    </div>
+
     <header class="pb-4 lg:hidden">
       <div class="flex items-center gap-3">
-        <button class="p-2 bg-white rounded-xl shadow-sm border border-slate-100 relative md:rounded-none md:shadow-none md:border-0 md:bg-transparent" @click="handleCartClick">
+        <button v-if="cartEnabled" class="p-2 bg-white rounded-xl shadow-sm border border-slate-100 relative md:rounded-none md:shadow-none md:border-0 md:bg-transparent" @click="handleCartClick">
           <component :is="getIcon('ShoppingCart')" fill="currentColor" class="w-5 h-5 text-slate-700" />
           <span v-if="cartCount > 0" class="absolute -right-1 -top-1 min-w-5 h-5 px-1 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">{{ cartCount }}</span>
         </button>
@@ -175,7 +190,7 @@ function toggleViewMode() {
     <main class="pb-2 lg:grid lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-8">
       <aside class="hidden lg:block">
         <div class="sticky top-20 space-y-5">
-          <div>
+          <div v-if="cartEnabled">
             <button
               class="w-full flex items-center justify-between border border-slate-200 bg-white px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 shadow-sm hover:shadow-md transition"
               @click="handleCartClick"
@@ -264,10 +279,12 @@ function toggleViewMode() {
           :user="props.user"
           :favorite-product-ids="favoriteProductIds"
           :can-favorite="isCustomerAuthenticated"
+          :catalog-mode="catalogMode"
           viewMode="grid"
           @open="openProduct"
           @add-cart="handleAddCart"
           @toggle-favorite="handleToggleFavorite"
+          @lead="handleLead"
         />
         <ProductCardSkeleton v-if="loading" v-for="n in 6" :key="'sk' + n" viewMode="grid" />
       </div>
@@ -280,10 +297,12 @@ function toggleViewMode() {
           :user="props.user"
           :favorite-product-ids="favoriteProductIds"
           :can-favorite="isCustomerAuthenticated"
+          :catalog-mode="catalogMode"
           viewMode="list"
           @open="openProduct"
           @add-cart="handleAddCart"
           @toggle-favorite="handleToggleFavorite"
+          @lead="handleLead"
         />
         <ProductCardSkeleton v-if="loading" v-for="n in 3" :key="'skl' + n" viewMode="list" />
       </div>

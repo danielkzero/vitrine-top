@@ -12,6 +12,7 @@ const props = defineProps({
   reviews: { type: Array, default: () => [] },
   isCustomerAuthenticated: { type: Boolean, default: false },
   favoriteProductIds: { type: Array as () => number[], default: () => [] },
+  catalogMode: { type: String, default: 'store' },
 })
 
 const emit = defineEmits(['back', 'add-cart', 'toggle-favorite', 'open-customer-panel'])
@@ -104,6 +105,30 @@ function toggleFavorite() {
 function addToCart() {
   emit('add-cart', product.value)
 }
+
+const effectiveAction = computed(() => {
+  const action = product.value?.conversion_type || 'cart'
+  if (props.catalogMode === 'affiliate' && action === 'cart') return 'external'
+  if (props.catalogMode === 'showcase' && action === 'cart') return 'whatsapp'
+  return action
+})
+
+const ctaLabel = computed(() => product.value?.cta_label || ({
+  cart: 'Adicionar ao carrinho',
+  external: 'Ver oferta',
+  whatsapp: 'Comprar via WhatsApp',
+  lead: 'Quero saber mais',
+}[effectiveAction.value] ?? 'Continuar'))
+
+function convert() {
+  if (effectiveAction.value === 'cart') return addToCart()
+  if (effectiveAction.value === 'lead') return emit('open-customer-panel')
+  if (effectiveAction.value === 'external') {
+    if (product.value?.external_url) window.open(product.value.external_url, '_blank', 'noopener,noreferrer')
+    return
+  }
+  buyNow()
+}
 </script>
 
 <template>
@@ -164,14 +189,14 @@ function addToCart() {
       </div>
 
       <div class="flex gap-3 mt-3">
-        <button class="flex-1 text-white py-3 rounded-2xl font-semibold" :style="{ backgroundColor: props.user.theme_color }" @click="buyNow">
+        <button class="flex-1 text-white py-3 rounded-2xl font-semibold" :style="{ backgroundColor: props.user.theme_color }" @click="convert">
           <div class="flex justify-center items-center">
-            <component :is="getIcon('ShoppingBag')" class="w-5 h-5 mr-2" />
-            Comprar via WhatsApp
+            <component :is="getIcon(effectiveAction === 'external' ? 'ExternalLink' : effectiveAction === 'whatsapp' ? 'MessageCircle' : effectiveAction === 'lead' ? 'UserRound' : 'ShoppingBag')" class="w-5 h-5 mr-2" />
+            {{ ctaLabel }}
           </div>
         </button>
 
-        <button class="p-3 bg-white border rounded-2xl text-slate-600" @click="addToCart">
+        <button v-if="effectiveAction !== 'cart' && ['store', 'hybrid'].includes(catalogMode)" class="p-3 bg-white border rounded-2xl text-slate-600" @click="addToCart">
           <component :is="getIcon('ShoppingCart')" class="w-5 h-5" />
         </button>
       </div>

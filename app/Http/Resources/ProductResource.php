@@ -9,23 +9,26 @@ class ProductResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'              => $this->id,
-            'code'            => $this->code,
-            'name'            => $this->name,
-            'description'     => $this->description,
-            'price'           => $this->price,
-            'discount_price'  => $this->discount_price,
-            'stock'           => $this->stock,
-            'is_public'       => $this->is_public,
-            'allow_whatsapp'  => $this->allow_whatsapp,
-            'cover_image'     => $this->cover_image,
-            'seo_title'       => $this->seo_title,
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+            'description' => $this->description,
+            'price' => $this->price,
+            'discount_price' => $this->discount_price,
+            'stock' => $this->stock,
+            'is_public' => $this->is_public,
+            'allow_whatsapp' => $this->allow_whatsapp,
+            'conversion_type' => $this->conversion_type,
+            'external_url' => $this->external_url,
+            'cta_label' => $this->cta_label,
+            'cover_image' => $this->cover_image,
+            'seo_title' => $this->seo_title,
             'seo_description' => $this->seo_description,
-            'rating'          => $this->rating,
-            'featured'        => $this->featured,
+            'rating' => $this->rating,
+            'featured' => $this->featured,
 
-            'images'          => ImageResource::collection($this->whenLoaded('images')),
-            'category'        => new CategoryResource($this->whenLoaded('category')),
+            'images' => ImageResource::collection($this->whenLoaded('images')),
+            'category' => new CategoryResource($this->whenLoaded('category')),
         ];
     }
 }

@@ -1,24 +1,24 @@
 <template>
-    <div class="cursor-pointer hover:shadow-lg transition p-4 rounded-lg bg-white dark:bg-slate-800 border shadow-sm flex gap-4 items-center"
+    <div class="flex cursor-pointer items-center gap-4 rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm transition hover:shadow-lg"
         @click="$emit('edit', product)">
-        <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center border">
+        <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
             <img v-if="firstImage" :src="firstImage" class="w-full h-full object-cover" :alt="product.name" />
-            <component v-else :is="getIcon('Package')" class="w-7 h-7 text-slate-400" />
+            <component v-else :is="getIcon('Package')" class="h-7 w-7 text-muted-foreground" />
         </div>
 
         <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between gap-4">
                 <div class="truncate">
-                    <p class="font-medium text-slate-800 dark:text-slate-100 truncate">{{ product.name }}</p>
-                    <p class="text-xs text-slate-500 dark:text-slate-300 truncate">{{ product.description }}</p>
+                    <p class="truncate font-medium text-foreground">{{ product.name }}</p>
+                    <p class="truncate text-xs text-muted-foreground">{{ product.description }}</p>
                 </div>
 
                 <div class="text-right">
-                    <p v-if="product.discount_price" class="text-xs text-slate-400 line-through">{{
+                    <p v-if="product.discount_price" class="text-xs text-muted-foreground line-through">{{
                         formatCurrency(product.price) }}</p>
                     <p class="font-bold text-emerald-600 dark:text-emerald-300">{{ formatCurrency(product.discount_price
                         || product.price) }}</p>
-                    <p class="text-xs text-slate-400 dark:text-slate-300">Estoque: {{ product.stock ?? 0 }}</p>
+                    <p class="text-xs text-muted-foreground">Estoque: {{ product.stock ?? 0 }}</p>
                 </div>
             </div>
 
@@ -26,8 +26,8 @@
                 <span v-if="product.featured"
                     class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Destaque</span>
                 <span v-if="!product.is_public"
-                    class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">Privado</span>
-                <span class="text-xs text-slate-400">{{ categoryName }}</span>
+                    class="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Privado</span>
+                <span class="text-xs text-muted-foreground">{{ categoryName }}</span>
             </div>
         </div>
     </div>

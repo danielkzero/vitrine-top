@@ -3,7 +3,7 @@
     <button type="button"
       :class="[
         'px-3 py-1 rounded-lg text-sm font-medium transition whitespace-nowrap cursor-pointer',
-        selected ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        selected ? 'bg-sky-500 text-white' : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'
       ]"
       @click="$emit('select', category.id)"
     >

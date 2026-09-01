@@ -1,20 +1,20 @@
 <template>
   <transition name="fade">
     <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div class="w-11/12 max-w-xl rounded-xl bg-white dark:bg-slate-900 p-5 shadow-lg">
+      <div class="w-11/12 max-w-xl rounded-xl border border-border bg-card p-5 text-card-foreground shadow-xl">
 
         <!-- HEADER -->
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-semibold text-lg text-slate-800 dark:text-slate-100">
+          <h3 class="text-lg font-semibold text-foreground">
             {{ modalTitle }}
           </h3>
-          <button type="button" @click="close" class="text-slate-500 hover:text-slate-700">✕</button>
+          <button type="button" @click="close" class="text-muted-foreground hover:text-foreground">✕</button>
         </div>
 
         <!-- BODY -->
         <div class="space-y-3">
 
-          <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Imagens</label>
+          <label class="text-sm font-medium text-foreground">Imagens</label>
           <DropzoneFile
             :initial-files="localProduct.images"
             @onCoverSelected="handleFiles"
@@ -25,24 +25,24 @@
             display-file-types="JPG, PNG, WEBP (máx. 1MB)"
           />
 
-          <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Nome</label>
-          <input v-model="localProduct.name" class="w-full border rounded-lg px-3 py-2" />
+          <label class="text-sm font-medium text-foreground">Nome</label>
+          <input v-model="localProduct.name" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground" />
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="text-sm font-medium">Preço</label>
-              <input v-model="localProduct.price" class="w-full border rounded-lg px-3 py-2" />
+              <input v-model="localProduct.price" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground" />
             </div>
             <div>
               <label class="text-sm font-medium">Preço (desconto)</label>
-              <input v-model="localProduct.discount_price" class="w-full border rounded-lg px-3 py-2" />
+              <input v-model="localProduct.discount_price" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="text-sm font-medium">Categoria</label>
-              <select v-model="localProduct.category_id" class="w-full border rounded-lg px-3 py-2">
+              <select v-model="localProduct.category_id" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground">
                 <option value="" disabled>Selecione</option>
                 <option v-for="c in categorias" :key="c.id" :value="c.id">{{ c.name }}</option>
               </select>
@@ -50,16 +50,38 @@
 
             <div>
               <label class="text-sm font-medium">Estoque</label>
-              <input v-model="localProduct.stock" type="number" class="w-full border rounded-lg px-3 py-2" />
+              <input v-model="localProduct.stock" type="number" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground" />
             </div>
           </div>
 
           <label class="text-sm font-medium">Descrição</label>
           <textarea
             v-model="localProduct.description"
-            class="w-full border rounded-lg px-3 py-2"
+            class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground"
             rows="4"
           ></textarea>
+
+          <div class="grid gap-3 rounded-lg border border-border bg-muted/40 p-3 md:grid-cols-2">
+            <div>
+              <label class="text-sm font-medium">Ação do botão</label>
+              <select v-model="localProduct.conversion_type" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground">
+                <option value="cart">Adicionar ao carrinho</option>
+                <option value="external">Abrir link externo/afiliado</option>
+                <option value="whatsapp">Conversar pelo WhatsApp</option>
+                <option value="lead">Abrir formulário de contato</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-medium">Texto do botão</label>
+              <input v-model="localProduct.cta_label" maxlength="80" placeholder="Ex.: Ver oferta"
+                class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground" />
+            </div>
+            <div v-if="localProduct.conversion_type === 'external'" class="md:col-span-2">
+              <label class="text-sm font-medium">URL externa ou link de afiliado</label>
+              <input v-model="localProduct.external_url" type="url" placeholder="https://..."
+                class="w-full rounded-lg border border-input bg-background px-3 py-2 text-foreground" />
+            </div>
+          </div>
 
           <div class="flex items-center gap-4">
             <label class="inline-flex items-center gap-2">
@@ -77,7 +99,7 @@
         <!-- FOOTER -->
         <div class="mt-4 flex justify-end gap-3">
           <button
-            class="px-3 py-1 rounded-lg border cursor-pointer"
+            class="cursor-pointer rounded-lg border border-border px-3 py-1 hover:bg-accent hover:text-accent-foreground"
             type="button"
             @click="close"
           >
@@ -126,6 +148,9 @@ function resetProduct() {
     images: Array.isArray(props.novoProduto.images)
       ? props.novoProduto.images.map(img => ({ ...img }))
       : [],
+    conversion_type: props.novoProduto.conversion_type ?? 'cart',
+    external_url: props.novoProduto.external_url ?? '',
+    cta_label: props.novoProduto.cta_label ?? '',
   }
 }
 

@@ -24,8 +24,8 @@ class CategoryController extends BaseController
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => ['nullable','string','max:255',
-                Rule::unique('categories')->where(fn($q) => $q->where('user_id', $this->user->id))
+            'slug' => ['nullable', 'string', 'max:255',
+                Rule::unique('categories')->where(fn ($q) => $q->where('user_id', $this->user->id)),
             ],
             'order' => 'nullable|integer',
             'days_of_week' => 'nullable|array',
@@ -54,8 +54,8 @@ class CategoryController extends BaseController
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => ['nullable','string','max:255',
-                Rule::unique('categories')->ignore($category->id)->where(fn($q) => $q->where('user_id', $this->user->id))
+            'slug' => ['nullable', 'string', 'max:255',
+                Rule::unique('categories')->ignore($category->id)->where(fn ($q) => $q->where('user_id', $this->user->id)),
             ],
             'order' => 'nullable|integer',
             'days_of_week' => 'nullable|array',
@@ -70,10 +70,10 @@ class CategoryController extends BaseController
 
     public function destroy(Category $category)
     {
-        //$this->authorizeOwnership($category);
+        $this->authorizeOwnership($category);
         $category->delete();
 
-        return back()->with(['message' => 'Categoria removida.']);
+        return back()->with(['message' => 'Categoria e seus produtos foram removidos.']);
     }
 
     protected function authorizeOwnership(Category $category)
