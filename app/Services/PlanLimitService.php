@@ -46,7 +46,7 @@ class PlanLimitService
         $plan = $this->getPlanForUser($user);
         if (($currentCount + $newCount) > $plan->products_limit) {
             throw ValidationException::withMessages([
-                'produtos' => "Limite de produtos atingido. Maximo: {$plan->products_limit}.",
+                'produtos' => "Limite de produtos atingido. Máximo: {$plan->products_limit}.",
             ]);
         }
     }
@@ -58,7 +58,7 @@ class PlanLimitService
 
         if ($limit !== null && $imagesCount > $limit) {
             throw ValidationException::withMessages([
-                'produtos' => "Cada produto pode ter no maximo {$limit} imagens.",
+                'produtos' => "Cada produto pode ter no máximo {$limit} imagens.",
             ]);
         }
     }
@@ -68,7 +68,7 @@ class PlanLimitService
         $plan = $this->getPlanForUser($user);
         if ($galleryImagesCount > $plan->gallery_images_limit) {
             throw ValidationException::withMessages([
-                'page' => "Limite de fotos na galeria atingido. Maximo: {$plan->gallery_images_limit}.",
+                'page' => "Limite de fotos na galeria atingido. Máximo: {$plan->gallery_images_limit}.",
             ]);
         }
     }
@@ -78,7 +78,7 @@ class PlanLimitService
         $plan = $this->getPlanForUser($user);
         if ($currentCount >= $plan->banners_limit) {
             throw ValidationException::withMessages([
-                'image' => "Limite de banners atingido. Voce pode ter no maximo {$plan->banners_limit} banners.",
+                'image' => "Limite de banners atingido. Você pode ter no máximo {$plan->banners_limit} banners.",
             ]);
         }
     }

@@ -151,7 +151,7 @@ class SubscriptionController extends BaseController
     protected function authorizeOwnership(Subscription $subscription)
     {
         if ($subscription->user_id !== $this->user->id) {
-            abort(403, 'Esta assinatura nao pertence ao usuario autenticado.');
+            abort(403, 'Esta assinatura não pertence ao usuário autenticado.');
         }
     }
 }

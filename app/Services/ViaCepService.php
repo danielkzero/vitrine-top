@@ -22,7 +22,7 @@ class ViaCepService
         if (!$response->successful() || $response->json('erro')) {
             return [
                 'found' => false,
-                'message' => 'CEP nao encontrado.',
+                'message' => 'CEP não encontrado.',
             ];
         }
 

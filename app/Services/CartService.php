@@ -37,7 +37,7 @@ class CartService
 
         if (!$product) {
             throw ValidationException::withMessages([
-                'product_id' => 'Produto nao encontrado para esta loja.',
+                'product_id' => 'Produto não encontrado para esta loja.',
             ]);
         }
 

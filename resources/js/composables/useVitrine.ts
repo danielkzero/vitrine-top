@@ -4,12 +4,12 @@ import { ref, computed, UnwrapRef } from 'vue'
 
 /**
  * Composable para carregar dados da vitrine via API (REST).
- * - Usa cache simples em memÃ³ria por slug
+ * - Usa cache simples em memória por slug
  * - Faz carregamento condicional (pages => only load products/reviews/categories when needed)
- * - Retorna mÃ©todos de reload e helpers
+ * - Retorna métodos de reload e helpers
  */
 
-// Tipagens mÃ­nimas (adicione mais campos conforme necessidade)
+// Tipagens mínimas (adicione mais campos conforme necessidade)
 export interface User {
   id: number
   slug: string
@@ -85,7 +85,7 @@ export function useVitrineApi() {
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), user })
       return user
     } catch (err: any) {
-      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar usuÃ¡rio'
+      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar usuário'
       throw err
     } finally {
       loading.value = false
@@ -103,7 +103,7 @@ export function useVitrineApi() {
       memoryCache.set(slug, { ...(memoryCache.get(slug) ?? {}), pages })
       return pages
     } catch (err: any) {
-      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar pÃ¡ginas'
+      error.value = err?.response?.data?.message || err.message || 'Erro ao carregar páginas'
       throw err
     } finally {
       loading.value = false

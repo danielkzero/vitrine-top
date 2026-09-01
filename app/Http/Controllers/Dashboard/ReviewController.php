@@ -51,7 +51,7 @@ class ReviewController extends BaseController
         return redirect()
             ->back()
             ->with([
-                'message' => 'Avaliacao criada com sucesso.',
+                'message' => 'Avaliação criada com sucesso.',
                 'review' => $review,
             ]);
     }
@@ -80,12 +80,12 @@ class ReviewController extends BaseController
 
         if ($request->wantsJson()) {
             return $this->json([
-                'message' => 'Avaliacao atualizada com sucesso.',
+                'message' => 'Avaliação atualizada com sucesso.',
                 'review' => $review,
             ]);
         }
 
-        return back()->with('success', 'Avaliacao atualizada com sucesso.');
+        return back()->with('success', 'Avaliação atualizada com sucesso.');
     }
 
     public function destroy(Request $request, Review $review)
@@ -95,16 +95,16 @@ class ReviewController extends BaseController
         $review->delete();
 
         if ($request->wantsJson()) {
-            return $this->json(['message' => 'Avaliacao removida com sucesso.']);
+            return $this->json(['message' => 'Avaliação removida com sucesso.']);
         }
 
-        return back()->with('success', 'Avaliacao removida com sucesso.');
+        return back()->with('success', 'Avaliação removida com sucesso.');
     }
 
     protected function authorizeOwnership(Review $review)
     {
         if ($review->user_id !== $this->user->id) {
-            abort(403, 'Esta avaliacao nao pertence ao usuario autenticado.');
+            abort(403, 'Esta avaliação não pertence ao usuário autenticado.');
         }
     }
 }

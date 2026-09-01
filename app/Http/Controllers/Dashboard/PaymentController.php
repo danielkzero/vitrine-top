@@ -170,7 +170,7 @@ class PaymentController extends BaseController
     protected function authorizeOwnership(Payment $payment): void
     {
         if ($payment->user_id !== $this->user->id) {
-            abort(403, 'Este pagamento nao pertence ao usuario autenticado.');
+            abort(403, 'Este pagamento não pertence ao usuário autenticado.');
         }
     }
 }

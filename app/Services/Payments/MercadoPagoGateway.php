@@ -28,12 +28,11 @@ class MercadoPagoGateway implements PaymentGateway
 
     public function createSubscription(Subscription $subscription, Plan $plan, string $paymentMethod): array
     {
-        throw new LogicException('Gateway Mercado Pago ainda nao implementado.');
+        throw new LogicException('Gateway Mercado Pago ainda não implementado.');
     }
 
     public function cancelSubscription(Subscription $subscription): void
     {
-        throw new LogicException('Cancelamento no gateway ainda nao implementado.');
+        throw new LogicException('Cancelamento no gateway ainda não implementado.');
     }
 }
-

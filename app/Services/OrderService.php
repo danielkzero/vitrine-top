@@ -117,7 +117,7 @@ class OrderService
     {
         if ($order->user_id !== $store->id || $order->customer_id !== $customer->id) {
             throw ValidationException::withMessages([
-                'order' => 'Pedido nao pertence a loja/cliente informado.',
+                'order' => 'Pedido não pertence à loja/cliente informado.',
             ]);
         }
 
