@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Daniel',
                 'email_verified_at' => now(),
                 'password' => 'V1p@@2025Put',
+                'is_admin' => true,
                 'two_factor_secret' => null,
                 'two_factor_recovery_codes' => null,
                 'two_factor_confirmed_at' => null,
@@ -29,5 +30,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(MinhaLojinhaSeeder::class);
         $this->call(EcommerceDemoSeeder::class);
+        $this->call(AdminDemoSeeder::class);
     }
 }
