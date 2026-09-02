@@ -173,6 +173,17 @@ async function updateOrderStatus(orderId: number, status: string) {
   await loadAnalytics()
 }
 
+function orderStatusLabel(status: string) {
+  return ({
+    pending: 'Pendente',
+    confirmed: 'Confirmado',
+    preparing: 'Em preparação',
+    shipped: 'Enviado',
+    delivered: 'Entregue',
+    canceled: 'Cancelado',
+  } as Record<string, string>)[status] ?? status
+}
+
 onMounted(async () => {
   await Promise.all([loadAnalytics(), loadOrders()])
 })
@@ -299,16 +310,16 @@ onMounted(async () => {
                 <td class="px-4 py-3">{{ order.customer?.name || order.customer_name || '-' }}</td>
                 <td class="px-4 py-3">{{ formatCurrency(order.total) }}</td>
                 <td class="px-4 py-3">
-                  <span class="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">{{ order.status }}</span>
+                  <span class="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">{{ orderStatusLabel(order.status) }}</span>
                 </td>
                 <td class="px-4 py-3">
                   <select class="rounded border border-input bg-background px-2 py-1 text-xs text-foreground" :value="order.status" @change="(e: any) => updateOrderStatus(order.id, e.target.value)">
-                    <option value="pending">pending</option>
-                    <option value="confirmed">confirmed</option>
-                    <option value="preparing">preparing</option>
-                    <option value="shipped">shipped</option>
-                    <option value="delivered">delivered</option>
-                    <option value="canceled">canceled</option>
+                    <option value="pending">Pendente</option>
+                    <option value="confirmed">Confirmado</option>
+                    <option value="preparing">Em preparação</option>
+                    <option value="shipped">Enviado</option>
+                    <option value="delivered">Entregue</option>
+                    <option value="canceled">Cancelado</option>
                   </select>
                 </td>
               </tr>

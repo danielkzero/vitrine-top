@@ -102,9 +102,9 @@ function statusClass(status: string) {
               <td class="px-4 py-3 text-muted-foreground">{{ formatDate(review.created_at) }}</td>
               <td class="px-4 py-3 space-y-2">
                 <select class="w-full rounded border border-input bg-background px-2 py-1 text-xs text-foreground" :value="review.status" @change="(e: any) => updateStatus(review.id, e.target.value)">
-                  <option value="pending">pending</option>
-                  <option value="approved">approved</option>
-                  <option value="rejected">rejected</option>
+                  <option value="pending">Pendente</option>
+                  <option value="approved">Aprovada</option>
+                  <option value="rejected">Rejeitada</option>
                 </select>
                 <button class="w-full rounded border border-rose-200 text-rose-600 px-2 py-1 text-xs" @click="removeReview(review.id)">Excluir</button>
               </td>
