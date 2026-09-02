@@ -12,8 +12,7 @@ interface PaymentGateway
 
     public function createOrGetCustomer(User $user): string;
 
-    public function createSubscription(Subscription $subscription, Plan $plan, string $paymentMethod): array;
+    public function createSubscription(Subscription $subscription, Plan $plan, string $paymentMethod, array $paymentData = []): array;
 
     public function cancelSubscription(Subscription $subscription): void;
 }
-

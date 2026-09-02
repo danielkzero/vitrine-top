@@ -11,6 +11,7 @@ use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\ReviewController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
 use App\Http\Controllers\Vitrine\VitrineController;
+use App\Http\Controllers\Webhook\MercadoPagoWebhookController;
 use App\Models\Plan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -54,6 +55,7 @@ Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout.
 Route::post('/checkout', [PaymentController::class, 'process'])->name('checkout.process');
 Route::get('/checkout/sucesso', [PaymentController::class, 'success'])->name('checkout.success');
 Route::get('/checkout/erro', [PaymentController::class, 'error'])->name('checkout.error');
+Route::post('/webhooks/mercado-pago', MercadoPagoWebhookController::class)->name('payments.mercado-pago.webhook');
 
 // Outras rotas internas
 require __DIR__.'/dashboard.php';

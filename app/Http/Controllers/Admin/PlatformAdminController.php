@@ -6,6 +6,7 @@ use App\Enums\SubscriptionStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Plan;
+use App\Models\PlatformSetting;
 use App\Models\ProductImage;
 use App\Models\Subscription;
 use App\Models\User;
@@ -132,7 +133,23 @@ class PlatformAdminController extends Controller
                 'banners_limit' => $plan->banners_limit,
             ]),
             'filters' => compact('search', 'status'),
+            'payment_settings' => [
+                'configured' => filled(PlatformSetting::valueFor('mercado_pago_access_token', config('services.mercado_pago.access_token'))),
+                'access_token_hint' => $this->secretHint(PlatformSetting::valueFor('mercado_pago_access_token', config('services.mercado_pago.access_token'))),
+                'public_key_hint' => $this->secretHint(PlatformSetting::valueFor('mercado_pago_public_key', config('services.mercado_pago.public_key'))),
+                'webhook_secret_hint' => $this->secretHint(PlatformSetting::valueFor('mercado_pago_webhook_secret', config('services.mercado_pago.webhook_secret'))),
+                'sandbox' => PlatformSetting::valueFor('mercado_pago_sandbox', config('services.mercado_pago.sandbox', true) ? '1' : '0') === '1',
+                'pix_enabled' => PlatformSetting::valueFor('mercado_pago_pix_enabled', '1') === '1',
+                'credit_card_enabled' => PlatformSetting::valueFor('mercado_pago_credit_card_enabled', '1') === '1',
+                'max_installments' => (int) PlatformSetting::valueFor('mercado_pago_max_installments', '12'),
+                'webhook_url' => route('payments.mercado-pago.webhook'),
+            ],
         ]);
+    }
+
+    private function secretHint(?string $value): ?string
+    {
+        return $value ? '••••••••'.substr($value, -6) : null;
     }
 
     public function updateSubscription(Request $request, User $user)

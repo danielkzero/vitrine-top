@@ -8,12 +8,17 @@ import {
   Barcode,
   Check,
   CreditCard,
+  Copy,
   LoaderCircle,
   QrCode,
   ShieldCheck,
   WalletCards,
 } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+
+declare global {
+  interface Window { MercadoPago: any }
+}
 
 moment.locale('pt-br')
 
@@ -40,6 +45,9 @@ const props = defineProps<{
   subscription: {
     id: number
     status: string
+    installments: number
+    installment_amount: number
+    status_detail: string | null
     billing_period: BillingPeriod
     trial_ends_at: string | null
     trial_days_left: number | null
@@ -59,7 +67,17 @@ const props = defineProps<{
     provider: string
     supports_pix: boolean
     supports_credit_card: boolean
+    supports_boleto: boolean
+    configured: boolean
+    public_key: string | null
+    max_installments: number
   }
+  pix_payment: {
+    id: number
+    qr_code: string | null
+    qr_code_base64: string | null
+    expires_at: string | null
+  } | null
   payments: Array<{
     id: number
     amount: number
@@ -77,6 +95,10 @@ const selectedPeriod = ref<BillingPeriod>(props.subscription.billing_period)
 const selectedPlan = computed(() => {
   return props.plan_catalog.find((plan) => plan.code === selectedPlanCode.value) ?? props.plan_catalog[0]
 })
+const hasPendingPlanChange = computed(() =>
+  selectedPlanCode.value !== props.subscription.plan_code
+  || selectedPeriod.value !== props.subscription.billing_period,
+)
 
 const breadcrumbs = computed(() => {
   if (props.is_blocked) {
@@ -92,7 +114,7 @@ const breadcrumbs = computed(() => {
 const selectedPrice = computed(() => {
   if (!selectedPlan.value) return 0
   return selectedPeriod.value === 'annual'
-    ? selectedPlan.value.annual_monthly_equivalent
+    ? selectedPlan.value.annual_total
     : selectedPlan.value.monthly
 })
 
@@ -103,7 +125,19 @@ const planForm = useForm({
 
 const payForm = useForm({
   method: 'pix',
+  token: '',
+  payment_method_id: '',
+  issuer_id: '',
+  installments: 1,
+  payer_email: '',
+  identification_type: '',
+  identification_number: '',
+  checkout_attempt_id: crypto.randomUUID(),
 })
+const cardReady = ref(false)
+const cardError = ref('')
+const cardFormInstance = ref<any>(null)
+let installmentObserver: MutationObserver | null = null
 
 const paymentMethods = computed(() => [
   {
@@ -118,11 +152,12 @@ const paymentMethods = computed(() => [
   },
   {
     value: 'boleto', label: 'Boleto bancário', icon: Barcode,
-    description: 'Pague pelo banco de sua preferência.', detail: 'Compensação bancária', enabled: true,
+    description: 'Pague pelo banco de sua preferência.', detail: 'Compensação bancária', enabled: props.payment_gateway.supports_boleto,
   },
 ].filter((method) => method.enabled))
 
 const selectedPaymentMethod = computed(() => paymentMethods.value.find((method) => method.value === payForm.method))
+const pixCopied = ref(false)
 
 if (!selectedPaymentMethod.value && paymentMethods.value[0]) {
   payForm.method = paymentMethods.value[0].value
@@ -139,7 +174,95 @@ function applyPlanSelection() {
 }
 
 function payNow() {
-  payForm.post(route('painel.billing.pay'))
+  if (!hasPendingPlanChange.value && payForm.method === 'pix') payForm.post(route('painel.billing.pay'))
+}
+
+async function loadMercadoPagoSdk() {
+  if (window.MercadoPago) return
+  await new Promise<void>((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = 'https://sdk.mercadopago.com/js/v2'
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Não foi possível carregar o checkout seguro.'))
+    document.head.appendChild(script)
+  })
+}
+
+function restrictInstallments() {
+  const select = document.querySelector<HTMLSelectElement>('#form-checkout__installments')
+  if (!select) return
+  const maximum = props.subscription.billing_period === 'monthly'
+    ? 1
+    : props.payment_gateway.max_installments
+  Array.from(select.options).forEach((option) => {
+    if (Number(option.value) > maximum) option.remove()
+  })
+  if (props.subscription.billing_period === 'monthly' && select.options.length) {
+    select.options[0].text = `À vista de ${formatCurrency(props.subscription.price)}`
+    select.value = '1'
+  }
+}
+
+async function mountCardForm() {
+  if (cardFormInstance.value || !props.payment_gateway.public_key) return
+  cardError.value = ''
+  await nextTick()
+  try {
+    await loadMercadoPagoSdk()
+    const mp = new window.MercadoPago(props.payment_gateway.public_key, { locale: 'pt-BR' })
+    cardFormInstance.value = mp.cardForm({
+      amount: String(props.subscription.price),
+      iframe: true,
+      form: {
+        id: 'form-checkout',
+        cardNumber: { id: 'form-checkout__cardNumber', placeholder: 'Número do cartão' },
+        expirationDate: { id: 'form-checkout__expirationDate', placeholder: 'MM/AA' },
+        securityCode: { id: 'form-checkout__securityCode', placeholder: 'CVV' },
+        cardholderName: { id: 'form-checkout__cardholderName', placeholder: 'Nome impresso no cartão' },
+        issuer: { id: 'form-checkout__issuer', placeholder: 'Banco emissor' },
+        installments: { id: 'form-checkout__installments', placeholder: 'Parcelas' },
+        identificationType: { id: 'form-checkout__identificationType', placeholder: 'Documento' },
+        identificationNumber: { id: 'form-checkout__identificationNumber', placeholder: 'Número do documento' },
+        cardholderEmail: { id: 'form-checkout__cardholderEmail', placeholder: 'E-mail' },
+      },
+      callbacks: {
+        onFormMounted(error: any) {
+          if (error) { cardError.value = 'Não foi possível iniciar o formulário do cartão.'; return }
+          cardReady.value = true
+          const select = document.querySelector('#form-checkout__installments')
+          if (select) {
+            installmentObserver = new MutationObserver(restrictInstallments)
+            installmentObserver.observe(select, { childList: true })
+          }
+        },
+        onSubmit(event: Event) {
+          event.preventDefault()
+          const data = cardFormInstance.value.getCardFormData()
+          payForm.token = data.token
+          payForm.payment_method_id = data.paymentMethodId
+          payForm.issuer_id = data.issuerId
+          payForm.installments = Number(data.installments)
+          payForm.payer_email = data.cardholderEmail
+          payForm.identification_type = data.identificationType
+          payForm.identification_number = data.identificationNumber
+          payForm.post(route('painel.billing.pay'), { preserveScroll: true })
+        },
+        onFetching() {},
+      },
+    })
+  } catch (error) {
+    cardError.value = error instanceof Error ? error.message : 'Não foi possível iniciar o cartão.'
+  }
+}
+
+watch(() => payForm.method, (method) => { if (method === 'credit_card') mountCardForm() })
+onBeforeUnmount(() => { installmentObserver?.disconnect(); cardFormInstance.value?.unmount?.() })
+
+async function copyPixCode() {
+  if (!props.pix_payment?.qr_code) return
+  await navigator.clipboard.writeText(props.pix_payment.qr_code)
+  pixCopied.value = true
+  window.setTimeout(() => { pixCopied.value = false }, 2500)
 }
 
 function deleteAccount() {
@@ -235,7 +358,7 @@ function statusLabel(status: string) {
               </div>
               <div>
                 <p class="text-slate-500">Valor vigente</p>
-                <p class="font-semibold text-slate-900">{{ formatCurrency(subscription.price) }}/mês</p>
+                <p class="font-semibold text-slate-900">{{ formatCurrency(subscription.price) }}/{{ subscription.billing_period === 'annual' ? 'ano' : 'mês' }}</p>
               </div>
               <div>
                 <p class="text-slate-500">Fim do trial</p>
@@ -311,7 +434,7 @@ function statusLabel(status: string) {
               <p class="font-semibold text-slate-900 mt-1">
                 {{ selectedPlan?.name ?? '-' }} - {{ selectedPeriod === 'annual' ? 'Anual' : 'Mensal' }}
               </p>
-              <p class="text-sm text-slate-700">Valor: {{ formatCurrency(selectedPrice) }}/mês</p>
+              <p class="text-sm text-slate-700">Total do ciclo: {{ formatCurrency(selectedPrice) }}</p>
             </div>
 
             <button
@@ -343,7 +466,7 @@ function statusLabel(status: string) {
                 class="rounded-lg border bg-slate-50 px-4 py-3 text-sm grid md:grid-cols-4 gap-2"
               >
                 <p class="font-semibold text-slate-900">#{{ formatNumber(payment.id) }}</p>
-                <p class="text-slate-700">{{ methodLabel(payment.method) }} - {{ statusLabel(payment.status) }}</p>
+                <p class="text-slate-700">{{ methodLabel(payment.method) }} - {{ statusLabel(payment.status) }}<span v-if="payment.installments > 1" class="block text-xs text-slate-500">{{ payment.installments }}x de {{ formatCurrency(payment.installment_amount) }}</span></p>
                 <p class="text-slate-700">{{ formatDateTime(payment.paid_at ?? payment.created_at) }}</p>
                 <p class="font-semibold text-slate-900 md:text-right">{{ formatCurrency(payment.amount) }}</p>
               </div>
@@ -371,6 +494,26 @@ function statusLabel(status: string) {
             </header>
 
             <div class="space-y-5 p-5 md:p-6">
+              <div v-if="pix_payment?.qr_code" class="rounded-xl border border-emerald-300 bg-emerald-50 p-4 text-center dark:border-emerald-800 dark:bg-emerald-950/30">
+                <p class="font-semibold text-foreground">PIX aguardando pagamento</p>
+                <p class="mt-1 text-xs text-muted-foreground">Leia o QR Code no aplicativo do seu banco ou copie o código abaixo.</p>
+                <img v-if="pix_payment.qr_code_base64" :src="`data:image/png;base64,${pix_payment.qr_code_base64}`" alt="QR Code PIX" class="mx-auto mt-4 h-52 w-52 rounded-xl bg-white p-2" />
+                <div class="mt-4 flex items-stretch gap-2">
+                  <textarea readonly rows="3" :value="pix_payment.qr_code" class="min-w-0 flex-1 resize-none rounded-lg border border-border bg-background p-3 text-xs text-foreground"></textarea>
+                  <button type="button" class="flex w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-700" @click="copyPixCode">
+                    <Check v-if="pixCopied" class="h-4 w-4" /><Copy v-else class="h-4 w-4" />
+                    {{ pixCopied ? 'Copiado' : 'Copiar PIX' }}
+                  </button>
+                </div>
+                <p class="mt-3 text-xs text-muted-foreground">A confirmação acontece automaticamente após o pagamento.</p>
+              </div>
+
+              <div v-if="!payment_gateway.configured" class="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                O pagamento está temporariamente indisponível. A integração ainda não foi configurada.
+              </div>
+              <div v-if="hasPendingPlanChange" class="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                Salve a alteração de plano para atualizar o valor e as parcelas do checkout.
+              </div>
               <fieldset>
                 <legend class="mb-3 text-sm font-semibold text-foreground">Forma de pagamento</legend>
                 <div class="grid gap-3">
@@ -407,6 +550,29 @@ function statusLabel(status: string) {
                 </div>
               </fieldset>
 
+              <form v-show="payForm.method === 'credit_card' && !hasPendingPlanChange" id="form-checkout" class="space-y-3 rounded-xl border border-border bg-muted/20 p-4">
+                <p class="text-sm font-semibold text-foreground">Dados do cartão</p>
+                <p class="text-xs text-muted-foreground">Os dados são enviados diretamente ao Mercado Pago e não ficam armazenados na Vitrine.</p>
+                <div id="form-checkout__cardNumber" class="h-11 rounded-lg border border-input bg-background px-3 py-2"></div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div id="form-checkout__expirationDate" class="h-11 rounded-lg border border-input bg-background px-3 py-2"></div>
+                  <div id="form-checkout__securityCode" class="h-11 rounded-lg border border-input bg-background px-3 py-2"></div>
+                </div>
+                <input id="form-checkout__cardholderName" type="text" class="h-11 w-full rounded-lg border border-input bg-background px-3 text-foreground" />
+                <select id="form-checkout__issuer" class="h-11 w-full rounded-lg border border-input bg-background px-3 text-foreground"></select>
+                <select id="form-checkout__installments" class="h-11 w-full rounded-lg border border-input bg-background px-3 text-foreground"></select>
+                <div class="grid grid-cols-3 gap-3">
+                  <select id="form-checkout__identificationType" class="h-11 rounded-lg border border-input bg-background px-2 text-foreground"></select>
+                  <input id="form-checkout__identificationNumber" type="text" class="col-span-2 h-11 rounded-lg border border-input bg-background px-3 text-foreground" />
+                </div>
+                <input id="form-checkout__cardholderEmail" type="email" class="h-11 w-full rounded-lg border border-input bg-background px-3 text-foreground" />
+                <p v-if="cardError || payForm.errors.token" class="text-sm text-destructive">{{ cardError || payForm.errors.token }}</p>
+                <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white disabled:opacity-50" :disabled="!cardReady || payForm.processing">
+                  <LoaderCircle v-if="payForm.processing" class="h-4 w-4 animate-spin" />
+                  {{ cardReady ? 'Pagar com cartão' : 'Carregando checkout seguro...' }}
+                </button>
+              </form>
+
               <div class="rounded-xl border border-border bg-muted/40 p-4">
                 <div class="flex items-center justify-between gap-3 text-sm">
                   <span class="text-muted-foreground">Plano</span>
@@ -421,6 +587,7 @@ function statusLabel(status: string) {
                   <div>
                     <p class="text-xs text-muted-foreground">Total a pagar</p>
                     <p class="mt-1 text-2xl font-bold text-foreground">{{ formatCurrency(subscription.price) }}</p>
+                    <p v-if="payForm.method === 'credit_card'" class="mt-1 text-[11px] text-muted-foreground">{{ subscription.billing_period === 'monthly' ? 'Pagamento mensal somente à vista.' : 'Selecione as parcelas acima para ver os juros e o total calculados pelo Mercado Pago.' }}</p>
                   </div>
                   <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
                     {{ selectedPaymentMethod?.label }}
@@ -431,8 +598,9 @@ function statusLabel(status: string) {
               <p v-if="payForm.errors.method" class="text-sm text-destructive">{{ payForm.errors.method }}</p>
 
               <button
+                v-if="payForm.method === 'pix'"
                 class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-emerald-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
-                :disabled="payForm.processing"
+                :disabled="payForm.processing || !payment_gateway.configured || hasPendingPlanChange"
                 @click="payNow"
               >
                 <LoaderCircle v-if="payForm.processing" class="h-4 w-4 animate-spin" />

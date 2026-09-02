@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import { Head, Link, router, useForm } from '@inertiajs/vue3'
 import {
   Activity, BadgeDollarSign, Boxes, CalendarClock, CheckCircle2,
-  Clock3, CreditCard, Package, Pencil, Search, ShieldCheck, Store, Users, X,
+  Clock3, CreditCard, KeyRound, Package, Pencil, Search, Settings, ShieldCheck, Store, Users, X,
 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 
@@ -26,11 +26,12 @@ const props = defineProps<{
   payments: Array<{ id: number; customer: string | null; email: string | null; amount: number; method: string; status: string; paid_at: string | null; created_at: string }>
   plans: Array<{ id: number; name: string; price: number; products_limit: number; product_images_limit: number | null; gallery_images_limit: number; banners_limit: number }>
   filters: { search: string; status: string }
+  payment_settings: { configured: boolean; access_token_hint: string | null; public_key_hint: string | null; webhook_secret_hint: string | null; sandbox: boolean; pix_enabled: boolean; credit_card_enabled: boolean; max_installments: number; webhook_url: string }
 }>()
 
 const search = ref(props.filters.search)
 const status = ref(props.filters.status)
-const activeTab = ref<'clients' | 'payments'>('clients')
+const activeTab = ref<'clients' | 'payments' | 'settings'>('clients')
 const editingClient = ref<Client | null>(null)
 const customEnabled = ref(false)
 
@@ -41,6 +42,8 @@ const form = useForm({
   custom_product_images_limit: null as number | null, custom_gallery_images_limit: null as number | null,
   custom_banners_limit: null as number | null,
 })
+const paymentSettingsForm = useForm({ access_token: '', public_key: '', webhook_secret: '', sandbox: props.payment_settings.sandbox, pix_enabled: props.payment_settings.pix_enabled, credit_card_enabled: props.payment_settings.credit_card_enabled, max_installments: props.payment_settings.max_installments })
+function savePaymentSettings() { paymentSettingsForm.put('/admin/configuracoes/pagamentos', { preserveScroll: true, onSuccess: () => paymentSettingsForm.reset('access_token', 'public_key', 'webhook_secret') }) }
 
 const statCards = computed(() => [
   { label: 'Clientes', value: props.stats.clients, detail: `${props.stats.active} com plano ativo`, icon: Users, color: 'text-blue-600 bg-blue-100 dark:bg-blue-950 dark:text-blue-300' },
@@ -138,6 +141,7 @@ function statusClass(value: string) {
       <div class="flex w-fit rounded-xl border border-border bg-muted/40 p-1">
         <button class="rounded-lg px-4 py-2 text-sm font-medium" :class="activeTab === 'clients' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'" @click="activeTab = 'clients'">Clientes</button>
         <button class="rounded-lg px-4 py-2 text-sm font-medium" :class="activeTab === 'payments' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'" @click="activeTab = 'payments'">Pagamentos</button>
+        <button class="rounded-lg px-4 py-2 text-sm font-medium" :class="activeTab === 'settings' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground'" @click="activeTab = 'settings'">Configurações</button>
       </div>
 
       <section v-if="activeTab === 'clients'" class="space-y-4">
@@ -186,9 +190,28 @@ function statusClass(value: string) {
         </div>
       </section>
 
-      <section v-else class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <section v-else-if="activeTab === 'payments'" class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <div class="border-b border-border p-5"><h2 class="font-semibold text-foreground">Pagamentos recentes</h2><p class="text-sm text-muted-foreground">Últimos 30 registros processados pela plataforma.</p></div>
         <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-sm"><thead class="bg-muted/50 text-left text-xs uppercase text-muted-foreground"><tr><th class="px-5 py-3">Cliente</th><th class="px-5 py-3">Método</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Data</th><th class="px-5 py-3 text-right">Valor</th></tr></thead><tbody class="divide-y divide-border"><tr v-for="payment in payments" :key="payment.id"><td class="px-5 py-4"><b class="text-foreground">{{ payment.customer || 'Cliente removido' }}</b><p class="text-xs text-muted-foreground">{{ payment.email }}</p></td><td class="px-5 py-4 text-foreground">{{ methodLabel(payment.method) }}</td><td class="px-5 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="statusClass(payment.status)">{{ statusLabel(payment.status) }}</span></td><td class="px-5 py-4 text-muted-foreground">{{ formatDateTime(payment.paid_at || payment.created_at) }}</td><td class="px-5 py-4 text-right font-semibold text-foreground">{{ formatCurrency(payment.amount) }}</td></tr><tr v-if="!payments.length"><td colspan="5" class="px-5 py-10 text-center text-muted-foreground">Nenhum pagamento registrado.</td></tr></tbody></table></div>
+      </section>
+
+      <section v-else class="mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        <header class="border-b border-border bg-muted/40 p-5 md:p-6"><div class="flex items-start gap-3"><div class="rounded-xl bg-blue-100 p-3 text-blue-700 dark:bg-blue-950 dark:text-blue-300"><KeyRound class="h-5 w-5" /></div><div><h2 class="font-semibold text-foreground">Mercado Pago</h2><p class="text-sm text-muted-foreground">Credenciais usadas para gerar PIX e confirmar pagamentos.</p></div><span class="ml-auto rounded-full px-2.5 py-1 text-xs font-semibold" :class="payment_settings.configured ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'">{{ payment_settings.configured ? 'Configurado' : 'Pendente' }}</span></div></header>
+        <form class="space-y-5 p-5 md:p-6" @submit.prevent="savePaymentSettings">
+          <div class="rounded-xl border border-border bg-muted/40 p-4 text-sm text-muted-foreground"><b class="text-foreground">Segurança:</b> as credenciais são criptografadas no banco. Depois de salvar, apenas os últimos caracteres serão exibidos.</div>
+          <label class="block text-sm text-foreground">Access Token privado <span class="text-destructive">*</span><input v-model="paymentSettingsForm.access_token" type="password" autocomplete="new-password" class="mt-1.5 w-full rounded-xl border border-input bg-background p-3" :placeholder="payment_settings.access_token_hint || 'APP_USR-... ou TEST-...'" /><span class="mt-1 block text-xs text-muted-foreground">{{ payment_settings.access_token_hint ? `Atual: ${payment_settings.access_token_hint}. Deixe vazio para manter.` : 'Obrigatório para criar pagamentos no servidor.' }}</span></label>
+          <label class="block text-sm text-foreground">Public Key<input v-model="paymentSettingsForm.public_key" type="password" autocomplete="new-password" class="mt-1.5 w-full rounded-xl border border-input bg-background p-3" :placeholder="payment_settings.public_key_hint || 'APP_USR-... ou TEST-...'" /><span class="mt-1 block text-xs text-muted-foreground">Obrigatória para tokenizar cartões com segurança no navegador.</span></label>
+          <label class="block text-sm text-foreground">Assinatura secreta do webhook<input v-model="paymentSettingsForm.webhook_secret" type="password" autocomplete="new-password" class="mt-1.5 w-full rounded-xl border border-input bg-background p-3" :placeholder="payment_settings.webhook_secret_hint || 'Chave secreta das notificações'" /></label>
+          <label class="flex items-center justify-between gap-3 rounded-xl border border-border p-4"><span><b class="block text-sm text-foreground">Ambiente de testes</b><span class="text-xs text-muted-foreground">Use credenciais TEST antes de receber pagamentos reais.</span></span><input v-model="paymentSettingsForm.sandbox" type="checkbox" class="h-5 w-5 accent-primary" /></label>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="flex items-center justify-between rounded-xl border border-border p-4 text-sm text-foreground"><span>Receber por PIX</span><input v-model="paymentSettingsForm.pix_enabled" type="checkbox" class="h-5 w-5 accent-primary" /></label>
+            <label class="flex items-center justify-between rounded-xl border border-border p-4 text-sm text-foreground"><span>Receber por cartão</span><input v-model="paymentSettingsForm.credit_card_enabled" type="checkbox" class="h-5 w-5 accent-primary" /></label>
+          </div>
+          <label class="block text-sm text-foreground">Limite de parcelas<input v-model.number="paymentSettingsForm.max_installments" type="number" min="1" max="12" class="mt-1.5 w-full rounded-xl border border-input bg-background p-3" /><span class="mt-1 block text-xs text-muted-foreground">Teto permitido pela plataforma. A quantidade disponível e os juros são definidos pelo Mercado Pago conforme sua conta e o cartão.</span></label>
+          <div><p class="text-sm font-medium text-foreground">URL para notificações</p><code class="mt-1.5 block break-all rounded-xl bg-muted p-3 text-xs text-foreground">{{ payment_settings.webhook_url }}</code><p class="mt-1 text-xs text-muted-foreground">Cadastre esta URL em “Webhooks” na sua integração do Mercado Pago.</p></div>
+          <p v-if="Object.keys(paymentSettingsForm.errors).length" class="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">Revise as credenciais informadas.</p>
+          <button class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary p-3 font-semibold text-primary-foreground disabled:opacity-50" :disabled="paymentSettingsForm.processing"><Settings class="h-4 w-4" /> Salvar configurações</button>
+        </form>
       </section>
     </div>
 

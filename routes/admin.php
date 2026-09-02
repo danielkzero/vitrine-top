@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ClientCrmController;
+use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\Admin\PlatformAdminController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,5 @@ Route::middleware(['auth', 'verified', 'admin'])
         Route::post('/clientes/{user}/notas', [ClientCrmController::class, 'addNote'])->name('clients.notes.store');
         Route::post('/clientes/{user}/tickets', [ClientCrmController::class, 'createTicket'])->name('clients.tickets.store');
         Route::put('/tickets/{ticket}', [ClientCrmController::class, 'updateTicket'])->name('tickets.update');
+        Route::put('/configuracoes/pagamentos', [PaymentSettingsController::class, 'update'])->name('payment-settings.update');
     });
