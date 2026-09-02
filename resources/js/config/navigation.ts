@@ -1,5 +1,5 @@
 import { routes } from './routes';
-import { CreditCard, FileText, Home, Layers, MessageCircleMore } from 'lucide-vue-next';
+import { CreditCard, FileText, Home, Layers, LifeBuoy, MessageCircleMore } from 'lucide-vue-next';
 import type { NavItem } from '@/types';
 
 export const mainNavItems: NavItem[] = [
@@ -8,6 +8,7 @@ export const mainNavItems: NavItem[] = [
     { title: 'Banners', href: routes.painel.banners.index, icon: Layers },
     { title: 'Avaliacoes', href: routes.painel.reviews.index, icon: MessageCircleMore },
     { title: 'Assinatura e cobrança', href: routes.painel.billing.index, icon: CreditCard },
+    { title: 'Suporte', href: '/painel/suporte', icon: LifeBuoy },
 ];
 
 export const footerNavItems: NavItem[] = [];

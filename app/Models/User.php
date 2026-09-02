@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyEmailCustom;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Notifications\VerifyEmailCustom;
-
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -37,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'plan',
         'billing_customer_id',
         'is_active',
+        'is_admin',
     ];
 
     protected $hidden = [
@@ -53,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'is_active' => 'boolean',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -105,7 +106,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $subscription = $this->subscription;
 
-        if (!$subscription) {
+        if (! $subscription) {
             return null;
         }
 
@@ -160,6 +161,21 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(ProductView::class);
     }
 
+    public function crmProfile()
+    {
+        return $this->hasOne(CrmProfile::class);
+    }
+
+    public function crmNotes()
+    {
+        return $this->hasMany(CrmNote::class);
+    }
+
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
     /**
      * ===============================
      * Acessores e Mutadores
@@ -168,7 +184,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected static function booted()
     {
         static::creating(function ($user) {
-            if (empty($user->slug) && !empty($user->business_name)) {
+            if (empty($user->slug) && ! empty($user->business_name)) {
                 $user->slug = str()->slug($user->business_name);
             }
         });

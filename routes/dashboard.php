@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\ReviewController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
+use App\Http\Controllers\Dashboard\SupportController;
 use App\Http\Middleware\EnsureAccountIsInGoodStanding;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,9 @@ Route::middleware(['auth', 'verified'])
         Route::post('/assinatura/plano', [BillingController::class, 'choosePlan'])->name('billing.plan');
         Route::post('/assinatura/pagar', [BillingController::class, 'pay'])->name('billing.pay');
         Route::delete('/assinatura/conta', [BillingController::class, 'destroyAccount'])->name('billing.destroy-account');
+        Route::get('/suporte', [SupportController::class, 'index'])->name('support.index');
+        Route::post('/suporte', [SupportController::class, 'store'])->name('support.store');
+        Route::post('/suporte/{ticket}/responder', [SupportController::class, 'reply'])->name('support.reply');
 
         Route::middleware([EnsureAccountIsInGoodStanding::class])->group(function () {
             Route::get('/', [BaseController::class, 'index'])->name('index');

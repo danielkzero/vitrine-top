@@ -1,13 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Laravel\Fortify\Features;
-
-use App\Http\Controllers\Dashboard\PageController;
-use App\Http\Controllers\Dashboard\PaymentController;
-use App\Http\Controllers\Dashboard\ReviewController;
-use App\Http\Controllers\Dashboard\SubscriptionController;
 use App\Http\Controllers\Api\V1\BannerController as ApiV1BannerController;
 use App\Http\Controllers\Api\V1\CategoryController as ApiV1CategoryController;
 use App\Http\Controllers\Api\V1\PageController as ApiV1PageController;
@@ -15,8 +7,14 @@ use App\Http\Controllers\Api\V1\ProductController as ApiV1ProductController;
 use App\Http\Controllers\Api\V1\ReviewController as ApiV1ReviewController;
 use App\Http\Controllers\Api\V1\SettingsController as ApiV1SettingsController;
 use App\Http\Controllers\Api\V1\UserController as ApiV1UserController;
+use App\Http\Controllers\Dashboard\PaymentController;
+use App\Http\Controllers\Dashboard\ReviewController;
+use App\Http\Controllers\Dashboard\SubscriptionController;
 use App\Http\Controllers\Vitrine\VitrineController;
 use App\Models\Plan;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Laravel\Fortify\Features;
 
 // Página inicial
 Route::get('/', function () {
@@ -58,9 +56,10 @@ Route::get('/checkout/sucesso', [PaymentController::class, 'success'])->name('ch
 Route::get('/checkout/erro', [PaymentController::class, 'error'])->name('checkout.error');
 
 // Outras rotas internas
-require __DIR__ . '/dashboard.php';
-require __DIR__ . '/settings.php';
-require __DIR__ . '/banner.php';
+require __DIR__.'/dashboard.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/banner.php';
+require __DIR__.'/admin.php';
 
 // Compatibilidade legada para clientes que ainda chamam /v1 sem /api.
 Route::prefix('v1')->group(function () {

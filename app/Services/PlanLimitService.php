@@ -14,19 +14,20 @@ class PlanLimitService
     public function getPlanForUser(User $user): Plan
     {
         $subscription = $user->subscription;
-        if (!$subscription) {
+        if (! $subscription) {
             return $this->getDefaultPlan();
         }
 
         if ($subscription->relationLoaded('planModel') && $subscription->planModel) {
-            return $subscription->planModel;
+            return $this->applyCustomLimits($subscription->planModel, $subscription);
         }
 
         if ($subscription->plan_id) {
             $plan = Plan::find($subscription->plan_id);
             if ($plan) {
                 $this->syncSubscriptionPlanCode($subscription, $plan);
-                return $plan;
+
+                return $this->applyCustomLimits($plan, $subscription);
             }
         }
 
@@ -35,10 +36,31 @@ class PlanLimitService
 
         if ($plan) {
             $this->syncSubscriptionPlan($subscription, $plan);
-            return $plan;
+
+            return $this->applyCustomLimits($plan, $subscription);
         }
 
         return $plan ?? $this->getDefaultPlan();
+    }
+
+    private function applyCustomLimits(Plan $plan, Subscription $subscription): Plan
+    {
+        if (! $subscription->custom_plan_name) {
+            return $plan;
+        }
+
+        $customPlan = $plan->replicate();
+        $customPlan->forceFill([
+            'name' => $subscription->custom_plan_name,
+            'monthly_price' => $subscription->price,
+            'annual_monthly_equivalent' => $subscription->price,
+            'products_limit' => $subscription->custom_products_limit ?? $plan->products_limit,
+            'product_images_limit' => $subscription->custom_product_images_limit,
+            'gallery_images_limit' => $subscription->custom_gallery_images_limit ?? $plan->gallery_images_limit,
+            'banners_limit' => $subscription->custom_banners_limit ?? $plan->banners_limit,
+        ]);
+
+        return $customPlan;
     }
 
     public function ensureCanAddProducts(User $user, int $currentCount, int $newCount): void
@@ -143,7 +165,7 @@ class PlanLimitService
             $updates['plan'] = $code;
         }
 
-        if (!empty($updates)) {
+        if (! empty($updates)) {
             $subscription->forceFill($updates)->save();
         }
     }

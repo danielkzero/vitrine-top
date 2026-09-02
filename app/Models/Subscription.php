@@ -15,6 +15,11 @@ class Subscription extends Model
     protected $fillable = [
         'user_id',
         'plan_id',
+        'custom_plan_name',
+        'custom_products_limit',
+        'custom_product_images_limit',
+        'custom_gallery_images_limit',
+        'custom_banners_limit',
         'plan',
         'price',
         'billing_period',
@@ -24,6 +29,7 @@ class Subscription extends Model
         'current_period_ends_at',
         'next_billing_at',
         'status',
+        'status_changed_at',
         'payment_method',
         'gateway_provider',
         'gateway_subscription_id',
@@ -34,6 +40,7 @@ class Subscription extends Model
     protected $casts = [
         'billing_period' => BillingPeriod::class,
         'status' => SubscriptionStatus::class,
+        'status_changed_at' => 'datetime',
         'gateway_provider' => PaymentGatewayProvider::class,
         'trial_starts_at' => 'datetime',
         'trial_ends_at' => 'date',
@@ -42,11 +49,24 @@ class Subscription extends Model
         'next_billing_at' => 'date',
         'gateway_metadata' => 'array',
         'price' => 'decimal:2',
+        'custom_products_limit' => 'integer',
+        'custom_product_images_limit' => 'integer',
+        'custom_gallery_images_limit' => 'integer',
+        'custom_banners_limit' => 'integer',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Subscription $subscription) {
+            if ($subscription->isDirty('status') && ! $subscription->isDirty('status_changed_at')) {
+                $subscription->status_changed_at = now();
+            }
+        });
     }
 
     public function planModel()

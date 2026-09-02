@@ -29,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.customer_token' => \App\Http\Middleware\AuthenticateCustomerApiToken::class,
             'customer.store_context' => \App\Http\Middleware\EnsureCustomerStoreContext::class,
             'auth.api_admin' => \App\Http\Middleware\EnsureApiAdminSession::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'track.store_visit' => \App\Http\Middleware\TrackStoreVisit::class,
         ]);
     })

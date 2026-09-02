@@ -11,11 +11,20 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { Link } from '@inertiajs/vue3'
+import { Link, usePage } from '@inertiajs/vue3'
+import { ShieldCheck } from 'lucide-vue-next'
+import { computed } from 'vue'
+import type { AppPageProps } from '@/types'
 import AppLogo from './AppLogo.vue'
 
 // Importa os menus configurados
 import { mainNavItems, footerNavItems } from '@/config/navigation'
+
+const page = usePage<AppPageProps>()
+const navigationItems = computed(() => page.props.auth.user?.is_admin
+    ? [...mainNavItems, { title: 'Administração', href: '/admin', icon: ShieldCheck }]
+    : mainNavItems,
+)
 </script>
 
 <template>
@@ -36,7 +45,7 @@ import { mainNavItems, footerNavItems } from '@/config/navigation'
 
         <!-- Conteúdo principal -->
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="navigationItems" />
         </SidebarContent>
 
         <!-- Rodapé -->
