@@ -385,7 +385,7 @@ function formatBrl(value: number): string {
                     <a href="#planos"
                         class="px-8 py-4 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-bold transition-colors">Criar
                         minha vitrine grátis</a>
-                    <BaseButton variant="outline" size="lg">
+                    <BaseButton as="a" href="/demonstracao" variant="outline" size="lg">
                         Ver demonstração
                     </BaseButton>
                 </div>

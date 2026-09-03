@@ -44,6 +44,10 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+// Endereço estável usado pelos CTAs da landing page para abrir a loja demo.
+Route::redirect('/demonstracao', '/minha-lojinha/catalogo')
+    ->name('demo');
+
 // Público: avaliações
 Route::get('/avaliacoes', [ReviewController::class, 'publicIndex'])->name('reviews.public');
 

@@ -34,7 +34,7 @@ interface Props {
 
     as?: 'button' | 'Link' | 'a';
 
-    href?: { type: [String, Object], default: null },       // para Link ou <a>
+    href?: string | Record<string, unknown>; // para Link ou <a>
     method?: string;     // para Link
     preserveScroll?: boolean;
     preserveState?: boolean;

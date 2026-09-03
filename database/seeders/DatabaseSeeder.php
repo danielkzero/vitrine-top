@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(MinhaLojinhaSeeder::class);
         $this->call(EcommerceDemoSeeder::class);
+        $this->call(MinhaLojinhaContentSeeder::class);
         $this->call(AdminDemoSeeder::class);
     }
 }
