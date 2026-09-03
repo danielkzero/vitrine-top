@@ -39,6 +39,10 @@ class BannerController extends Controller
             'title' => 'nullable|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'image' => 'required|image|max:1024',
+        ], [
+            'image.required' => 'Selecione uma imagem para o banner.',
+            'image.image' => 'O arquivo selecionado precisa ser uma imagem JPG, PNG ou WEBP.',
+            'image.max' => 'A imagem é maior que 1 MB. Escolha uma imagem menor para continuar.',
         ]);
 
         $path = $request->file('image')->store('banners', 'public_direct');

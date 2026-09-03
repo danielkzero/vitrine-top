@@ -10,6 +10,7 @@ const props = defineProps({
     allowedExtensions: { type: Array, default: () => [] },
     multiple: { type: Boolean, default: false },
     maxFiles: { type: Number, default: 3 },
+    maxFileSizeBytes: { type: Number, default: null },
     initialFiles: { type: Array, default: () => [] },
 });
 
@@ -78,6 +79,12 @@ function handleFiles(event: Event) {
         if (filesPreview.value.length >= props.maxFiles) {
             errorMessage.value = `Limite máximo de ${props.maxFiles} imagens atingido.`;
             break;
+        }
+
+        if (props.maxFileSizeBytes && file.size > props.maxFileSizeBytes) {
+            const maxSizeMb = props.maxFileSizeBytes / (1024 * 1024);
+            errorMessage.value = `A imagem "${file.name}" é maior que ${maxSizeMb.toLocaleString("pt-BR")} MB. Escolha uma imagem menor para continuar.`;
+            continue;
         }
 
         const url = URL.createObjectURL(file);

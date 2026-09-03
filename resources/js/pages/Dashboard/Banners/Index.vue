@@ -11,6 +11,7 @@ const banners = ref(page.props.banners || [])
 
 const uploading = ref(false)
 const newFiles = ref<File[]>([])
+const uploadError = ref('')
 const titulo = ref('')
 const subtitulo = ref('')
 
@@ -19,6 +20,7 @@ const subtitulo = ref('')
  * Removemos qualquer base64 e guardamos apenas o FILE real.
  */
 async function handleFiles(files: any[]) {
+  uploadError.value = ''
   newFiles.value = files
 }
 
@@ -26,9 +28,13 @@ async function handleFiles(files: any[]) {
  * Enviar banner com FILE real (sem base64)
  */
 async function salvarBanner() {
-  if (!newFiles.value.length) return alert("Selecione uma imagem!")
+  if (!newFiles.value.length) {
+    uploadError.value = 'Selecione uma imagem de até 1 MB para continuar.'
+    return
+  }
 
   uploading.value = true
+  uploadError.value = ''
 
   const form = new FormData()
   const first = newFiles.value[0]
@@ -47,6 +53,9 @@ async function salvarBanner() {
       subtitulo.value = ""
       newFiles.value = []
       banners.value = page.props.banners as any[]
+    },
+    onError: (errors) => {
+      uploadError.value = errors.image || 'Não foi possível enviar o banner. Verifique a imagem e tente novamente.'
     },
     onFinish: () => (uploading.value = false)
   })
@@ -82,9 +91,13 @@ function removerBanner(id: number) {
       <div class="rounded-xl border border-border bg-card p-6 text-card-foreground shadow-sm">
         <h2 class="mb-3 text-lg font-semibold">Adicionar Banner</h2>
 
-        <DropzoneFile :initial-files="[]" :multiple="false" :maxFiles="1"
+        <DropzoneFile :initial-files="[]" :multiple="false" :maxFiles="1" :max-file-size-bytes="1024 * 1024"
           :allowed-extensions="['jpg', 'jpeg', 'png', 'webp']" title-file-types="Clique ou arraste uma imagem"
           display-file-types="JPG, PNG, WEBP – Máx. 1MB" @onCoverSelected="handleFiles" />
+
+        <p v-if="uploadError" role="alert" class="mt-3 text-sm font-medium text-red-600">
+          {{ uploadError }}
+        </p>
 
         <button :disabled="uploading" @click="salvarBanner"
           class="mt-4 px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition disabled:opacity-50">
