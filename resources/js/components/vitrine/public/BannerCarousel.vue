@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
 
 
 <template>
-    <div v-if="props.images?.length" class="w-full md:h-[12rem] mt-4 md:mt-0 select-none">
+    <div v-if="props.images?.length" class="w-full md:h-[19rem] mt-4 md:mt-0 select-none">
 
         <!-- CONTAINER -->
         <div class="
@@ -51,7 +51,7 @@ onBeforeUnmount(() => {
                 <div
                     v-for="banner in props.images"
                     :key="banner.id"
-                    class="min-w-full h-44 md:h-[14rem] bg-cover bg-center"
+                    class="min-w-full h-44 md:h-[19rem] bg-cover bg-center"
                     :style="{ backgroundImage: `url('${banner.image}')` }"
                 ></div>
             </div>
