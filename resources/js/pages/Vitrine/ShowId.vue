@@ -267,7 +267,7 @@ onMounted(async () => {
       @open-cart="cartPanelOpen = true"
     />
 
-    <main class="container-custom md:max-w-none mx-auto md:px-10 md:pt-6 flex-grow">
+    <main class="container-custom mx-auto md:px-10 md:pt-6 flex-grow">
       <div class="md:rounded-none md:border-0 md:bg-transparent md:backdrop-blur-none md:p-0 md:shadow-none">
         <div v-if="message" class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900">{{ message }}</div>
 
@@ -293,13 +293,13 @@ onMounted(async () => {
     </main>
 
     <footer class="mt-6">
-      <div class="container-custom md:max-w-none mx-auto px-4 md:px-10 py-6 text-sm text-slate-600 md:rounded-none md:border-0 md:bg-transparent md:backdrop-blur-none md:shadow-none">
+      <div class="container-custom mx-auto px-4 md:px-10 py-6 text-sm text-slate-600 md:rounded-none md:border-0 md:bg-transparent md:backdrop-blur-none md:shadow-none">
         <h2 class="text-xl md:text-xl font-extrabold items-center flex mb-3">Sobre</h2>
         <p class="leading-relaxed">{{ user?.description }}</p>
       </div>
-      <div class="container-custom md:max-w-none mx-auto px-4 md:px-10 py-6 text-sm text-slate-500 text-center">
+      <div class="container-custom mx-auto px-4 md:px-10 py-6 text-sm text-slate-500 text-center">
         &copy; {{ new Date().getFullYear() }} {{ user?.business_name }}
-        <div class="container-custom md:max-w-none mx-auto px-4 text-xs mt-2 text-slate-500 text-center">
+        <div class="container-custom mx-auto px-4 text-xs mt-2 text-slate-500 text-center">
           Desenvolvido por
           <a href="https://vitrinetop.hydradigital.com.br" target="_blank" class="font-extrabold">vitrine.top</a>
         </div>

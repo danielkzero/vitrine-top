@@ -349,7 +349,7 @@ onBeforeUnmount(() => {
     class="min-h-screen flex flex-col bg-[radial-gradient(circle_at_top,_#f8fafc,_#eef2ff_45%,_#f8fafc)] text-slate-900 md:bg-[#f5f5f7]"
   >
     <header
-      class="container-custom md:max-w-none mx-auto relative w-full h-[10rem] md:h-[20rem] flex items-center justify-center bg-cover bg-center bg-no-repeat rounded-b-3xl md:rounded-none shadow-xl md:shadow-none md:mt-0 md:overflow-hidden"
+      class="container-custom mx-auto relative w-full h-[10rem] md:h-[20rem] flex items-center justify-center bg-cover bg-center bg-no-repeat rounded-b-3xl md:rounded-none shadow-xl md:shadow-none md:mt-0 md:overflow-hidden"
       :style="{ backgroundImage: `url('${heroImage}')` }"
     >
       <div class="absolute inset-0 bg-gradient-to-t from-black/65 to-black/35 backdrop-blur-[1px] rounded-b-3xl md:rounded-none"></div>
@@ -380,7 +380,7 @@ onBeforeUnmount(() => {
       @open-cart="cartPanelOpen = true"
     />
 
-    <main class="container-custom md:max-w-none mx-auto px-3 md:px-10 md:pt-6 flex-grow">
+    <main class="container-custom mx-auto px-3 md:px-10 md:pt-6 flex-grow">
       <section>
         <div class="md:rounded-none md:border-0 md:bg-transparent md:backdrop-blur-none md:p-0 md:shadow-none">
           <h2 class="text-xl font-bold items-center flex py-6 md:hidden">
@@ -426,13 +426,13 @@ onBeforeUnmount(() => {
     </div>
 
     <footer class="pb-24 md:pb-8 mt-6">
-      <div class="container-custom md:max-w-none mx-auto px-4 md:px-10 py-6 text-sm text-slate-600 md:rounded-none md:border-0 md:bg-transparent md:backdrop-blur-none md:shadow-none">
+      <div class="container-custom mx-auto px-4 md:px-10 py-6 text-sm text-slate-600 md:rounded-none md:border-0 md:bg-transparent md:backdrop-blur-none md:shadow-none">
         <h2 class="text-xl md:text-xl font-extrabold items-center flex mb-3">Sobre</h2>
         <p class="leading-relaxed">{{ user?.description }}</p>
       </div>
-      <div class="container-custom md:max-w-none mx-auto px-4 md:px-10 py-6 text-sm text-slate-500 text-center">
+      <div class="container-custom mx-auto px-4 md:px-10 py-6 text-sm text-slate-500 text-center">
         &copy; {{ new Date().getFullYear() }} {{ user?.business_name }}
-        <div class="container-custom md:max-w-none mx-auto px-4 text-xs mt-2 text-slate-500 text-center">
+        <div class="container-custom mx-auto px-4 text-xs mt-2 text-slate-500 text-center">
           Desenvolvido por
           <a href="https://vitrinetop.hydradigital.com.br" target="_blank" class="font-extrabold">vitrine.top</a>
         </div>

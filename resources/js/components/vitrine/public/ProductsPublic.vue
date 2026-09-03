@@ -271,7 +271,7 @@ function toggleViewMode() {
 
       <div v-if="!visibleProducts.length && !loading" class="text-center py-12 text-slate-400">Nenhum produto disponivel.</div>
 
-      <div v-if="viewMode === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 lg:gap-6">
+      <div v-if="viewMode === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6">
         <ProductCard
           v-for="p in visibleProducts"
           :key="p.id"

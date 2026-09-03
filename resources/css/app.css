@@ -183,12 +183,12 @@
 .container-custom {
     width: 100%;
     margin-inline: auto;
-    max-width: 100%;
+    max-width: 40rem /* 640px */;
 }
 
-/* Keep container behavior only for mobile; desktop stays full width. */
-@media (width < 48rem /* 768px */) {
+/* Standard storefront width on desktop. */
+@media (width >= 48rem /* 768px */) {
     .container-custom {
-        max-width: 40rem /* 640px */;
+        max-width: 80rem /* 1280px */;
     }
 }

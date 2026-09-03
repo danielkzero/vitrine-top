@@ -132,7 +132,7 @@ function convert() {
 </script>
 
 <template>
-  <div class="container-custom md:max-w-none w-full mx-auto min-h-screen bg-white md:min-h-0 md:bg-transparent md:shadow-none md:backdrop-blur-none">
+  <div class="container-custom w-full mx-auto min-h-screen bg-white md:min-h-0 md:bg-transparent md:shadow-none md:backdrop-blur-none">
     <div class="flex items-center justify-between p-3 border-b md:border-slate-200 md:bg-transparent">
       <button class="p-2 bg-white rounded-xl border shadow-sm md:rounded-none md:border-0 md:bg-transparent md:shadow-none" @click="goBack">
         <component :is="getIcon('ChevronLeft')" class="w-5 h-5" />

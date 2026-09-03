@@ -19,7 +19,7 @@ const emit = defineEmits<{
 
 <template>
   <section class="hidden md:block sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-xl">
-    <div class="w-full px-6 lg:px-10 py-2.5 flex items-center justify-between gap-4">
+    <div class="container-custom px-6 lg:px-10 py-2.5 flex items-center justify-between gap-4">
       <div class="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-1 shadow-sm">
         <button
           v-for="p in pages"

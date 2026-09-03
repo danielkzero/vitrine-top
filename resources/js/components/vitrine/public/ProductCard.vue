@@ -67,7 +67,7 @@ const isFavorite = computed(() => props.favoriteProductIds.includes(Number(props
   <article
     v-if="viewMode === 'grid'"
     @click="open"
-    class="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition cursor-pointer relative overflow-hidden md:rounded-xl md:border md:border-slate-200/80 md:bg-white md:p-3 md:shadow-[0_14px_28px_rgba(15,23,42,0.08)] md:hover:shadow-[0_20px_36px_rgba(15,23,42,0.12)]"
+    class="relative flex h-full flex-col overflow-hidden rounded-xl bg-white p-3 shadow-sm transition hover:shadow-md cursor-pointer md:rounded-xl md:border md:border-slate-200/80 md:bg-white md:p-3 md:shadow-[0_14px_28px_rgba(15,23,42,0.08)] md:hover:shadow-[0_20px_36px_rgba(15,23,42,0.12)]"
   >
     <div v-if="product.featured" class="absolute top-2 left-2 z-20 bg-amber-100/80 text-xs px-2 py-1 rounded-md flex items-center gap-1" :style="{ color: props.user?.theme_color }">
       <component :is="getIcon('Star')" class="w-4 h-4" /> Destaque
@@ -89,9 +89,11 @@ const isFavorite = computed(() => props.favoriteProductIds.includes(Number(props
       <div class="text-xs text-slate-400" v-if="product.stock">Estoque: {{ product.stock }}</div>
     </div>
 
-    <button class="mt-3 w-full rounded-lg text-white py-2 text-sm md:rounded-lg md:py-2.5 md:font-medium" :style="{ backgroundColor: props.user?.theme_color }" @click="convert">
-      {{ ctaLabel }}
-    </button>
+    <div class="mt-auto pt-3">
+      <button class="w-full rounded-lg py-2 text-sm text-white md:rounded-lg md:py-2.5 md:font-medium" :style="{ backgroundColor: props.user?.theme_color }" @click="convert">
+        {{ ctaLabel }}
+      </button>
+    </div>
   </article>
 
   <article v-else @click="open" class="bg-white rounded-xl p-3 shadow-sm flex gap-3 items-center cursor-pointer relative md:rounded-xl md:border md:border-slate-200/80 md:bg-white md:p-4 md:shadow-[0_12px_24px_rgba(15,23,42,0.08)]">
