@@ -89,18 +89,34 @@ class CustomerAuthController extends Controller
     {
         $store = $this->resolveStore($storeSlug);
 
+        $request->merge([
+            'identifier' => $request->input('identifier', $request->input('email')),
+        ]);
+
         $data = $request->validate([
-            'email' => ['required', 'email'],
+            'identifier' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string'],
         ]);
 
+        $identifier = trim($data['identifier']);
+        $phone = preg_replace('/\D+/', '', $identifier);
+
         $customer = Customer::query()
             ->where('user_id', $store->id)
-            ->where('email', $data['email'])
+            ->where(function ($query) use ($identifier, $phone) {
+                $query->whereRaw('LOWER(email) = ?', [mb_strtolower($identifier)]);
+
+                if ($phone !== '') {
+                    $query->orWhereRaw(
+                        "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(whatsapp, '+', ''), '(', ''), ')', ''), '-', ''), ' ', '') = ?",
+                        [$phone],
+                    );
+                }
+            })
             ->first();
 
         if (!$customer || !Hash::check($data['password'], $customer->password)) {
-            return response()->json(['message' => 'Credenciais invalidas.'], 422);
+            return response()->json(['message' => 'E-mail, WhatsApp ou senha inválidos.'], 422);
         }
 
         $customer->forceFill(['last_login_at' => now()])->save();

@@ -12,6 +12,7 @@ use App\Http\Controllers\Dashboard\ReviewController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
 use App\Http\Controllers\Vitrine\VitrineController;
 use App\Http\Controllers\Webhook\MercadoPagoWebhookController;
+use App\Http\Controllers\SitemapController;
 use App\Models\Plan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -47,6 +48,13 @@ Route::get('/', function () {
 // Endereço estável usado pelos CTAs da landing page para abrir a loja demo.
 Route::redirect('/demonstracao', '/minha-lojinha/catalogo')
     ->name('demo');
+
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/robots.txt', fn () => response(
+    "User-agent: *\nAllow: /\n\nSitemap: ".route('sitemap')."\n",
+    200,
+    ['Content-Type' => 'text/plain; charset=UTF-8'],
+))->name('robots');
 
 // Público: avaliações
 Route::get('/avaliacoes', [ReviewController::class, 'publicIndex'])->name('reviews.public');
@@ -84,15 +92,18 @@ Route::prefix('v1')->group(function () {
 Route::prefix('{slug}')->group(function () {
 
     Route::get('/', [VitrineController::class, 'home'])
+        ->middleware('track.store_visit')
         ->name('vitrine.public.home');
 
     Route::get('/{page}', [VitrineController::class, 'page'])
+        ->middleware('track.store_visit')
         ->name('vitrine.public.page');
 
     Route::get('/{page}/{id}', [VitrineController::class, 'pageWithId'])
+        ->middleware('track.store_visit')
         ->whereNumber('id')
         ->name('vitrine.public.page.id');
 
-    Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])
+    Route::post('/products/{product}/reviews', [VitrineController::class, 'storeReview'])
         ->name('vitrine.reviews.store');
 });

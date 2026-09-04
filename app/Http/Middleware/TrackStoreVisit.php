@@ -47,7 +47,7 @@ class TrackStoreVisit
                 return $response;
             }
 
-            $pageKey = $request->route('pageKey');
+            $pageKey = $request->route('pageKey') ?? $request->route('page');
             if ($pageKey) {
                 $page = Page::query()
                     ->where('user_id', $store->id)

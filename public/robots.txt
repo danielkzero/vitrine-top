@@ -1,2 +1,4 @@
 User-agent: *
-Disallow:
+Allow: /
+
+Sitemap: https://vitrinetop.hydradigital.com.br/sitemap.xml
