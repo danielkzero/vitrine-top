@@ -3,11 +3,13 @@
 use App\Http\Controllers\Dashboard\BaseController;
 use App\Http\Controllers\Dashboard\BillingController;
 use App\Http\Controllers\Dashboard\CategoryController;
+use App\Http\Controllers\Dashboard\CustomerController;
 use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\ReviewController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
 use App\Http\Controllers\Dashboard\SupportController;
+use App\Http\Controllers\Dashboard\StoreOrderController;
 use App\Http\Middleware\EnsureAccountIsInGoodStanding;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +32,9 @@ Route::middleware(['auth', 'verified'])
 
         Route::middleware([EnsureAccountIsInGoodStanding::class])->group(function () {
             Route::get('/', [BaseController::class, 'index'])->name('index');
+
+            Route::get('/pedidos', [StoreOrderController::class, 'index'])->name('orders.index');
+            Route::get('/clientes', [CustomerController::class, 'index'])->name('customers.index');
 
             Route::resource('categories', CategoryController::class);
             Route::resource('reviews', ReviewController::class)->only(['index', 'update', 'destroy']);

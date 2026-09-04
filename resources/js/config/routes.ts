@@ -16,6 +16,12 @@ export const routes = {
         reviews: {
             index: '/painel/reviews',
         },
+        orders: {
+            index: '/painel/pedidos',
+        },
+        customers: {
+            index: '/painel/clientes',
+        },
         subscriptions: {
             index: '/painel/subscriptions',
         },
