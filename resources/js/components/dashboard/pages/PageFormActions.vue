@@ -14,11 +14,11 @@
 <script setup lang="ts">
 import BaseButton from '@/components/ui/button/BaseButton.vue'
 
-const props = defineProps<{
+defineProps<{
   sending?: boolean
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   (e: 'cancel'): void
 }>()
 </script>

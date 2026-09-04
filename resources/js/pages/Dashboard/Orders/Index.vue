@@ -5,7 +5,7 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { Head, Link, router } from '@inertiajs/vue3'
 import axios from 'axios'
 
-const props = defineProps<{ orders: any; filters: { status?: string } }>()
+defineProps<{ orders: any; filters: { status?: string } }>()
 const breadcrumbs = [{ title: 'Painel', href: routes.painel.index }, { title: 'Pedidos', href: routes.painel.orders.index }]
 
 const labels: Record<string, string> = {
@@ -53,7 +53,7 @@ async function updateStatus(id: number, status: string) {
         </table>
       </section>
 
-      <nav v-if="orders.links?.length > 3" class="flex flex-wrap justify-center gap-1"><Link v-for="link in orders.links" :key="link.label" :href="link.url || '#'" class="rounded border px-3 py-2 text-sm" :class="{ 'bg-primary text-primary-foreground': link.active, 'pointer-events-none opacity-40': !link.url }" preserve-scroll v-html="link.label" /></nav>
+      <nav v-if="orders.links?.length > 3" class="flex flex-wrap justify-center gap-1"><Link v-for="link in orders.links" :key="link.label" :href="link.url || '#'" class="rounded border px-3 py-2 text-sm" :class="{ 'bg-primary text-primary-foreground': link.active, 'pointer-events-none opacity-40': !link.url }" preserve-scroll><span v-html="link.label"></span></Link></nav>
     </div>
   </AppLayout>
 </template>

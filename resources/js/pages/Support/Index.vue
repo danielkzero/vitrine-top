@@ -108,6 +108,7 @@ const date = (value: string) =>
                                 'billing',
                                 'other',
                             ]"
+                            :key="category"
                             :value="category"
                         >
                             {{ labels[category] }}

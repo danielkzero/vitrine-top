@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { getIcon } from '@/lib/iconMap'
-const props = defineProps({
-  user: Object,
-  page: Object
-})
+const props = defineProps<{
+  user: Record<string, any>
+  page: Record<string, any>
+}>()
 </script>
 
 <template>

@@ -14,6 +14,6 @@ defineProps({
     </li>
 </template>
 
-<script>
+<script lang="ts">
 import { CheckCircle2 } from "lucide-vue-next";
 </script>

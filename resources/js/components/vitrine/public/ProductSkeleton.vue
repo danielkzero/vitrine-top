@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps({ list: { type: Boolean, default: false } })
+defineProps({ list: { type: Boolean, default: false } })
 </script>
 
 <template>

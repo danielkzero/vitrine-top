@@ -44,7 +44,7 @@ const props = defineProps({
     categorias: { type: Array as PropType<any[]>, default: () => [] }
 })
 
-const emit = defineEmits<{ (e: 'edit', p: any): void }>()
+defineEmits<{ (e: 'edit', p: any): void }>()
 
 const firstImage = computed(() => {
     const imgs = props.product?.images ?? []

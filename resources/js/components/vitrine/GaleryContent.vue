@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DropzoneFile from '@/components/ui/dropzone-file/DropzoneFile.vue'
-import BaseButton from '@/components/ui/button/BaseButton.vue'
 import { getIcon } from '@/lib/iconMap'
 
 defineProps<{

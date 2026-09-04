@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { routes } from '@/config/routes';
 
 const form = useForm({

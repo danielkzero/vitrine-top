@@ -37,7 +37,7 @@
 import { ref } from 'vue'
 import { getIcon } from '@/lib/iconMap'
 
-const props = defineProps<{
+defineProps<{
   modelValue: string
   icons: Array<{ name: string; label: string }>
 }>()

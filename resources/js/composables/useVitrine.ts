@@ -1,6 +1,6 @@
 ﻿// src/composables/useVitrine.ts
 import axios from 'axios'
-import { ref, computed, UnwrapRef } from 'vue'
+import { ref, computed } from 'vue'
 
 /**
  * Composable para carregar dados da vitrine via API (REST).

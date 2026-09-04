@@ -22,7 +22,7 @@ interface TabItem {
   label: string
 }
 
-const props = defineProps<{
+defineProps<{
   modelValue: string
   tabs: TabItem[]
 }>()

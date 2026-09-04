@@ -41,7 +41,6 @@ const produtos = ref<any[]>(
 const coverPreview = ref<string | null>(page.value.cover_image ?? null)
 const activeTab = ref<'general' | 'seo'>('general')
 const sending = ref(false)
-const showIconPicker = ref(false)
 
 // ---------- Constants ----------
 const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/bmp', 'image/webp']
@@ -269,7 +268,7 @@ async function salvarProduto(produtoRecebido: any) {
 // ---------- Imagens de produto (recebe Array<File> ou FileList, opcionalmente productId) ----------
 type ProductImageInput = File | { file?: File; url?: string }
 
-function onProductImageSelected(input: Event | ProductImageInput[] | FileList, productId?: number | null) {
+function onProductImageSelected(input: Event | ProductImageInput[] | FileList) {
   const files = input instanceof Event
     ? ((input.target as HTMLInputElement | null)?.files ?? [])
     : input
@@ -401,7 +400,7 @@ async function cancel() {
             <ProductContent v-if="page.type === 'products'" :page="page" :categorias="categorias" :produtos="produtos"
               :novaCategoria="novaCategoria" :removerCategoria="removerCategoria" :nomeCategoria="nomeCategoria"
               :salvarCategoria="salvarCategoria" :salvarProduto="salvarProduto" :editarProduto="editarProduto"
-              :onCoverSelected="onProductImageSelected" />
+              :onCoverSelected="onProductImageSelected" @update-catalog-mode="page.catalog_mode = $event" />
 
           </PageGeneralSection>
 

@@ -2,7 +2,6 @@
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
 import PageCard from '@/components/dashboard/PageCard.vue'
-import PageCardSkeleton from '@/components/dashboard/PageCardSkeleton.vue'
 import { routes } from '@/config/routes'
 import draggable from 'vuedraggable'
 import { ref } from 'vue'

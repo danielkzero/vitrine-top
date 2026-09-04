@@ -1,4 +1,6 @@
 <script setup lang="ts">
+/* The page editor intentionally edits the shared form object supplied by its parent. */
+/* eslint-disable vue/no-mutating-props */
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 

@@ -72,7 +72,7 @@ const props = defineProps<{
   iconOptions: Array<{ name: string; label: string }>
 }>()
 
-const emit = defineEmits(['update:page'])
+defineEmits(['update:page'])
 
 const page = props.page
 const iconOptions = props.iconOptions

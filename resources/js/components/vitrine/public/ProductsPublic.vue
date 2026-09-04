@@ -289,7 +289,9 @@ function toggleViewMode() {
           @toggle-favorite="handleToggleFavorite"
           @lead="handleLead"
         />
-        <ProductCardSkeleton v-if="loading" v-for="n in 6" :key="'sk' + n" viewMode="grid" />
+        <template v-if="loading">
+          <ProductCardSkeleton v-for="n in 6" :key="'sk' + n" viewMode="grid" />
+        </template>
       </div>
 
       <div v-else class="space-y-3 lg:space-y-4">
@@ -307,7 +309,9 @@ function toggleViewMode() {
           @toggle-favorite="handleToggleFavorite"
           @lead="handleLead"
         />
-        <ProductCardSkeleton v-if="loading" v-for="n in 3" :key="'skl' + n" viewMode="list" />
+        <template v-if="loading">
+          <ProductCardSkeleton v-for="n in 3" :key="'skl' + n" viewMode="list" />
+        </template>
       </div>
 
       <div ref="sentinel" class="h-6"></div>

@@ -208,7 +208,7 @@ function normalizePrice(value: any): number {
     return 0
   }
 
-  let v = String(value)
+  const v = String(value)
     .replace(/\s/g, "")        // remove espaços
     .replace(/[R$\$]/g, "")    // remove R e $
     .replace(/\./g, "")        // remove separador de milhar

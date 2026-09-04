@@ -42,7 +42,7 @@ function submitSearch() {
         </table>
       </section>
 
-      <nav v-if="customers.links?.length > 3" class="flex flex-wrap justify-center gap-1"><Link v-for="link in customers.links" :key="link.label" :href="link.url || '#'" class="rounded border px-3 py-2 text-sm" :class="{ 'bg-primary text-primary-foreground': link.active, 'pointer-events-none opacity-40': !link.url }" preserve-scroll v-html="link.label" /></nav>
+      <nav v-if="customers.links?.length > 3" class="flex flex-wrap justify-center gap-1"><Link v-for="link in customers.links" :key="link.label" :href="link.url || '#'" class="rounded border px-3 py-2 text-sm" :class="{ 'bg-primary text-primary-foreground': link.active, 'pointer-events-none opacity-40': !link.url }" preserve-scroll><span v-html="link.label"></span></Link></nav>
     </div>
   </AppLayout>
 </template>

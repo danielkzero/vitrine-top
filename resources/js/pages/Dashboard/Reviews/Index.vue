@@ -4,7 +4,7 @@ import { Head, router } from '@inertiajs/vue3'
 import { routes } from '@/config/routes'
 import { formatDate } from '@/lib/utils'
 
-const props = defineProps<{
+defineProps<{
   reviews: Array<any>
   stats: {
     total: number

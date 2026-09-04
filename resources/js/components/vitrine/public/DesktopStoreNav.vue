@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getIcon } from '@/lib/iconMap'
 
-const props = defineProps<{
+defineProps<{
   pages: Array<any>
   activeKey?: string | null
   themeColor?: string | null

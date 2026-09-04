@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import { getIcon } from '@/lib/iconMap'
-defineProps({ reviews: Array })
+defineProps<{ reviews: Array<Record<string, any>> }>()
 </script>
 
 <template>

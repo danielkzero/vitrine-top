@@ -14,7 +14,6 @@ import DemoStorePreview from './DemoStorePreview.vue';
 
 const isMenuOpen = ref(false);
 const scrolled = ref(false);
-const search = ref('')
 
 const toggleMenu = () => (isMenuOpen.value = !isMenuOpen.value);
 

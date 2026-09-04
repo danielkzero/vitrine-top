@@ -1,5 +1,5 @@
-<script setup>
-defineProps({ page: Object })
+<script setup lang="ts">
+defineProps<{ page: Record<string, any> }>()
 </script>
 
 <template>

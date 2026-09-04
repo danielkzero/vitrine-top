@@ -27,13 +27,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   title?: string
   subtitle?: string
   breadcrumbs?: Array<{ title: string; href?: string }>
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   (e: 'goto', href: string): void
 }>()
 </script>

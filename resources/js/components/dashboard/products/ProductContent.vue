@@ -6,7 +6,7 @@
                 <p class="mt-1 text-xs text-muted-foreground">Define a experiência padrão desta página.</p>
             </div>
             <div>
-                <select id="catalog-mode" v-model="page.catalog_mode"
+                <select id="catalog-mode" v-model="catalogMode"
                     class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground">
                     <option value="store">Loja própria — carrinho e checkout</option>
                     <option value="affiliate">Afiliados — links para ofertas externas</option>
@@ -106,6 +106,12 @@ const props = defineProps<{
     page: { type: string; catalog_mode?: CatalogMode }
 }>()
 
+const emit = defineEmits<{ (event: 'update-catalog-mode', value: CatalogMode): void }>()
+const catalogMode = computed({
+    get: () => props.page.catalog_mode ?? 'store',
+    set: (value: CatalogMode) => emit('update-catalog-mode', value),
+})
+
 // local state to avoid mutating parent directly (keeps compatibility)
 const categoriaSelecionadaLocal = ref(props.categorias.length ? props.categorias[props.categorias.length - 1].id : null)
 const showAddCategoryLocal = ref(false)
@@ -128,7 +134,7 @@ const catalogModeHelp = computed(() => ({
     presell: 'Use o conteúdo da página para apresentar benefícios, provas e contexto antes dos produtos.',
     showcase: 'Apresenta o catálogo sem checkout; prioriza WhatsApp ou formulário de contato.',
     hybrid: 'Misture carrinho, links externos, WhatsApp e captura de contato no mesmo catálogo.',
-}[props.page.catalog_mode ?? 'store']))
+}[catalogMode.value]))
 
 const produtosFiltrados = computed(() => {
     return (props.produtos || []).filter((p: any) => p.category_id === categoriaSelecionadaLocal.value)
@@ -159,7 +165,7 @@ function openNewProduct() {
         is_public: true,
         featured: false,
         images: [],
-        conversion_type: props.page.catalog_mode === 'affiliate' ? 'external' : props.page.catalog_mode === 'showcase' ? 'whatsapp' : 'cart',
+        conversion_type: catalogMode.value === 'affiliate' ? 'external' : catalogMode.value === 'showcase' ? 'whatsapp' : 'cart',
         external_url: '',
         cta_label: '',
     }
@@ -183,14 +189,14 @@ function onEditProduct(prod: any) {
 
 
 function handleSaveProduct(payload: any) {  
-    props.salvarProduto && props.salvarProduto(payload)
+    props.salvarProduto(payload)
 }
 
 // Save category from modal
 function saveCategoria() {
     if (!novaCategoriaLocal.value || !novaCategoriaLocal.value.trim()) return
     // update local and ask parent to persist
-    props.salvarCategoria && props.salvarCategoria(novaCategoriaLocal.value)
+    props.salvarCategoria(novaCategoriaLocal.value)
     novaCategoriaLocal.value = ''
     showAddCategoryLocal.value = false
 }

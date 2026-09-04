@@ -14,7 +14,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
     <Head>
-        <link rel="icon" href="/store.svg" type="image/svg+xml"></link>
+        <link rel="icon" href="/store.svg" type="image/svg+xml" />
     </Head>
     <AppLayout :breadcrumbs="breadcrumbs">
         <slot />

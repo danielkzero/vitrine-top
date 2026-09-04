@@ -105,7 +105,6 @@ function usagePercent(value: number, limit: number | null) {
 }
 
 function formatCurrency(value: number) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) }
-function formatDate(value: string | null) { return value ? new Intl.DateTimeFormat('pt-BR').format(new Date(`${value}T12:00:00`)) : 'Não definido' }
 function formatDateTime(value: string | null) { return value ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—' }
 function statusLabel(value: string) { return ({ trial: 'Trial', active: 'Ativo', past_due: 'Em atraso', cancelled: 'Cancelado', expired: 'Expirado', paid: 'Concluído', pending: 'Pendente', failed: 'Falhou', refunded: 'Estornado' } as Record<string, string>)[value] ?? value }
 function methodLabel(value: string) { return ({ pix: 'PIX', credit_card: 'Cartão', boleto: 'Boleto' } as Record<string, string>)[value] ?? value }
@@ -186,7 +185,7 @@ function statusClass(value: string) {
         </div>
 
         <div v-if="clients.links.length > 3" class="flex flex-wrap justify-center gap-1">
-          <Link v-for="link in clients.links" :key="link.label" :href="link.url || '#'" class="rounded-lg border border-border px-3 py-2 text-sm" :class="link.active ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'" v-html="link.label" />
+          <Link v-for="link in clients.links" :key="link.label" :href="link.url || '#'" class="rounded-lg border border-border px-3 py-2 text-sm" :class="link.active ? 'bg-primary text-primary-foreground' : 'bg-card text-muted-foreground'"><span v-html="link.label"></span></Link>
         </div>
       </section>
 

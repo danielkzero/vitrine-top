@@ -24,10 +24,10 @@
 import { getIcon } from '@/lib/iconMap'
 import type { PropType } from 'vue'
 
-const props = defineProps({
+defineProps({
   category: { type: Object as PropType<any>, required: true },
   selected: { type: Boolean, default: false }
 })
 
-const emit = defineEmits<{ (e:'select', id:number): void; (e:'delete', c:any): void }>()
+defineEmits<{ (e:'select', id:number): void; (e:'delete', c:any): void }>()
 </script>

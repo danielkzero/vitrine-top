@@ -19,11 +19,6 @@ function open() {
   emit('open', props.product)
 }
 
-function addToCart(event: Event) {
-  event.stopPropagation()
-  emit('add-cart', props.product)
-}
-
 const effectiveAction = computed(() => {
   const action = props.product?.conversion_type || 'cart'
   if (props.catalogMode === 'affiliate' && action === 'cart') return 'external'
