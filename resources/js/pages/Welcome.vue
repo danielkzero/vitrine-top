@@ -107,7 +107,7 @@ function formatBrl(value: number): string {
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
-                    <BaseButton v-if="$page.props.auth.user" as="Link" :href="['/painel']" variant="ghost" size="sm">
+                    <BaseButton v-if="$page.props.auth.user" as="Link" href="/painel" variant="ghost" size="sm">
                         Painel
                     </BaseButton>
                     <template v-else>
@@ -147,10 +147,10 @@ function formatBrl(value: number): string {
                 <a href="#planos" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Planos</a>
                 <a href="#trial" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Trial</a>
                 <hr class="border-slate-100" />
-                <a v-if="$page.props.auth.user" :href="['/painel']"
+                <a v-if="$page.props.auth.user" href="/painel"
                     class="text-base font-medium text-emerald-600">Painel</a>
                 <template v-else>
-                    <a :href="['/login']" class="text-base font-medium text-slate-600">Entrar</a>
+                    <a href="/login" class="text-base font-medium text-slate-600">Entrar</a>
                      <BaseButton v-if="props.canRegister" as="Link" :href="register()" variant="dark" size="lg"
                             trailing-icon="ArrowRight">
                             Criar conta grátis
@@ -231,7 +231,7 @@ function formatBrl(value: number): string {
                 <div class="flex flex-wrap justify-center gap-3 mt-8">
                     <span v-for="(c, idx) in content.categories.items" :key="idx"
                         class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-100 rounded-full shadow-sm text-sm text-slate-700">
-                        <component :is="iconMap[c.icon] || Store" class="w-4 h-4 text-emerald-500" />
+                        <component :is="iconMap[c.icon] || getIcon('Store')" class="w-4 h-4 text-emerald-500" />
                         {{ c.name }}
                     </span>
                 </div>

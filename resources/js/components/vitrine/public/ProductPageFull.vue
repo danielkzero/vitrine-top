@@ -5,14 +5,17 @@ import { formatCurrency } from '@/lib/utils'
 import { router } from '@inertiajs/vue3'
 import { route } from 'ziggy-js'
 
-const props = defineProps({
-  product: { type: Object, required: true },
-  user: { type: Object, required: true },
-  banners: { type: Array, default: () => [] },
-  reviews: { type: Array, default: () => [] },
-  isCustomerAuthenticated: { type: Boolean, default: false },
-  favoriteProductIds: { type: Array as () => number[], default: () => [] },
-  catalogMode: { type: String, default: 'store' },
+const props = withDefaults(defineProps<{
+  product: Record<string, any>
+  user: Record<string, any>
+  banners?: Array<Record<string, any>>
+  reviews?: Array<Record<string, any>>
+  isCustomerAuthenticated?: boolean
+  favoriteProductIds?: number[]
+  catalogMode?: string
+}>(), {
+  banners: () => [], reviews: () => [], isCustomerAuthenticated: false,
+  favoriteProductIds: () => [], catalogMode: 'store',
 })
 
 const emit = defineEmits(['back', 'add-cart', 'toggle-favorite', 'open-customer-panel'])
@@ -81,6 +84,7 @@ function submitReview() {
       onSuccess: () => {
         form.value = {
           customer_name: '',
+          product_id: product.value?.id,
           whatsapp: '',
           rating: 5,
           comment: '',
@@ -118,7 +122,7 @@ const ctaLabel = computed(() => product.value?.cta_label || ({
   external: 'Ver oferta',
   whatsapp: 'Comprar via WhatsApp',
   lead: 'Quero saber mais',
-}[effectiveAction.value] ?? 'Continuar'))
+}[effectiveAction.value as 'cart' | 'external' | 'whatsapp' | 'lead'] ?? 'Continuar'))
 
 function convert() {
   if (effectiveAction.value === 'cart') return addToCart()

@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import { routes } from '@/config/routes';
 const breadcrumbs = [
     { title: 'Painel', href: routes.painel.index },
-    { title: 'Assinaturas', href: routes.painel.subscriptions }
+    { title: 'Assinaturas', href: routes.painel.subscriptions.index }
 ];
 </script>
 

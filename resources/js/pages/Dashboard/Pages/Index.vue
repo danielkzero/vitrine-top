@@ -10,7 +10,8 @@ import { getIcon } from '@/lib/iconMap'
 import { route } from 'ziggy-js'
 
 const { props } = usePage()
-const pagesOriginal = props.pages?.data || []
+type PageSummary = { id: number; [key: string]: unknown }
+const pagesOriginal = (props.pages as { data?: PageSummary[] } | undefined)?.data ?? []
 
 const pages = ref([...pagesOriginal]) // ← precisamos tornar reativo para arrastar
 

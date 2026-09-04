@@ -26,7 +26,7 @@ const emit = defineEmits<{
           :key="p.key"
           class="px-4 py-1.5 rounded-full text-sm font-medium transition inline-flex items-center gap-2"
           :class="activeKey === p.key ? 'text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'"
-          :style="activeKey === p.key ? { backgroundColor: themeColor } : {}"
+          :style="activeKey === p.key && themeColor ? { backgroundColor: themeColor } : {}"
           @click="emit('navigate', p.key)"
         >
           <component :is="getIcon(p?.icon)" class="w-4 h-4" />

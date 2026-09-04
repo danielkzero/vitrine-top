@@ -71,13 +71,15 @@ const whatsappCartUrl = computed(() => {
 })
 
 function resolvePageComponent(page: any) {
-  return {
+  const components: Record<string, any> = {
     simple: SimplePublic,
     links: LinksPublic,
     gallery: GalleryPublic,
     reviews: ReviewsPublic,
     products: ProductsPublic,
-  }[page?.type] || SimplePublic
+  }
+
+  return components[page?.type] || SimplePublic
 }
 
 const pageLocal = computed(() => currentPage.value)

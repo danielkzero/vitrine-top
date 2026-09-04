@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { route } from 'ziggy-js';
 
 const breadcrumbs = [
   { title: 'Dashboard', href: route('painel.index') },

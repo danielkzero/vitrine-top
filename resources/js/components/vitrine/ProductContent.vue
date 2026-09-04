@@ -6,16 +6,16 @@ import { ref, watch } from 'vue'
 import { formatCurrency } from '@/lib/utils';
 
 const props = defineProps<{
-    categorias: {};
+    categorias: any[];
     removerCategoria: (categoria: any) => void;
     nomeCategoria: (id: number) => any;
-    produtos: {};
+    produtos: any[];
     novaCategoria: string;
     salvarCategoria: () => void;
     salvarProduto: () => void;
     editarProduto: (produto: Product) => void;
     onCoverSelected: (files: File[] | FileList) => void;
-    page: {};
+    page: Record<string, any>;
 }>()
 
 const showAddCategory = defineModel<boolean>('showAddCategory', { required: true })

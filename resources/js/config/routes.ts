@@ -4,6 +4,7 @@ export const routes = {
         index: '/painel', // use o nome real da rota base (ajuste se for /painel)
         pages: {
             index: '/painel/pages',
+            create: '/painel/pages/create',
             edit: (id: number | string) => `/painel/pages/edit/${id}`,
             show: (id: number | string) => `/painel/pages/${id}`,
             store: '/painel/pages'

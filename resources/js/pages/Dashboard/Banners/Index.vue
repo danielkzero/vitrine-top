@@ -7,10 +7,13 @@ import { route } from 'ziggy-js'
 import { getIcon } from '@/lib/iconMap'
 
 const page = usePage()
-const banners = ref(page.props.banners || [])
+type Banner = { id: number; image_url: string }
+type SelectedFile = File | { file?: File; url?: string }
+
+const banners = ref<Banner[]>((page.props.banners as Banner[] | undefined) ?? [])
 
 const uploading = ref(false)
-const newFiles = ref<File[]>([])
+const newFiles = ref<SelectedFile[]>([])
 const uploadError = ref('')
 const titulo = ref('')
 const subtitulo = ref('')
@@ -19,7 +22,7 @@ const subtitulo = ref('')
  * Dropzone retorna os arquivos selecionados.
  * Removemos qualquer base64 e guardamos apenas o FILE real.
  */
-async function handleFiles(files: any[]) {
+async function handleFiles(files: SelectedFile[]) {
   uploadError.value = ''
   newFiles.value = files
 }
@@ -43,7 +46,13 @@ async function salvarBanner() {
   form.append("subtitle", subtitulo.value)
 
   // se o DropzoneFile retorna {file: File, url: string}
-  form.append("image", first.file ?? first)  
+  const image = first instanceof File ? first : ('file' in first ? first.file : undefined)
+  if (!image) {
+    uploadError.value = 'O arquivo selecionado não pôde ser lido. Selecione a imagem novamente.'
+    uploading.value = false
+    return
+  }
+  form.append("image", image)
 
   router.post(route("painel.banners.store"), form, {
     forceFormData: true,

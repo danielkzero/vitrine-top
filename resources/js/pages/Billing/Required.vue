@@ -15,6 +15,7 @@ import {
   WalletCards,
 } from 'lucide-vue-next'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { route } from 'ziggy-js'
 
 declare global {
   interface Window { MercadoPago: any }
@@ -86,6 +87,8 @@ const props = defineProps<{
     status: string
     created_at: string
     paid_at: string | null
+    installments?: number | null
+    installment_amount?: number | null
   }>
 }>()
 
@@ -466,7 +469,7 @@ function statusLabel(status: string) {
                 class="rounded-lg border bg-slate-50 px-4 py-3 text-sm grid md:grid-cols-4 gap-2"
               >
                 <p class="font-semibold text-slate-900">#{{ formatNumber(payment.id) }}</p>
-                <p class="text-slate-700">{{ methodLabel(payment.method) }} - {{ statusLabel(payment.status) }}<span v-if="payment.installments > 1" class="block text-xs text-slate-500">{{ payment.installments }}x de {{ formatCurrency(payment.installment_amount) }}</span></p>
+                <p class="text-slate-700">{{ methodLabel(payment.method) }} - {{ statusLabel(payment.status) }}<span v-if="(payment.installments ?? 0) > 1" class="block text-xs text-slate-500">{{ payment.installments }}x de {{ formatCurrency(payment.installment_amount ?? 0) }}</span></p>
                 <p class="text-slate-700">{{ formatDateTime(payment.paid_at ?? payment.created_at) }}</p>
                 <p class="font-semibold text-slate-900 md:text-right">{{ formatCurrency(payment.amount) }}</p>
               </div>

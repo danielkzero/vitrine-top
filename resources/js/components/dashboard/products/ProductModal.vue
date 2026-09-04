@@ -125,11 +125,15 @@
 import { ref, watch } from "vue"
 import DropzoneFile from "@/components/ui/dropzone-file/DropzoneFile.vue"
 
-const props = defineProps({
-  modelValue: { type: Boolean, required: true },
-  novoProduto: { type: Object, required: true },
-  categorias: { type: Array, required: true },
-})
+type Category = { id: number; name: string }
+type SelectedImage = { id?: number | null; file?: File | null; url?: string | null; preview?: string | null }
+type EditableProduct = Record<string, any> & { images?: SelectedImage[] }
+
+const props = defineProps<{
+  modelValue: boolean
+  novoProduto: EditableProduct
+  categorias: Category[]
+}>()
 
 const emit = defineEmits(["update:modelValue", "save"])
 
@@ -190,8 +194,8 @@ function close() {
 }
 
 /* IMAGENS */
-function handleFiles(files) {
-  localProduct.value.images = files.map(f => ({
+function handleFiles(files: SelectedImage[]) {
+  localProduct.value.images = files.map((f) => ({
     id: f.id ?? null,
     file: f.file instanceof File ? f.file : null,
     url: f.url ?? f.preview ?? null,

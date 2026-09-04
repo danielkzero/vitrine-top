@@ -81,6 +81,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import type { Product } from '@/types'
 import ProductCard from '@/components/dashboard/products/ProductCard.vue'
 import CategoryPill from '@/components/dashboard/products/CategoryPill.vue'
 import ProductModal from '@/components/dashboard/products/ProductModal.vue'
@@ -88,18 +89,22 @@ import { getIcon } from '@/lib/iconMap'
 import { formatCurrency } from '@/lib/utils'
 
 // Props expected from parent (Edit.vue)
-const props = defineProps({
-    categorias: { type: Array, required: true },
-    removerCategoria: { type: Function, required: true },
-    nomeCategoria: { type: Function, required: true },
-    produtos: { type: Array, required: true },
-    novaCategoria: { type: String, default: '' },
-    salvarCategoria: { type: Function, required: true },
-    salvarProduto: { type: Function, required: true },
-    editarProduto: { type: Function, required: true },
-    onCoverSelected: { type: Function, required: true },
-    page: { type: Object, required: true }
-})
+type Category = { id: number; name: string }
+type CatalogMode = 'store' | 'affiliate' | 'presell' | 'showcase' | 'hybrid'
+type EditableProduct = Product & { _localId?: string; stock?: number }
+
+const props = defineProps<{
+    categorias: Category[]
+    removerCategoria: (category: Category) => void
+    nomeCategoria: (id: number) => string
+    produtos: EditableProduct[]
+    novaCategoria?: string
+    salvarCategoria: (name: string) => void
+    salvarProduto: (product: unknown) => void
+    editarProduto: (product: EditableProduct) => void
+    onCoverSelected: (files: FileList | File[]) => void
+    page: { type: string; catalog_mode?: CatalogMode }
+}>()
 
 // local state to avoid mutating parent directly (keeps compatibility)
 const categoriaSelecionadaLocal = ref(props.categorias.length ? props.categorias[props.categorias.length - 1].id : null)
@@ -123,7 +128,7 @@ const catalogModeHelp = computed(() => ({
     presell: 'Use o conteúdo da página para apresentar benefícios, provas e contexto antes dos produtos.',
     showcase: 'Apresenta o catálogo sem checkout; prioriza WhatsApp ou formulário de contato.',
     hybrid: 'Misture carrinho, links externos, WhatsApp e captura de contato no mesmo catálogo.',
-}[props.page.catalog_mode || 'store']))
+}[props.page.catalog_mode ?? 'store']))
 
 const produtosFiltrados = computed(() => {
     return (props.produtos || []).filter((p: any) => p.category_id === categoriaSelecionadaLocal.value)

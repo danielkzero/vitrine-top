@@ -11,7 +11,7 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import '@fontsource/inter/800.css';
-import { ZiggyVue } from 'ziggy-js';
+import { ZiggyVue, type Config } from 'ziggy-js';
 import { Ziggy } from './ziggy'; // caminho depende do seu arquivo gerado
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -26,7 +26,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue, Ziggy)
+            .use(ZiggyVue, Ziggy as Config)
             .mount(el);
     },
     progress: {

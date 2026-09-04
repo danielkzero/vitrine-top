@@ -19,13 +19,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type Component } from 'vue';
+import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { cn } from '@/lib/utils';
 import iconMap from '@/lib/iconMap';
 
 interface Props {
-    variant?: 'primary' | 'secondary' | 'dark' | 'outline';
+    variant?: 'primary' | 'secondary' | 'dark' | 'outline' | 'pill' | 'ghost';
     size?: 'sm' | 'md' | 'lg';
     block?: boolean;
     disabled?: boolean;
@@ -41,8 +41,8 @@ interface Props {
     replace?: boolean;
 
     type?: 'button' | 'submit' | 'reset';
-    leadingIcon?: Component | null;
-    trailingIcon?: Component | null;
+    leadingIcon?: keyof typeof iconMap | null;
+    trailingIcon?: keyof typeof iconMap | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {

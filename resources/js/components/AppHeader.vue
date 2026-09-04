@@ -31,7 +31,7 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { painel } from '@/routes';
+import { routes } from '@/config/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
@@ -63,7 +63,7 @@ const activeItemStyles = computed(
 const mainNavItems: NavItem[] = [
     {
         title: 'Painel',
-        href: painel(),
+        href: routes.painel.index,
         icon: LayoutGrid,
     },
 ];
@@ -152,7 +152,7 @@ const rightNavItems: NavItem[] = [
                 </div>
 
                 <!-- LOGO -->
-                <Link :href="painel()" class="flex items-center gap-x-2">
+                <Link :href="routes.painel.index" class="flex items-center gap-x-2">
                     <AppLogo />
                 </Link>
 

@@ -201,8 +201,8 @@ onMounted(async () => {
         </div>
 
         <div class="ms-auto gap-3 flex">
-          <BaseButton as="Link" :href="['/settings/store']" variant="primary" size="lg" leading-icon="Settings">Configurar loja</BaseButton>
-          <BaseButton v-if="props.user?.business_name && props.user.slug" as="a" :href="[`/${props.user.slug}`]" variant="secondary" size="lg" leading-icon="StoreIcon" target="_blank">Ver vitrine</BaseButton>
+          <BaseButton as="Link" href="/settings/store" variant="primary" size="lg" leading-icon="Settings">Configurar loja</BaseButton>
+          <BaseButton v-if="props.user?.business_name && props.user.slug" as="a" :href="`/${props.user.slug}`" variant="secondary" size="lg" leading-icon="StoreIcon" target="_blank">Ver vitrine</BaseButton>
         </div>
       </div>
 
@@ -284,7 +284,7 @@ onMounted(async () => {
       <section class="rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
         <div class="flex items-center justify-between border-b border-border p-4">
           <h3 class="font-semibold text-foreground">Pedidos recentes</h3>
-          <BaseButton as="Link" :href="['/painel/cobranca']" variant="ghost" size="sm">Financeiro</BaseButton>
+          <BaseButton as="Link" href="/painel/cobranca" variant="ghost" size="sm">Financeiro</BaseButton>
         </div>
 
         <div class="overflow-x-auto">

@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
-const props = defineProps({
-    images: {
-        type: Array,
-        default: () => []
-    }
+const props = withDefaults(defineProps<{ images?: Array<Record<string, any>> }>(), {
+    images: () => []
 });
 
 const current = ref(0);

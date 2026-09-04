@@ -3,11 +3,11 @@
 import { getIcon } from '@/lib/iconMap'
 import { computed } from 'vue'
 
-const props = defineProps({
-  user: Object,
-  pages: { type: Array, default: () => [] },
-  activeKey: { type: String, default: null }
-})
+const props = withDefaults(defineProps<{
+  user?: Record<string, any>
+  pages?: Array<Record<string, any>>
+  activeKey?: string | null
+}>(), { user: () => ({}), pages: () => [], activeKey: null })
 
 const emit = defineEmits(['navigate'])
 
@@ -17,7 +17,7 @@ const sortedPages = computed(() => {
     .sort((a, b) => a.order - b.order)
 })
 
-function go(page) {
+function go(page: Record<string, any>) {
   emit('navigate', page)
 }
 </script>

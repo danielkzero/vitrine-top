@@ -267,16 +267,22 @@ async function salvarProduto(produtoRecebido: any) {
 
 
 // ---------- Imagens de produto (recebe Array<File> ou FileList, opcionalmente productId) ----------
-function onProductImageSelected(files: File[] | FileList, productId?: number | null) {
+type ProductImageInput = File | { file?: File; url?: string }
+
+function onProductImageSelected(input: Event | ProductImageInput[] | FileList, productId?: number | null) {
+  const files = input instanceof Event
+    ? ((input.target as HTMLInputElement | null)?.files ?? [])
+    : input
   novoProduto.value.images = []
   if (!files) return;
 
-  const isPreviewList = Array.isArray(files) && files[0] && (files[0].url || files[0].file);
+  const first = Array.isArray(files) ? files[0] : undefined
+  const isPreviewList = !!first && !(first instanceof File) && (!!first.url || !!first.file);
 
   if (isPreviewList) {
     novoProduto.value.images = [];
 
-    files.forEach((item: any) => {
+    ;(files as Array<{ file?: File; url?: string }>).forEach((item) => {
       if (item.file) {
         const reader = new FileReader();
         reader.onload = e => {

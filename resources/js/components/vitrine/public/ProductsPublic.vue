@@ -10,16 +10,19 @@ import { route } from 'ziggy-js'
 import { router } from '@inertiajs/vue3'
 import CategorySkeleton from './CategorySkeleton.vue'
 
-const props = defineProps({
-  page: Object,
-  products: Array,
-  categories: Array,
-  user: Object,
-  settings: Object,
-  banners: Object,
-  cartCount: { type: Number, default: 0 },
-  favoriteProductIds: { type: Array as () => number[], default: () => [] },
-  isCustomerAuthenticated: { type: Boolean, default: false },
+const props = withDefaults(defineProps<{
+  page: Record<string, any>
+  products?: Array<Record<string, any>>
+  categories?: Array<Record<string, any>>
+  user: Record<string, any>
+  settings?: Record<string, any>
+  banners?: Array<Record<string, any>>
+  cartCount?: number
+  favoriteProductIds?: number[]
+  isCustomerAuthenticated?: boolean
+}>(), {
+  products: () => [], categories: () => [], banners: () => [], cartCount: 0,
+  favoriteProductIds: () => [], isCustomerAuthenticated: false,
 })
 
 const emit = defineEmits(['open-cart', 'open-customer-panel', 'add-cart', 'toggle-favorite'])

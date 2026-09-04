@@ -4,14 +4,14 @@ import { getIcon } from '@/lib/iconMap'
 import { formatCurrency } from '@/lib/utils'
 import { computed } from 'vue'
 
-const props = defineProps({
-  user: Object,
-  product: { type: Object, required: true },
-  viewMode: { type: String, default: 'grid' },
-  favoriteProductIds: { type: Array as () => number[], default: () => [] },
-  canFavorite: { type: Boolean, default: false },
-  catalogMode: { type: String, default: 'store' },
-})
+const props = withDefaults(defineProps<{
+  user?: Record<string, any>
+  product: Record<string, any>
+  viewMode?: string
+  favoriteProductIds?: number[]
+  canFavorite?: boolean
+  catalogMode?: string
+}>(), { viewMode: 'grid', favoriteProductIds: () => [], canFavorite: false, catalogMode: 'store' })
 
 const emit = defineEmits(['open', 'add-cart', 'toggle-favorite', 'lead'])
 
@@ -36,7 +36,7 @@ const ctaLabel = computed(() => props.product?.cta_label || ({
   external: 'Ver oferta',
   whatsapp: 'Falar no WhatsApp',
   lead: 'Quero saber mais',
-}[effectiveAction.value] ?? 'Ver produto'))
+}[effectiveAction.value as 'cart' | 'external' | 'whatsapp' | 'lead'] ?? 'Ver produto'))
 
 function convert(event: Event) {
   event.stopPropagation()
