@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Settings\ProfileUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -115,25 +116,18 @@ class ProfileController extends Controller
     /**
      * Atualiza os dados gerais do perfil do usuário.
      */
-    public function update(Request $request)
+    public function update(ProfileUpdateRequest $request)
     {
         $user = $request->user();
+        $user->fill($request->validated());
 
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'surname' => ['nullable', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email,'.$user->id],
-            'address' => ['nullable', 'string', 'max:255'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:2'],
-            'zip' => ['nullable', 'string', 'max:10'],
-            'phone_primary' => ['nullable', 'string', 'max:20'],
-            'whatsapp' => ['nullable', 'string', 'max:20'],
-        ]);
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
 
-        $user->update($data);
+        $user->save();
 
-        return back()->with('success', 'Perfil atualizado com sucesso.');
+        return redirect()->route('profile.edit')->with('success', 'Perfil atualizado com sucesso.');
     }
 
     /**
