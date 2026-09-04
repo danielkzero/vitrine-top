@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
 
 const breadcrumbs = [
-  { title: 'Dashboard', href: route('painel.index') },
+  { title: 'Painel', href: route('painel.index') },
   { title: 'Categorias', href: route('painel.categories.index') },
 ];
 </script>

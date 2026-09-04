@@ -106,7 +106,7 @@ function usagePercent(value: number, limit: number | null) {
 
 function formatCurrency(value: number) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) }
 function formatDateTime(value: string | null) { return value ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—' }
-function statusLabel(value: string) { return ({ trial: 'Trial', active: 'Ativo', past_due: 'Em atraso', cancelled: 'Cancelado', expired: 'Expirado', paid: 'Concluído', pending: 'Pendente', failed: 'Falhou', refunded: 'Estornado' } as Record<string, string>)[value] ?? value }
+function statusLabel(value: string) { return ({ trial: 'Período de teste', active: 'Ativo', past_due: 'Em atraso', cancelled: 'Cancelado', expired: 'Expirado', paid: 'Concluído', pending: 'Pendente', failed: 'Falhou', refunded: 'Estornado' } as Record<string, string>)[value] ?? value }
 function methodLabel(value: string) { return ({ pix: 'PIX', credit_card: 'Cartão', boleto: 'Boleto' } as Record<string, string>)[value] ?? value }
 function statusClass(value: string) {
   if (['active', 'paid'].includes(value)) return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
@@ -147,7 +147,7 @@ function statusClass(value: string) {
         <div class="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 md:flex-row">
           <div class="relative flex-1"><Search class="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /><input v-model="search" class="w-full rounded-xl border border-input bg-background py-2.5 pl-10 pr-3 text-sm text-foreground" placeholder="Buscar por cliente, loja ou e-mail" @keyup.enter="applyFilters" /></div>
           <select v-model="status" class="rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground" @change="applyFilters">
-            <option value="">Todos os status</option><option value="trial">Trial</option><option value="active">Ativo</option><option value="past_due">Em atraso</option><option value="expired">Expirado</option><option value="cancelled">Cancelado</option>
+            <option value="">Todos os status</option><option value="trial">Período de teste</option><option value="active">Ativo</option><option value="past_due">Em atraso</option><option value="expired">Expirado</option><option value="cancelled">Cancelado</option>
           </select>
           <button class="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground" @click="applyFilters">Filtrar</button>
         </div>
@@ -220,7 +220,7 @@ function statusClass(value: string) {
         <div class="space-y-5 p-5">
           <div class="grid gap-4 sm:grid-cols-2">
             <label class="text-sm text-foreground">Plano base<select v-model="form.plan_id" class="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5" @change="chooseBasePlan"><option v-for="plan in plans" :key="plan.id" :value="plan.id">{{ plan.name }}</option></select></label>
-            <label class="text-sm text-foreground">Status<select v-model="form.status" class="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5"><option value="trial">Trial</option><option value="active">Ativo</option><option value="past_due">Em atraso</option><option value="expired">Expirado</option><option value="cancelled">Cancelado</option></select></label>
+            <label class="text-sm text-foreground">Status<select v-model="form.status" class="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5"><option value="trial">Período de teste</option><option value="active">Ativo</option><option value="past_due">Em atraso</option><option value="expired">Expirado</option><option value="cancelled">Cancelado</option></select></label>
             <label class="text-sm text-foreground">Valor cobrado<input v-model.number="form.price" type="number" min="0" step="0.01" class="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5" /></label>
             <label class="text-sm text-foreground">Ciclo<select v-model="form.billing_period" class="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5"><option value="monthly">Mensal</option><option value="annual">Anual</option></select></label>
             <label class="text-sm text-foreground">Fim do trial<input v-model="form.trial_ends_at" type="date" class="mt-1.5 w-full rounded-lg border border-input bg-background p-2.5" /></label>

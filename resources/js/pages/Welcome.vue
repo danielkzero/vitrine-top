@@ -102,7 +102,7 @@ function formatBrl(value: number): string {
                     <a href="#planos"
                         class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Planos</a>
                     <a href="#trial"
-                        class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Trial</a>
+                        class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition-colors">Período de teste</a>
                 </div>
 
                 <div class="hidden md:flex items-center gap-4">
@@ -144,7 +144,7 @@ function formatBrl(value: number): string {
                 <a href="#como-funciona" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Como
                     Funciona</a>
                 <a href="#planos" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Planos</a>
-                <a href="#trial" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Trial</a>
+                <a href="#trial" @click="isMenuOpen = false" class="text-base font-medium text-slate-600">Período de teste</a>
                 <hr class="border-slate-100" />
                 <a v-if="$page.props.auth.user" href="/painel"
                     class="text-base font-medium text-emerald-600">Painel</a>
@@ -334,7 +334,7 @@ function formatBrl(value: number): string {
                             <li>Fotos/produto: {{ plan.limits.product_images ?? 'Ilimitadas' }}</li>
                             <li>Galeria: {{ plan.limits.gallery_images }} fotos</li>
                             <li>Banners: {{ plan.limits.banners }}</li>
-                            <li>Trial: {{ plan.trial_days }} dias</li>
+                            <li>Período de teste: {{ plan.trial_days }} dias</li>
                         </ul>
 
                         <BaseButton

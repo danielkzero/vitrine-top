@@ -55,7 +55,7 @@ defineProps<{
 
             <div class="space-x-1 text-center text-sm text-muted-foreground">
                 <span>Ou, Voltar a página de</span>
-                <TextLink :href="login()">Login</TextLink>
+                <TextLink :href="login()">Entrar</TextLink>
             </div>
         </div>
     </AuthLayout>

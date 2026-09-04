@@ -79,7 +79,14 @@ const labels: Record<string, string> = {
     attention: 'Atenção',
     risk: 'Risco',
     active: 'Ativo',
-    trial: 'Trial',
+    trial: 'Período de teste',
+    paid: 'Pago',
+    pending: 'Pendente',
+    failed: 'Falhou',
+    refunded: 'Estornado',
+    pix: 'Pix',
+    credit_card: 'Cartão de crédito',
+    boleto: 'Boleto',
     expired: 'Expirado',
     cancelled: 'Cancelado',
     past_due: 'Em atraso',
@@ -562,8 +569,8 @@ const labels: Record<string, string> = {
                                             <td class="py-3">
                                                 #{{ payment.id }}
                                             </td>
-                                            <td>{{ payment.status }}</td>
-                                            <td>{{ payment.method }}</td>
+                                            <td>{{ labels[payment.status] ?? payment.status }}</td>
+                                            <td>{{ labels[payment.method] ?? payment.method }}</td>
                                             <td>
                                                 {{
                                                     date(
