@@ -46,6 +46,7 @@ class StoreCatalogController extends Controller
         $page = Page::query()
             ->where('user_id', $store->id)
             ->where('key', $pageKey)
+            ->where('is_active', true)
             ->firstOrFail();
 
         return response()->json(['data' => $page]);
@@ -58,9 +59,9 @@ class StoreCatalogController extends Controller
         $products = Product::query()
             ->where('user_id', $store->id)
             ->where('is_public', true)
-            ->when($request->filled('q'), fn ($query) => $query->where('name', 'like', '%' . $request->string('q') . '%'))
+            ->when($request->filled('q'), fn ($query) => $query->where('name', 'like', '%'.$request->string('q').'%'))
             ->orderByDesc('id')
-            ->paginate((int) $request->integer('per_page', 15));
+            ->paginate(min(50, max(1, (int) $request->integer('per_page', 15))));
 
         return response()->json($products);
     }

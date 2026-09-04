@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\UserRepository;
 use App\Http\Resources\ProductResource;
+use App\Repositories\UserRepository;
 
 class ProductController extends Controller
 {
@@ -26,7 +26,8 @@ class ProductController extends Controller
 
         $product = $user->products()
             ->where('id', $id)
-            ->with(['images', 'category', 'reviews' => fn($q) => $q->approved()])
+            ->where('is_public', true)
+            ->with(['images', 'category', 'reviews' => fn ($q) => $q->approved()])
             ->firstOrFail();
 
         return new ProductResource($product);

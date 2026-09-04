@@ -33,9 +33,10 @@ class CartService
         $product = Product::query()
             ->where('user_id', $store->id)
             ->where('id', $productId)
+            ->where('is_public', true)
             ->first();
 
-        if (!$product) {
+        if (! $product) {
             throw ValidationException::withMessages([
                 'product_id' => 'Produto não encontrado para esta loja.',
             ]);

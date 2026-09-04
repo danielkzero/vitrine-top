@@ -21,8 +21,7 @@ class CustomerAuthController extends Controller
     public function __construct(
         private readonly CustomerAuthTokenService $tokenService,
         private readonly ViaCepService $viaCepService,
-    ) {
-    }
+    ) {}
 
     public function register(Request $request, string $storeSlug): JsonResponse
     {
@@ -115,7 +114,7 @@ class CustomerAuthController extends Controller
             })
             ->first();
 
-        if (!$customer || !Hash::check($data['password'], $customer->password)) {
+        if (! $customer || ! $customer->is_active || ! Hash::check($data['password'], $customer->password)) {
             return response()->json(['message' => 'E-mail, WhatsApp ou senha inválidos.'], 422);
         }
 

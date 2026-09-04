@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Dashboard\BaseController;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ReviewController extends BaseController
@@ -69,7 +69,11 @@ class ReviewController extends BaseController
 
         $data = $request->validate([
             'customer_name' => ['sometimes', 'string', 'max:255'],
-            'product_id' => 'sometimes|integer|exists:products,id',
+            'product_id' => [
+                'sometimes',
+                'integer',
+                Rule::exists('products', 'id')->where(fn ($query) => $query->where('user_id', $this->user->id)),
+            ],
             'whatsapp' => 'nullable|string|max:20',
             'rating' => ['sometimes', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string'],

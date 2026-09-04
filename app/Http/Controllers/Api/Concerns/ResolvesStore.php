@@ -8,6 +8,9 @@ trait ResolvesStore
 {
     protected function resolveStore(string $storeSlug): User
     {
-        return User::query()->where('slug', $storeSlug)->firstOrFail();
+        return User::query()
+            ->where('slug', $storeSlug)
+            ->where('is_active', true)
+            ->firstOrFail();
     }
 }

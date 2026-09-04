@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Api\Concerns\ResolvesStore;
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
 use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,9 +12,7 @@ class CartController extends Controller
 {
     use ResolvesStore;
 
-    public function __construct(private readonly CartService $cartService)
-    {
-    }
+    public function __construct(private readonly CartService $cartService) {}
 
     public function show(Request $request, string $storeSlug): JsonResponse
     {
@@ -39,7 +36,7 @@ class CartController extends Controller
 
         $data = $request->validate([
             'product_id' => ['required', 'integer'],
-            'quantity' => ['required', 'integer', 'min:1'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:999'],
         ]);
 
         $cart = $this->cartService->addItem($store, $customer, $data['product_id'], $data['quantity']);
@@ -56,7 +53,7 @@ class CartController extends Controller
         $customer = $request->attributes->get('customer');
 
         $data = $request->validate([
-            'quantity' => ['required', 'integer', 'min:0'],
+            'quantity' => ['required', 'integer', 'min:0', 'max:999'],
         ]);
 
         $cart = $this->cartService->updateQuantity($store, $customer, $itemId, $data['quantity']);

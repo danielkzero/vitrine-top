@@ -10,9 +10,9 @@ use App\Http\Controllers\Api\V1\UserController as ApiV1UserController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\ReviewController;
 use App\Http\Controllers\Dashboard\SubscriptionController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\Vitrine\VitrineController;
 use App\Http\Controllers\Webhook\MercadoPagoWebhookController;
-use App\Http\Controllers\SitemapController;
 use App\Models\Plan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -105,5 +105,6 @@ Route::prefix('{slug}')->group(function () {
         ->name('vitrine.public.page.id');
 
     Route::post('/products/{product}/reviews', [VitrineController::class, 'storeReview'])
+        ->middleware('throttle:10,1')
         ->name('vitrine.reviews.store');
 });

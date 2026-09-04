@@ -8,15 +8,13 @@ use App\Http\Controllers\Api\Customer\FavoriteController as CustomerFavoriteCont
 use App\Http\Controllers\Api\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Api\Store\CustomerAuthController;
 use App\Http\Controllers\Api\Store\StoreCatalogController;
-use App\Http\Controllers\Api\V1\{
-    BannerController,
-    CategoryController,
-    PageController,
-    ProductController,
-    ReviewController,
-    SettingsController,
-    UserController
-};
+use App\Http\Controllers\Api\V1\BannerController;
+use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\PageController;
+use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\ReviewController;
+use App\Http\Controllers\Api\V1\SettingsController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -38,9 +36,9 @@ Route::prefix('store/{storeSlug}')->group(function () {
     Route::get('products', [StoreCatalogController::class, 'products']);
     Route::get('products/{productId}', [StoreCatalogController::class, 'product'])->middleware('track.store_visit');
 
-    Route::get('zipcode', [CustomerAuthController::class, 'lookupZip']);
-    Route::post('customers/register', [CustomerAuthController::class, 'register']);
-    Route::post('customers/login', [CustomerAuthController::class, 'login']);
+    Route::get('zipcode', [CustomerAuthController::class, 'lookupZip'])->middleware('throttle:30,1');
+    Route::post('customers/register', [CustomerAuthController::class, 'register'])->middleware('throttle:5,1');
+    Route::post('customers/login', [CustomerAuthController::class, 'login'])->middleware('throttle:5,1');
 
     Route::middleware(['auth.customer_token', 'customer.store_context'])->group(function () {
         Route::post('customers/logout', [CustomerAuthController::class, 'logout']);

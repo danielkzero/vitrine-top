@@ -6,17 +6,17 @@ use App\Http\Controllers\Api\Concerns\ResolvesStore;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerAddress;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
     use ResolvesStore;
 
-    public function __construct(private readonly OrderService $orderService)
-    {
-    }
+    public function __construct(private readonly OrderService $orderService) {}
 
     public function index(Request $request, string $storeSlug): JsonResponse
     {
@@ -28,7 +28,7 @@ class OrderController extends Controller
             ->where('customer_id', $customer->id)
             ->with('items')
             ->latest()
-            ->paginate((int) $request->integer('per_page', 15));
+            ->paginate(min(50, max(1, (int) $request->integer('per_page', 15))));
 
         return response()->json($orders);
     }
@@ -55,9 +55,9 @@ class OrderController extends Controller
 
         $data = $request->validate([
             'address_id' => ['required', 'integer'],
-            'payment_method' => ['required', 'string', 'max:50'],
-            'shipping_method' => ['nullable', 'string', 'max:50'],
-            'notes' => ['nullable', 'string'],
+            'payment_method' => ['required', Rule::in(['pix', 'cash', 'credit_card', 'manual'])],
+            'shipping_method' => ['nullable', Rule::in(['delivery', 'retirada'])],
+            'notes' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $address = CustomerAddress::query()
@@ -109,7 +109,7 @@ class OrderController extends Controller
 
         $phone = $store->whatsapp ?: $store->phone_primary;
 
-        if (!$phone) {
+        if (! $phone) {
             return response()->json(['message' => 'Loja sem WhatsApp configurado.'], 422);
         }
 
@@ -123,7 +123,7 @@ class OrderController extends Controller
         $store = $this->resolveStore($storeSlug);
         $customer = $request->attributes->get('customer');
 
-        $items = \App\Models\OrderItem::query()
+        $items = OrderItem::query()
             ->where('user_id', $store->id)
             ->where('customer_id', $customer->id)
             ->latest()

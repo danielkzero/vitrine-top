@@ -155,6 +155,15 @@ class PageController extends Controller
             return back()->withErrors(['page' => 'Formato invalido dos dados enviados.']);
         }
 
+        $request->validate([
+            'produtos_images' => ['sometimes', 'array'],
+            'produtos_images.*' => ['file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:1024'],
+        ], [
+            'produtos_images.*.image' => 'Cada arquivo de produto precisa ser uma imagem válida.',
+            'produtos_images.*.mimes' => 'As imagens dos produtos devem estar nos formatos JPG, PNG ou WEBP.',
+            'produtos_images.*.max' => 'Cada imagem de produto deve ter no máximo 1 MB.',
+        ]);
+
         validator(['products' => $produtos], [
             'products' => 'array',
             'products.*.conversion_type' => 'nullable|in:cart,external,whatsapp,lead',

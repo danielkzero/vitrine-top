@@ -7,13 +7,12 @@ use App\Models\Banner;
 use App\Services\PlanLimitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class BannerController extends Controller
 {
-    public function __construct(private readonly PlanLimitService $planLimitService)
-    {
-    }
+    public function __construct(private readonly PlanLimitService $planLimitService) {}
 
     public function index()
     {
@@ -75,7 +74,18 @@ class BannerController extends Controller
 
     public function reorder(Request $request)
     {
-        foreach ($request->banners as $item) {
+        $data = $request->validate([
+            'banners' => ['required', 'array'],
+            'banners.*.id' => [
+                'required',
+                'integer',
+                'distinct',
+                Rule::exists('banners', 'id')->where(fn ($query) => $query->where('user_id', auth()->id())),
+            ],
+            'banners.*.order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        foreach ($data['banners'] as $item) {
             Banner::where('id', $item['id'])
                 ->where('user_id', auth()->id())
                 ->update(['order' => $item['order']]);

@@ -11,9 +11,7 @@ use Illuminate\Http\Request;
 
 class OrderManagementController extends Controller
 {
-    public function __construct(private readonly OrderService $orderService)
-    {
-    }
+    public function __construct(private readonly OrderService $orderService) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -24,7 +22,7 @@ class OrderManagementController extends Controller
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->with(['customer:id,name,email', 'items'])
             ->latest()
-            ->paginate((int) $request->integer('per_page', 20));
+            ->paginate(min(100, max(1, (int) $request->integer('per_page', 20))));
 
         return response()->json($orders);
     }
