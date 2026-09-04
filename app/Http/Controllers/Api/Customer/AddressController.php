@@ -93,6 +93,6 @@ class AddressController extends Controller
 
         $address->delete();
 
-        return response()->json(['message' => 'Endereco removido com sucesso.']);
+        return response()->json(['message' => 'Endereço removido com sucesso.']);
     }
 }

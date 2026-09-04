@@ -13,13 +13,13 @@ class ViaCepService
         if (strlen($normalizedZip) !== 8) {
             return [
                 'found' => false,
-                'message' => 'CEP invalido.',
+                'message' => 'CEP inválido.',
             ];
         }
 
         $response = Http::timeout(5)->get("https://viacep.com.br/ws/{$normalizedZip}/json/");
 
-        if (!$response->successful() || $response->json('erro')) {
+        if (! $response->successful() || $response->json('erro')) {
             return [
                 'found' => false,
                 'message' => 'CEP não encontrado.',

@@ -359,15 +359,15 @@ function formatBrl(value: number): string {
                     <div class="grid md:grid-cols-3 gap-4 text-sm text-slate-700">
                         <div class="rounded-xl bg-slate-50 p-4 border">
                             <p class="font-semibold mb-2">1. Cadastro imediato</p>
-                            <p>Ao criar a conta, voce entra com acesso completo durante o periodo de teste.</p>
+                            <p>Ao criar a conta, você entra com acesso completo durante o período de teste.</p>
                         </div>
                         <div class="rounded-xl bg-slate-50 p-4 border">
-                            <p class="font-semibold mb-2">2. Aviso de regularizacao</p>
+                            <p class="font-semibold mb-2">2. Aviso de regularização</p>
                             <p>No fim do trial, a plataforma exige escolha de plano e pagamento para continuar.</p>
                         </div>
                         <div class="rounded-xl bg-slate-50 p-4 border">
                             <p class="font-semibold mb-2">3. Continuidade da vitrine</p>
-                            <p>Com assinatura paga em dia, painel e vitrine publica seguem ativos sem bloqueios.</p>
+                            <p>Com assinatura paga em dia, painel e vitrine pública seguem ativos sem bloqueios.</p>
                         </div>
                     </div>
                 </div>

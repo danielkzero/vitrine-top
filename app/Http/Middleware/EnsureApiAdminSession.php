@@ -10,8 +10,8 @@ class EnsureApiAdminSession
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user()) {
-            return response()->json(['message' => 'Nao autenticado.'], 401);
+        if (! $request->user()) {
+            return response()->json(['message' => 'Não autenticado.'], 401);
         }
 
         return $next($request);

@@ -152,7 +152,7 @@ class PageController extends Controller
         $pageData = json_decode($request->page, true);
 
         if (json_last_error() !== JSON_ERROR_NONE || ! is_array($pageData)) {
-            return back()->withErrors(['page' => 'Formato invalido dos dados enviados.']);
+            return back()->withErrors(['page' => 'Formato inválido dos dados enviados.']);
         }
 
         $request->validate([

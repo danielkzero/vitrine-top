@@ -32,7 +32,7 @@ const images = computed(() => product.value?.images ?? [])
 function buyNow() {
   const phone = (props.user?.whatsapp || '').replace(/\D/g, '') || ''
   const text = encodeURIComponent(
-    `Ola, tenho interesse no produto: ${product.value?.name} (ID: ${product.value?.id}). Preco: ${
+    `Olá, tenho interesse no produto: ${product.value?.name} (ID: ${product.value?.id}). Preço: ${
       product.value.discount_price ? formatCurrency(product.value.discount_price) : formatCurrency(product.value.price)
     }`,
   )
@@ -89,7 +89,7 @@ function submitReview() {
           rating: 5,
           comment: '',
         }
-        alert('Avaliacao enviada com sucesso!')
+        alert('Avaliação enviada com sucesso!')
       },
     },
   )
@@ -211,7 +211,7 @@ function convert() {
     <div class="px-4 md:px-6 pb-6">
       <div class="pt-2">
         <div class="flex gap-2">
-          <button class="px-3 py-1 rounded-full bg-slate-100 text-sm">Avaliacoes ({{ reviews.length }})</button>
+          <button class="px-3 py-1 rounded-full bg-slate-100 text-sm">Avaliações ({{ reviews.length }})</button>
           <button class="bg-slate-600 text-white py-2 px-4 rounded-full font-semibold flex items-center" @click="toggleForm">
             <component :is="getIcon('UserStar')" class="w-5 h-5 mr-2" />
             {{ showForm ? 'Fechar' : 'Avaliar' }}
@@ -230,7 +230,7 @@ function convert() {
 
               <textarea v-model="form.comment" rows="4" placeholder="Comentario" class="w-full border rounded-xl p-3 mt-3"></textarea>
 
-              <button type="submit" class="w-full py-3 rounded-xl text-white font-semibold mt-3" :style="{ backgroundColor: props.user.theme_color }">Enviar Avaliacao</button>
+              <button type="submit" class="w-full py-3 rounded-xl text-white font-semibold mt-3" :style="{ backgroundColor: props.user.theme_color }">Enviar avaliação</button>
             </form>
           </div>
         </transition>
@@ -249,7 +249,7 @@ function convert() {
             <p class="text-sm text-slate-700 mt-1">{{ r.comment }}</p>
           </div>
 
-          <button class="w-full text-sm mt-2" :style="{ color: props.user.theme_color }" @click="loadMoreReviews">Carregar mais avaliacoes</button>
+          <button class="w-full text-sm mt-2" :style="{ color: props.user.theme_color }" @click="loadMoreReviews">Carregar mais avaliações</button>
         </div>
       </div>
     </div>

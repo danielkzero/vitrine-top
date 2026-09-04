@@ -12,6 +12,7 @@ use App\Models\Favorite;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Page;
+use App\Models\PageView;
 use App\Models\Product;
 use App\Models\ProductView;
 use App\Models\User;
@@ -39,7 +40,7 @@ class EcommerceDemoSeeder extends Seeder
                     ],
                     [
                         'name' => "Cliente {$i} Loja {$user->id}",
-                        'whatsapp' => '1199999000' . $i,
+                        'whatsapp' => '1199999000'.$i,
                         'password' => 'password',
                         'is_active' => true,
                         'last_login_at' => now()->subDays(rand(0, 7)),
@@ -59,7 +60,7 @@ class EcommerceDemoSeeder extends Seeder
                         'street' => 'Praca da Se',
                         'complement' => null,
                         'neighborhood' => 'Se',
-                        'city' => 'Sao Paulo',
+                        'city' => 'São Paulo',
                         'state' => 'SP',
                         'reference' => 'Ao lado da catedral',
                         'notes' => 'Interfone no nome do cliente',
@@ -105,7 +106,7 @@ class EcommerceDemoSeeder extends Seeder
                     [
                         'user_id' => $user->id,
                         'customer_id' => $customer->id,
-                        'order_number' => 'DEMO-' . $user->id . '-' . $customer->id,
+                        'order_number' => 'DEMO-'.$user->id.'-'.$customer->id,
                     ],
                     [
                         'shipping_address_id' => $address->id,
@@ -114,7 +115,7 @@ class EcommerceDemoSeeder extends Seeder
                         'total' => 0,
                         'payment_method' => 'manual',
                         'shipping_method' => 'retirada',
-                        'notes' => 'Pedido de demonstracao',
+                        'notes' => 'Pedido de demonstração',
                         'address_snapshot' => [
                             'zip' => $address->zip,
                             'street' => $address->street,
@@ -159,7 +160,7 @@ class EcommerceDemoSeeder extends Seeder
                 $visit = Visit::query()->create([
                     'user_id' => $user->id,
                     'customer_id' => $customer->id,
-                    'visitor_hash' => sha1("{$user->id}-{$customer->id}-" . now()->timestamp),
+                    'visitor_hash' => sha1("{$user->id}-{$customer->id}-".now()->timestamp),
                     'ip' => '127.0.0.1',
                     'user_agent' => 'SeederBot',
                     'referrer' => 'https://google.com',
@@ -172,7 +173,7 @@ class EcommerceDemoSeeder extends Seeder
                 $page = Page::query()->where('user_id', $user->id)->first();
 
                 if ($page) {
-                    \App\Models\PageView::query()->create([
+                    PageView::query()->create([
                         'user_id' => $user->id,
                         'page_id' => $page->id,
                         'visit_id' => $visit->id,

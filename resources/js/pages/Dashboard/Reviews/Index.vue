@@ -17,7 +17,7 @@ defineProps<{
 
 const breadcrumbs = [
   { title: 'Painel', href: routes.painel.index },
-  { title: 'Avaliacoes', href: routes.painel.reviews.index },
+  { title: 'Avaliações', href: routes.painel.reviews.index },
 ]
 
 function updateStatus(reviewId: number, status: 'pending' | 'approved' | 'rejected') {
@@ -38,12 +38,12 @@ function statusClass(status: string) {
 </script>
 
 <template>
-  <Head title="Avaliacoes" />
+  <Head title="Avaliações" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="container mx-auto px-4 py-6 space-y-6">
       <div>
-        <h1 class="text-2xl font-bold text-foreground">Avaliacoes</h1>
+        <h1 class="text-2xl font-bold text-foreground">Avaliações</h1>
         <p class="text-sm text-muted-foreground">Gerencie reputação e aprovação dos feedbacks da loja.</p>
       </div>
 

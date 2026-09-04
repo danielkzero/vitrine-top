@@ -192,18 +192,18 @@ async function handleRepeatOrder(orderId: number) {
 async function handleSaveAddress(payload: { address: Record<string, any>; id?: number }) {
   try {
     await customerApi.saveAddress(payload.address, payload.id)
-    message.value = 'Endereco salvo com sucesso.'
+    message.value = 'Endereço salvo com sucesso.'
   } catch (error: any) {
-    message.value = error?.response?.data?.message ?? 'Falha ao salvar endereco.'
+    message.value = error?.response?.data?.message ?? 'Falha ao salvar endereço.'
   }
 }
 
 async function handleDeleteAddress(addressId: number) {
   try {
     await customerApi.deleteAddress(addressId)
-    message.value = 'Endereco removido.'
+    message.value = 'Endereço removido.'
   } catch (error: any) {
-    message.value = error?.response?.data?.message ?? 'Falha ao remover endereco.'
+    message.value = error?.response?.data?.message ?? 'Falha ao remover endereço.'
   }
 }
 

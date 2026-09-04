@@ -130,7 +130,7 @@ class PlanLimitService
 
         return new Plan([
             'code' => PlanCode::BASIC->value,
-            'name' => 'Plano Basico',
+            'name' => 'Plano Básico',
             'monthly_price' => 24.90,
             'annual_price_total' => 238.80,
             'annual_monthly_equivalent' => 19.90,

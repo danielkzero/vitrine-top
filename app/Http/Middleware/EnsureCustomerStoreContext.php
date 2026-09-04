@@ -13,8 +13,8 @@ class EnsureCustomerStoreContext
         $customer = $request->attributes->get('customer');
         $storeSlug = (string) $request->route('storeSlug');
 
-        if (!$customer || !$customer->user || $customer->user->slug !== $storeSlug) {
-            return response()->json(['message' => 'Cliente nao pertence a esta loja.'], 403);
+        if (! $customer || ! $customer->user || $customer->user->slug !== $storeSlug) {
+            return response()->json(['message' => 'Cliente não pertence a esta loja.'], 403);
         }
 
         return $next($request);

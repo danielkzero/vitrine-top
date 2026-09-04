@@ -129,7 +129,7 @@ function editAddress(address: any) {
     <aside class="absolute right-0 top-0 h-full w-full max-w-xl bg-white shadow-2xl overflow-y-auto">
       <header class="sticky top-0 bg-white border-b px-4 py-3 flex items-center justify-between z-10">
         <div>
-          <p class="text-xs uppercase tracking-wide text-slate-500">Area do cliente</p>
+          <p class="text-xs uppercase tracking-wide text-slate-500">Área do cliente</p>
           <h3 class="font-semibold text-slate-900">Minha conta</h3>
         </div>
         <button class="text-sm text-slate-500" @click="emit('close')">Fechar</button>
@@ -142,7 +142,7 @@ function editAddress(address: any) {
 
           <button v-if="isAuthenticated" class="px-3 py-1.5 rounded-full text-sm border" :style="activeTab === 'orders' ? { backgroundColor: storeThemeColor, color: '#fff' } : {}" @click="activeTab = 'orders'">Pedidos</button>
           <button v-if="isAuthenticated" class="px-3 py-1.5 rounded-full text-sm border" :style="activeTab === 'favorites' ? { backgroundColor: storeThemeColor, color: '#fff' } : {}" @click="activeTab = 'favorites'">Favoritos</button>
-          <button v-if="isAuthenticated" class="px-3 py-1.5 rounded-full text-sm border" :style="activeTab === 'addresses' ? { backgroundColor: storeThemeColor, color: '#fff' } : {}" @click="activeTab = 'addresses'">Enderecos</button>
+          <button v-if="isAuthenticated" class="px-3 py-1.5 rounded-full text-sm border" :style="activeTab === 'addresses' ? { backgroundColor: storeThemeColor, color: '#fff' } : {}" @click="activeTab = 'addresses'">Endereços</button>
         </div>
 
         <div v-if="!isAuthenticated && activeTab === 'login'" class="space-y-3">
@@ -162,13 +162,13 @@ function editAddress(address: any) {
           </div>
           <input v-model="registerForm.street" class="w-full border rounded-lg px-3 py-2" placeholder="Rua" />
           <div class="grid grid-cols-2 gap-2">
-            <input v-model="registerForm.number" class="border rounded-lg px-3 py-2" placeholder="Numero" />
+            <input v-model="registerForm.number" class="border rounded-lg px-3 py-2" placeholder="Número" />
             <input v-model="registerForm.complement" class="border rounded-lg px-3 py-2" placeholder="Complemento" />
           </div>
           <input v-model="registerForm.neighborhood" class="w-full border rounded-lg px-3 py-2" placeholder="Bairro" />
           <input v-model="registerForm.city" class="w-full border rounded-lg px-3 py-2" placeholder="Cidade" />
           <input v-model="registerForm.reference" class="w-full border rounded-lg px-3 py-2" placeholder="Referencia" />
-          <textarea v-model="registerForm.notes" class="w-full border rounded-lg px-3 py-2" rows="3" placeholder="Observacoes"></textarea>
+          <textarea v-model="registerForm.notes" class="w-full border rounded-lg px-3 py-2" rows="3" placeholder="Observações"></textarea>
           <button class="w-full rounded-lg text-white py-2" :style="{ backgroundColor: storeThemeColor }" @click="submitRegister">Criar conta</button>
         </div>
 
@@ -210,22 +210,22 @@ function editAddress(address: any) {
             </div>
             <input v-model="addressForm.street" class="w-full border rounded-lg px-3 py-2" placeholder="Rua" />
             <div class="grid grid-cols-2 gap-2">
-              <input v-model="addressForm.number" class="border rounded-lg px-3 py-2" placeholder="Numero" />
+              <input v-model="addressForm.number" class="border rounded-lg px-3 py-2" placeholder="Número" />
               <input v-model="addressForm.complement" class="border rounded-lg px-3 py-2" placeholder="Complemento" />
             </div>
             <input v-model="addressForm.neighborhood" class="w-full border rounded-lg px-3 py-2" placeholder="Bairro" />
             <input v-model="addressForm.city" class="w-full border rounded-lg px-3 py-2" placeholder="Cidade" />
             <input v-model="addressForm.reference" class="w-full border rounded-lg px-3 py-2" placeholder="Referencia" />
-            <textarea v-model="addressForm.notes" class="w-full border rounded-lg px-3 py-2" rows="2" placeholder="Observacoes"></textarea>
+            <textarea v-model="addressForm.notes" class="w-full border rounded-lg px-3 py-2" rows="2" placeholder="Observações"></textarea>
             <label class="flex items-center gap-2 text-sm">
-              <input v-model="addressForm.is_default" type="checkbox" /> Endereco padrao
+              <input v-model="addressForm.is_default" type="checkbox" /> Endereço padrão
             </label>
-            <button class="w-full rounded-lg text-white py-2" :style="{ backgroundColor: storeThemeColor }">Salvar endereco</button>
+            <button class="w-full rounded-lg text-white py-2" :style="{ backgroundColor: storeThemeColor }">Salvar endereço</button>
           </form>
 
           <div class="space-y-2">
             <article v-for="address in addresses" :key="address.id" class="border rounded-xl p-3 text-sm">
-              <p class="font-semibold">{{ address.label || 'Endereco' }} <span v-if="address.is_default" class="text-xs text-emerald-700">(Padrao)</span></p>
+              <p class="font-semibold">{{ address.label || 'Endereço' }} <span v-if="address.is_default" class="text-xs text-emerald-700">(Padrão)</span></p>
               <p class="text-slate-600">{{ address.street }}, {{ address.number }} - {{ address.neighborhood }}</p>
               <p class="text-slate-500">{{ address.city }}/{{ address.state }} - {{ address.zip }}</p>
               <div class="mt-2 flex gap-2">

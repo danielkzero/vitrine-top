@@ -18,12 +18,11 @@ class OrderStatusUpdatedCustomerMail extends Mailable
         public Order $order,
         public string $previousStatus,
         public string $newStatus,
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Atualizacao do pedido {$this->order->order_number}");
+        return new Envelope(subject: "Atualização do pedido {$this->order->order_number}");
     }
 
     public function content(): Content

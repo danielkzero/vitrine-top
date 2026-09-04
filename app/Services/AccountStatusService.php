@@ -11,15 +11,13 @@ use App\Models\User;
 
 class AccountStatusService
 {
-    public function __construct(private readonly PlanLimitService $planLimitService)
-    {
-    }
+    public function __construct(private readonly PlanLimitService $planLimitService) {}
 
     public function sync(User $user): array
     {
         $subscription = $user->subscription;
 
-        if (!$subscription) {
+        if (! $subscription) {
             $subscription = $this->createTrialSubscription($user);
             $user->setRelation('subscription', $subscription);
         }
@@ -43,7 +41,7 @@ class AccountStatusService
             && now()->lessThanOrEqualTo($subscription->trial_ends_at);
 
         $isSubscriptionActive = $subscription->status === SubscriptionStatus::ACTIVE
-            && (!$subscription->next_billing_at || now()->lessThanOrEqualTo($subscription->next_billing_at));
+            && (! $subscription->next_billing_at || now()->lessThanOrEqualTo($subscription->next_billing_at));
 
         $isAllowed = $isTrialActive || $isSubscriptionActive;
 
@@ -60,10 +58,10 @@ class AccountStatusService
     private function createTrialSubscription(User $user): Subscription
     {
         $plan = Plan::where('code', PlanCode::BASIC->value)->first();
-        if (!$plan) {
+        if (! $plan) {
             $plan = Plan::create([
                 'code' => PlanCode::BASIC->value,
-                'name' => 'Plano Basico',
+                'name' => 'Plano Básico',
                 'monthly_price' => 24.90,
                 'annual_price_total' => 238.80,
                 'annual_monthly_equivalent' => 19.90,

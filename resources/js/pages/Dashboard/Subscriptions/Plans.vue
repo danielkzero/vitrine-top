@@ -29,7 +29,7 @@ defineProps<{
       <div class="text-center">
         <h1 class="text-2xl font-bold">Planos da plataforma</h1>
         <p class="mt-2 text-sm text-muted-foreground">
-          Todos os planos incluem trial gratis de {{ trial_days }} dias.
+          Todos os planos incluem período de teste grátis de {{ trial_days }} dias.
         </p>
       </div>
 

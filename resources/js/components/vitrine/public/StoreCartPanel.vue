@@ -76,9 +76,9 @@ function submitCheckout() {
         </div>
 
         <div v-if="hasItems" class="space-y-2">
-          <label class="text-sm text-slate-700">Endereco de entrega</label>
+          <label class="text-sm text-slate-700">Endereço de entrega</label>
           <select v-model="addressId" class="w-full border rounded-lg px-3 py-2">
-            <option :value="null">Selecione um endereco</option>
+            <option :value="null">Selecione um endereço</option>
             <option v-for="address in addresses" :key="address.id" :value="address.id">
               {{ address.street }}, {{ address.number }} - {{ address.neighborhood }}
             </option>
@@ -90,7 +90,7 @@ function submitCheckout() {
           </div>
 
           <div v-else-if="!addresses?.length" class="text-xs text-amber-700 bg-amber-50 border border-amber-200 p-2 rounded">
-            Voce precisa cadastrar um endereco antes de finalizar.
+            Você precisa cadastrar um endereço antes de finalizar.
             <button class="underline ml-1" @click="emit('open-customer-panel')">Abrir painel do cliente</button>
           </div>
 
@@ -99,7 +99,7 @@ function submitCheckout() {
             <option value="manual">Manual</option>
             <option value="whatsapp">WhatsApp</option>
             <option value="pix">PIX (futuro)</option>
-            <option value="card">Cartao (futuro)</option>
+            <option value="card">Cartão (futuro)</option>
           </select>
 
           <label class="text-sm text-slate-700">Entrega</label>
@@ -108,7 +108,7 @@ function submitCheckout() {
             <option value="entrega">Entrega</option>
           </select>
 
-          <textarea v-model="notes" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="Observacoes do pedido"></textarea>
+          <textarea v-model="notes" rows="3" class="w-full border rounded-lg px-3 py-2" placeholder="Observações do pedido"></textarea>
 
           <div class="grid grid-cols-2 gap-2">
             <button class="rounded-lg border py-2" @click="emit('clear')">Limpar</button>

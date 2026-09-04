@@ -9,22 +9,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticateCustomerApiToken
 {
-    public function __construct(private readonly CustomerAuthTokenService $tokenService)
-    {
-    }
+    public function __construct(private readonly CustomerAuthTokenService $tokenService) {}
 
     public function handle(Request $request, Closure $next): Response
     {
         $bearer = $request->bearerToken();
 
-        if (!$bearer) {
+        if (! $bearer) {
             return response()->json(['message' => 'Token de cliente ausente.'], 401);
         }
 
         $token = $this->tokenService->findValidToken($bearer);
 
-        if (!$token || !$token->customer || !$token->customer->is_active) {
-            return response()->json(['message' => 'Token de cliente invalido.'], 401);
+        if (! $token || ! $token->customer || ! $token->customer->is_active) {
+            return response()->json(['message' => 'Token de cliente inválido.'], 401);
         }
 
         $request->attributes->set('customer', $token->customer);

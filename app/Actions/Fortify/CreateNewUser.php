@@ -18,9 +18,7 @@ class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;
 
-    public function __construct(private readonly PlanLimitService $planLimitService)
-    {
-    }
+    public function __construct(private readonly PlanLimitService $planLimitService) {}
 
     /**
      * Validate and create a newly registered user.
@@ -45,7 +43,7 @@ class CreateNewUser implements CreatesNewUsers
             $plan = Plan::firstOrCreate(
                 ['code' => PlanCode::BASIC->value],
                 [
-                    'name' => 'Plano Basico',
+                    'name' => 'Plano Básico',
                     'monthly_price' => 24.90,
                     'annual_price_total' => 238.80,
                     'annual_monthly_equivalent' => 19.90,

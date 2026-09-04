@@ -8,7 +8,7 @@ export const mainNavItems: NavItem[] = [
     { title: 'Clientes', href: routes.painel.customers.index, icon: UsersRound },
     { title: 'Páginas', href: routes.painel.pages.index, icon: FileText },
     { title: 'Banners', href: routes.painel.banners.index, icon: Layers },
-    { title: 'Avaliacoes', href: routes.painel.reviews.index, icon: MessageCircleMore },
+    { title: 'Avaliações', href: routes.painel.reviews.index, icon: MessageCircleMore },
     { title: 'Assinatura e cobrança', href: routes.painel.billing.index, icon: CreditCard },
     { title: 'Suporte', href: '/painel/suporte', icon: LifeBuoy },
 ];
